@@ -1,0 +1,12 @@
+Copyright (C) 2014-2020 TectroLabs, https://tectrolabs.com
+
+THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+
+This software is used for interacting with the hardware random data generator device AlphaRNG for the purpose of downloading true random bytes.
+
+This software requires `openssl` library when communicating with the AlphaRNG device.
+
+This software uses `openssl` (directly or indirectly) which is distributed under the terms of the Apache License V2. For more information, please visit: https://www.openssl.org/source/apache-license-2.0.txt
+
+This software may only be used in conjunction with an AlphaRNG device.
