@@ -1,8 +1,8 @@
 # AlphaRNG Software Kit
 
-AlphaRNG device aia a true random number generators that plug directly into any Linux or macOS computer via USB. 
+AlphaRNG device is a true random number generator that plugs directly into any Linux or macOS computer via USB. 
 
-AlphaRNG device works can in virtual machines using software such as VMware Player, VMware ESXi, VirtualBox, and Parallels.
+AlphaRNG device works with virtual machines using software such as VMware Player, VMware ESXi, VirtualBox, and Parallels.
 
 This repository contains the AlphaRNG Software Kit, which provides everything you need to use AlphaRNG with Linux or macOS.
 
