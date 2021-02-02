@@ -35,6 +35,7 @@ static bool run_device_diagnostics(AlphaRngApi &rng);
 static bool display_frequency_table_summary(uint16_t frequency_table[]);
 static bool inspect_raw_data(unsigned char raw_data_1[], unsigned char raw_data_2[]);
 static bool retrieve_entropy_bytes(AlphaRngApi &rng);
+static bool retrieve_noise_bytes(AlphaRngApi &rng);
 static bool retrieve_test_data(AlphaRngApi &rng);
 
 int main() {
@@ -79,7 +80,6 @@ int main() {
 			cout << "(healthy)" << endl;
 		}
 
-
 		if (!display_device_info(rng)) {
 			return -1;
 		}
@@ -92,12 +92,16 @@ int main() {
 			return -1;
 		}
 
+		if (!retrieve_noise_bytes(rng)) {
+			return -1;
+		}
+
 		if (!retrieve_test_data(rng)) {
 			return -1;
 		}
 
 		cout << endl;
-		cout << "-------- Retrieving RAW data from noise sources  ---------  ";
+		cout << "----------  Inspecting RAW data of the noise sources  -------------" << endl;
 		unsigned char noise_source_1[16000];
 		if(!rng.get_noise_source_1((unsigned char *)noise_source_1, sizeof(noise_source_1))) {
 			cerr << "err: " << rng.get_last_error() << endl;
@@ -108,9 +112,7 @@ int main() {
 			cerr << "err: " << rng.get_last_error() << endl;
 			return -1;
 		}
-		cout << "Success" << endl;
 
-		cout << "----------  Inspecting RAW data of the noise sources  -------------" << endl;
 		if (!inspect_raw_data(noise_source_1, noise_source_2)) {
 			return -1;
 		}
@@ -190,7 +192,7 @@ static bool display_frequency_table_summary(uint16_t frequency_table[]) {
 	return true;
 }
 
-/**
+/**inspect_raw_data
  * Retrieve and display AlphaRNG device information
  *
  * @param[in] RNG api instance
@@ -321,7 +323,7 @@ static bool inspect_raw_data(unsigned char raw_data_1[], unsigned char raw_data_
 static bool run_device_diagnostics(AlphaRngApi &rng) {
 	cout << "---------- Running device internal diagnostics  ----------  ";
 	cout.flush();
-	for (int i = 0; i < 100; ++i) {
+	for (int i = 0; i < 10; ++i) {
 		if (!rng.run_health_test()) {
 			cerr << "err: " << rng.get_last_error() << endl;
 			return false;
@@ -347,6 +349,47 @@ static bool retrieve_entropy_bytes(AlphaRngApi &rng) {
 			return false;
 		}
 	}
+	cout << "Success" << endl;
+	return true;
+}
+
+/**
+ *  Retrieve bytes from the noise sources. It will also run APT and RCT health tests.
+ *
+ *  @return true for successful operation
+ *
+ */
+static bool retrieve_noise_bytes(AlphaRngApi &rng) {
+	uint8_t noise_surce_buffer[100000];
+	cout << "--------- Retrieving bytes from noise source 1  ----------  ";
+	cout.flush();
+	for (int i = 0; i < 10; ++i) {
+		if (!rng.get_noise_source_1(noise_surce_buffer, sizeof(noise_surce_buffer))) {
+			cerr << "err: " << rng.get_last_error() << endl;
+			return false;
+		}
+	}
+	cout << "Success" << endl;
+
+	cout << "--------- Retrieving bytes from noise source 2  ----------  ";
+	cout.flush();
+	for (int i = 0; i < 10; ++i) {
+		if (!rng.get_noise_source_2(noise_surce_buffer, sizeof(noise_surce_buffer))) {
+			cerr << "err: " << rng.get_last_error() << endl;
+			return false;
+		}
+	}
+	cout << "Success" << endl;
+
+	cout << "----- Retrieving combined bytes from noise sources -------  ";
+	cout.flush();
+	for (int i = 0; i < 10; ++i) {
+		if (!rng.get_noise(noise_surce_buffer, sizeof(noise_surce_buffer))) {
+			cerr << "err: " << rng.get_last_error() << endl;
+			return false;
+		}
+	}
+
 	cout << "Success" << endl;
 	return true;
 }
