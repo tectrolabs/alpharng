@@ -12,7 +12,7 @@
  */
 
 /**
- *    @file srng.cpp
+ *    @file alrng.cpp
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
  *    @version 1.0
@@ -400,15 +400,15 @@ static void generate_statistics(DeviceStatistics &ds, Cmd &cmd) {
  */
 void display_help() {
 	cout << "*********************************************************************************" << endl;
-	cout << "             TectroLabs - arng - AlphaRNG download utility Ver 1.0  " << endl;
+	cout << "             TectroLabs - alrng - AlphaRNG download utility Ver 1.0  " << endl;
 	cout << "*********************************************************************************" << endl;
 	cout << "NAME" << endl;
-	cout << "     srng  - True Random Number Generator AlphaRNG download utility" << endl;
+	cout << "     alrng  - True Random Number Generator AlphaRNG download utility" << endl;
 	cout << "SYNOPSIS" << endl;
-	cout << "     srng <operation mode> -o <file name> -n <number of bytes> [options]" << endl;
+	cout << "     alrng <operation mode> -o <file name> -n <number of bytes> [options]" << endl;
 	cout << endl;
 	cout << "DESCRIPTION" << endl;
-	cout << "     srng establishes a secure data communication channel with AlphaRNG devices" << endl;
+	cout << "     alrng establishes a secure data communication channel with AlphaRNG devices" << endl;
 	cout << "          connected through a USB interface and downloads data in a file." << endl;
 	cout << endl;
 	cout << "FUNCTION LETTERS" << endl;
@@ -464,10 +464,10 @@ void display_help() {
 	cout << endl;
 	cout << "EXAMPLES:" << endl;
 	cout << "     To list all available AlphaRNG (not currently in use) devices." << endl;
-	cout << "           srng -l" << endl;
+	cout << "           alrng -l" << endl;
 	cout << "     To download 12 MB of entropy bytes to 'rnd.bin' file" << endl;
-	cout << "           srng  -e -o rnd.bin -n 12000000" << endl;
+	cout << "           alrng  -e -o rnd.bin -n 12000000" << endl;
 	cout << "     To download 12 MB of raw (unprocessed) random bytes to 'rnd.bin' file" << endl;
-	cout << "           srng  -r -o rnd.bin -n 12000000" << endl;
+	cout << "           alrng  -r -o rnd.bin -n 12000000" << endl;
 	cout << endl;
 }

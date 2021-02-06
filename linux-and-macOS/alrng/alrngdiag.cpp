@@ -12,7 +12,7 @@
  */
 
 /**
- *    @file srngdialog.cpp
+ *    @file alrngdiag.cpp
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
  *    @version 1.0
@@ -44,7 +44,7 @@ int main() {
 	FrequencyTables freq_tables;
 
 	cout << "-------------------------------------------------------------------" << endl;
-	cout << "------ TectroLabs - arngdiag - AlphaRNG diagnostics utility ------" << endl;
+	cout << "------ TectroLabs - alrngdiag - AlphaRNG diagnostics utility ------" << endl;
 	cout << "-------------------------------------------------------------------" << endl;
 	cout << "Searching for devices -----------------";
 
