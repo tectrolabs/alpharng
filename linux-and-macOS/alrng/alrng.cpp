@@ -465,9 +465,9 @@ void display_help() {
 	cout << "EXAMPLES:" << endl;
 	cout << "     To list all available AlphaRNG (not currently in use) devices." << endl;
 	cout << "           alrng -l" << endl;
-	cout << "     To download 12 MB of entropy bytes to 'rnd.bin' file" << endl;
-	cout << "           alrng  -e -o rnd.bin -n 12000000" << endl;
-	cout << "     To download 12 MB of raw (unprocessed) random bytes to 'rnd.bin' file" << endl;
-	cout << "           alrng  -r -o rnd.bin -n 12000000" << endl;
+	cout << "     To download 1 MB of entropy bytes to 'rnd.bin' file" << endl;
+	cout << "           alrng  -e -o rnd.bin -n 1000000" << endl;
+	cout << "     To download 1 MB of raw (unprocessed) random bytes to 'rnd.bin' file" << endl;
+	cout << "           alrng  -r -o rnd.bin -n 1000000" << endl;
 	cout << endl;
 }
