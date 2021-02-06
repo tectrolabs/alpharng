@@ -53,7 +53,7 @@ struct RngConfig {
 	MacType e_mac_type;
 	KeySize e_aes_key_size;
 	string key_file;
-
+	RsaKeySize e_rsa_key_size;
 };
 
 static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv);
@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	AlphaRngApi rng(AlphaRngConfig {cfg.e_mac_type, RsaKeySize::rsa2048, cfg.e_aes_key_size, cfg.key_file});
+	AlphaRngApi rng(AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file});
 
 	if (cmd.cmd_type != CmdOpt::listDevices && cmd.cmd_type != CmdOpt::getHelp) {
 		if (!rng.connect(cmd.device_number)) {
@@ -164,6 +164,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv) {
 
 	cfg.e_mac_type = MacType::hmacSha256;
 	cfg.e_aes_key_size = KeySize::k256;
+	cfg.e_rsa_key_size = RsaKeySize::rsa2048;
 
 	while (1) {
 		int option_index = 0;
@@ -180,11 +181,12 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv) {
 				{"help",			no_argument,		0,	'h'},
 				{"mac-type",		required_argument,	0,	'm'},
 				{"cipher-type",		required_argument,	0,	'c'},
+				{"pk-type",			required_argument,	0,	'p'},
 				{"key-file",		required_argument,	0,	'k'},
 				{0,					0,					0,	0}
 		};
 
-		c = getopt_long(argc, argv, "12reo:n:d:lshm:k:c:", long_options, &option_index);
+		c = getopt_long(argc, argv, "12reo:n:d:lshm:k:c:p:", long_options, &option_index);
 		if (c == -1) {
 			break;
 		}
@@ -263,6 +265,18 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv) {
 			cerr << "unexpected cipher option specified, must be aes256, aes128 or none" << endl;
 			return false;
 			break;
+		case 'p':
+			if (strcmp("RSA1024", optarg) == 0) {
+				cfg.e_rsa_key_size = RsaKeySize::rsa1024;
+				break;
+			}
+			if (strcmp("RSA2048", optarg) == 0) {
+				cfg.e_rsa_key_size = RsaKeySize::rsa2048;
+				break;
+			}
+			cerr << "unexpected RSA option specified, must be RSA1024, RSA2048 or RSA4096" << endl;
+			return false;
+			break;
 		case 'd':
 			cmd.device_number = atoi(optarg);
 			break;
@@ -325,7 +339,7 @@ static bool validate_comand(Cmd &cmd) {
  * @return true for successful operation
  */
 static bool list_connected_devices(RngConfig cfg) {
-	AlphaRngApi rng(AlphaRngConfig {cfg.e_mac_type, RsaKeySize::rsa2048, cfg.e_aes_key_size, cfg.key_file});
+	AlphaRngApi rng(AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file});
 	string id;
 	string model;
 	unsigned char major_version;
@@ -435,6 +449,9 @@ void display_help() {
 	cout << endl;
 	cout << "     -m MAC, --mac-type MAC" << endl;
 	cout << "           MAC type: hmacMD5, hmacSha160, hmacSha256 or none - skip this option for hmacSha256." << endl;
+	cout << endl;
+	cout << "     -p KEYTYPE , --pk-type KEYTYPE" << endl;
+	cout << "           Public KEYTYPE: RSA1024 or RSA2048 - skip this option for RSA2048." << endl;
 	cout << endl;
 	cout << "     -c CIPHER, --cipher-type CIPHER" << endl;
 	cout << "           Cipher type: aes256, aes128 or none - skip this option for aes256." << endl;
