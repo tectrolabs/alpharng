@@ -174,7 +174,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv) {
 				{"get-entropy",		no_argument,		0,	'e'},
 				{"output",			required_argument,	0,	'o'},
 				{"get-noise-1",		no_argument,		0,	'1'},
-				{"get source-2",	no_argument,		0,	'2'},
+				{"get noise-2",		no_argument,		0,	'2'},
 				{"get-noise",		no_argument,		0,	'r'},
 				{"device-number",	required_argument,	0,	'd'},
 				{"log-statistics",	no_argument,		0,	's'},
