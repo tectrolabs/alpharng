@@ -34,9 +34,9 @@
 #include <HmacSha256.h>
 #include <HmacSha1.h>
 #include <HmacMD5.h>
-#include "AlphaRngConfig.h"
-#include "HealthTests.h"
-#include "Structures.h"
+#include <AlphaRngConfig.h>
+#include <HealthTests.h>
+#include <Structures.h>
 
 using namespace std;
 
@@ -121,6 +121,7 @@ private:
 	bool m_is_initialized = false;
 	int m_device_count;
 	const int c_max_command_retry_count = 3;
+	uint16_t m_token_serial_number;
 	char *m_device_name = nullptr;
 	DeviceInfo m_device_info;
 	const int c_slow_timeout_mlsecs = 4000;

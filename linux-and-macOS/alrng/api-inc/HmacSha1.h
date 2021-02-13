@@ -26,8 +26,11 @@
 
 #include <openssl/rand.h>
 #include <openssl/hmac.h>
-#include <string.h>
-#include "HmacInterface.h"
+#include <cstring>
+#include <new>
+#include <HmacInterface.h>
+
+using namespace std;
 
 namespace alpharng {
 

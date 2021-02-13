@@ -85,7 +85,7 @@ bool HmacMD5::get_mac_key(unsigned char* out) {
 }
 
 HmacMD5::HmacMD5() {
-	m_key = new unsigned char[c_key_size_bytes];
+	m_key = new (nothrow) unsigned char[c_key_size_bytes];
 	if (m_key == nullptr) {
 		m_initialized = false;
 		return;

@@ -162,7 +162,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv) {
 	cmd.cmd_type = CmdOpt::none;
 	cmd.log_statistics = false;
 
-	cfg.e_mac_type = MacType::hmacSha256;
+	cfg.e_mac_type = MacType::None;
 	cfg.e_aes_key_size = KeySize::k256;
 	cfg.e_rsa_key_size = RsaKeySize::rsa2048;
 
@@ -448,7 +448,7 @@ void display_help() {
 	cout << "           devices." << endl;
 	cout << endl;
 	cout << "     -m MAC, --mac-type MAC" << endl;
-	cout << "           MAC type: hmacMD5, hmacSha160, hmacSha256 or none - skip this option for hmacSha256." << endl;
+	cout << "           MAC type: hmacMD5, hmacSha160, hmacSha256 or none - skip this option for none." << endl;
 	cout << endl;
 	cout << "     -p KEYTYPE , --pk-type KEYTYPE" << endl;
 	cout << "           Public KEYTYPE: RSA1024 or RSA2048 - skip this option for RSA2048." << endl;

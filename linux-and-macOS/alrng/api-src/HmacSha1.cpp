@@ -85,7 +85,7 @@ bool HmacSha1::get_mac_key(unsigned char* out) {
 }
 
 HmacSha1::HmacSha1() {
-	m_key = new unsigned char[c_key_size_bytes];
+	m_key = new (nothrow) unsigned char[c_key_size_bytes];
 	if (m_key == nullptr) {
 		m_initialized = false;
 		return;

@@ -32,7 +32,7 @@
 #include <sys/file.h>
 #include <cstdint>
 
-#include "DeviceInterface.h"
+#include <DeviceInterface.h>
 
 using namespace std;
 namespace alpharng {

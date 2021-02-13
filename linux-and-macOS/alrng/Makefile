@@ -1,7 +1,7 @@
 CC=gcc
 IDIR =./api-inc
 SDIR =./api-src
-CPPFLAGS= -O2 -I$(IDIR) -lssl -lcrypto -Wall -Wextra -lstdc++ -std=c++11
+CPPFLAGS= -O2 -I$(IDIR) -lcrypto -Wall -Wextra -lstdc++ -std=c++11
 
 
 PREFIX = $(DESTDIR)/usr/local
