@@ -19,7 +19,7 @@
  *    @Author: Andrian Belinski
  *    @version 1.0
  *
- *    @brief Encrypts or decrypts session data using AES with 128 or 256 bit keys.
+ *    @brief Encrypts or decrypts session data using AES-GCM with 128 or 256 bit keys.
  */
 
 #include <AesCryptor.h>
@@ -201,7 +201,7 @@ bool AesCryptor::initialize_iv() {
  * @return true if decrypted successfully
  */
 bool AesCryptor::decrypt(const unsigned char *in, int in_byte_count, unsigned char *out, int *out_byte_count, unsigned char *in_tag) {
-	if (!m_initialized || in_byte_count == 0 || in == nullptr || out == nullptr || in_tag == nullptr) {
+	if (!m_initialized || in_byte_count == 0 || in == nullptr || out == nullptr || out_byte_count == nullptr || in_tag == nullptr) {
 		return false;
 	}
 

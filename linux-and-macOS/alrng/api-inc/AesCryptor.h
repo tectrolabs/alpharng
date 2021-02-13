@@ -19,7 +19,7 @@
  *    @Author: Andrian Belinski
  *    @version 1.0
  *
- *    @brief Encrypts and decrypts session data using AES with 128 or 256 bit keys.
+ *    @brief Encrypts or decrypts session data using AES-GCM with 128 or 256 bit keys.
  */
 
 #ifndef API_SRC_AESCRYPTOR_H_
