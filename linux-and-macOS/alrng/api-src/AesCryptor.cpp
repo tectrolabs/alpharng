@@ -88,7 +88,7 @@ void AesCryptor::initialize(KeySize e_key_size) {
 		return;
 	}
 	m_e_key_size = e_key_size;
-	m_key = new (nothrow)unsigned char[m_e_key_size];
+	m_key = new (nothrow)unsigned char[(int)m_e_key_size];
 	if (m_key == nullptr) {
 		m_initialized = false;
 		return;
