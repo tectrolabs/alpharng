@@ -60,9 +60,10 @@ struct Command {
 };
 struct Packet {
 	PacketType	e_type;
-	KeySize	e_key_size;
+	KeySize		e_key_size;
+	uint8_t		cipher_iv[12];
+	uint8_t		cipher_tag[16];
 	uint16_t 	payload_size;
-	// Variables below this line should be encrypted before sending over
 	uint8_t 	payload[16096];
 };
 struct Response {
@@ -77,7 +78,7 @@ struct Session {
 	KeySize 		e_size;
 	uint8_t 		key[32];
 	uint64_t		token;
-	uint8_t			not_in_use[16];
+	uint8_t			cipher_aad[16];
 	MacType 		e_mac_type;
 	uint8_t			mac_key[32];
 	uint8_t 		mac[32];

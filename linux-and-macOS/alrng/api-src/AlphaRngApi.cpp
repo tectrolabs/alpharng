@@ -56,16 +56,22 @@ void AlphaRngApi::initialize(AlphaRngConfig cfg) {
 		m_error_log_oss << "Could not initialize serial device" << ". " << endl;
 		return;
 	}
+
+	if (!RAND_bytes((unsigned char *)&m_token_serial_number, sizeof(m_token_serial_number))) {
+		m_error_log_oss << "Could not initialize token serial number" << ". " << endl;
+		return;
+	}
+
 	m_is_initialized = true;
 	clear_error_log();
 }
 
 bool AlphaRngApi::initialize_serial_device() {
-	m_device = new UsbSerialDevice();
+	m_device = new (nothrow) UsbSerialDevice();
 	if (m_device == nullptr) {
 		return false;
 	}
-	m_device_name = new char [128];
+	m_device_name = new (nothrow) char [128];
 	if (m_device_name == nullptr) {
 		return false;
 	}
@@ -74,7 +80,7 @@ bool AlphaRngApi::initialize_serial_device() {
 }
 
 bool AlphaRngApi::initialize_rsa_keyfile() {
-	m_rsa_cryptor = new RsaCryptor(m_cfg.pub_key_file_name, true);
+	m_rsa_cryptor = new (nothrow) RsaCryptor(m_cfg.pub_key_file_name, true);
 	if (m_rsa_cryptor == nullptr || !m_rsa_cryptor->is_initialized()) {
 		return false;
 	}
@@ -85,10 +91,10 @@ bool AlphaRngApi::initialize_rsa() {
 	switch(m_cfg.e_rsa_key_size) {
 	case RsaKeySize::rsa2048:
 	default:
-		m_rsa_cryptor = new RsaCryptor(m_rsa_key_repo.c_rsapub_2048_pem, m_rsa_key_repo.c_rsapub_2048_pem_len, true);
+		m_rsa_cryptor = new (nothrow) RsaCryptor(m_rsa_key_repo.c_rsapub_2048_pem, m_rsa_key_repo.c_rsapub_2048_pem_len, true);
 		break;
 	case RsaKeySize::rsa1024:
-		m_rsa_cryptor = new RsaCryptor(m_rsa_key_repo.c_rsapub_1024_pem, m_rsa_key_repo.c_rsapub_1024_pem_len, true);
+		m_rsa_cryptor = new (nothrow) RsaCryptor(m_rsa_key_repo.c_rsapub_1024_pem, m_rsa_key_repo.c_rsapub_1024_pem_len, true);
 		break;
 	}
 	if (m_rsa_cryptor == nullptr || !m_rsa_cryptor->is_initialized()) {
@@ -118,19 +124,19 @@ bool AlphaRngApi::initialize_hash(MacType e_mac_type) {
 	switch(e_mac_type) {
 	case MacType::hmacSha256:
 	default:
-		m_hmac = new HmacSha256();
+		m_hmac = new (nothrow) HmacSha256();
 		if (m_hmac == nullptr || !m_hmac->is_initialized()) {
 			return false;
 		}
 		break;
 	case MacType::hmacSha160:
-		m_hmac = new HmacSha1();
+		m_hmac = new (nothrow) HmacSha1();
 		if (m_hmac == nullptr || !m_hmac->is_initialized()) {
 			return false;
 		}
 		break;
 	case MacType::hmacMD5:
-		m_hmac = new HmacMD5();
+		m_hmac = new (nothrow) HmacMD5();
 		if (m_hmac == nullptr || !m_hmac->is_initialized()) {
 			return false;
 		}
@@ -144,7 +150,7 @@ bool AlphaRngApi::initialize_aes(KeySize e_aes_key_size) {
 		if (m_aes_cryptor != nullptr) {
 			delete m_aes_cryptor;
 		}
-		m_aes_cryptor = new AesCryptor(e_aes_key_size);
+		m_aes_cryptor = new (nothrow) AesCryptor(e_aes_key_size);
 		if (m_aes_cryptor == nullptr || !m_aes_cryptor->is_initialized()) {
 			return false;
 		}
@@ -414,7 +420,7 @@ bool AlphaRngApi::to_file(CommandType cmd_type, const string &file_path_name, in
 	}
 
 	if (m_file_buffer == nullptr) {
-		m_file_buffer = new unsigned char[c_file_output_buff_size_bytes];
+		m_file_buffer = new (nothrow) unsigned char[c_file_output_buff_size_bytes];
 		if (m_file_buffer == nullptr) {
 			m_error_log_oss << "Could not allocate memory for the file buffer" << ". " << endl;
 			return false;
@@ -891,11 +897,11 @@ bool AlphaRngApi::execute_command (Response *resp, Command *cmd, int resp_payloa
 bool AlphaRngApi::create_token(uint64_t *out) {
 	time_t seconds = time(NULL);
 	uint64_t token = seconds;
-	uint32_t rnd;
+	uint16_t rnd;
 	if (!RAND_bytes((unsigned char*)&rnd, sizeof(rnd))) {
 		return false;
 	}
-	token  = (token << 32) | rnd;
+	token  = (token << 32) | (m_token_serial_number++ << 16) | rnd;
 	*out = token;
 	return true;
 }
@@ -948,6 +954,10 @@ bool AlphaRngApi::upload_session_key() {
 	}
 
 	if (m_cfg.e_aes_key_size != KeySize::None) {
+		if (!m_aes_cryptor->get_aad(sess.cipher_aad)) {
+			m_error_log_oss << "Could not retrieve cipher AAD" << ". " << endl;
+			return false;
+		}
 		if (!m_aes_cryptor->get_key(sess.key)) {
 			m_error_log_oss << "Could not retrieve AES key" << ". " << endl;
 			return false;
@@ -1020,17 +1030,27 @@ bool AlphaRngApi::create_and_upload_command_packet(uint8_t *p, int object_size_b
 	} else {
 		memcpy((uint8_t *)tmp.payload, p, object_size_bytes);
 
+		if (!m_aes_cryptor->initialize_iv()) {
+			m_error_log_oss << "Could not generate IV for the AES cipher" << ". " << endl;
+			return false;
+		}
+
+		if (!m_aes_cryptor->get_iv(rqst.cipher_iv)) {
+			m_error_log_oss << "Could not retrieve AES cipher IV" << ". " << endl;
+			return false;
+		}
+
 		// Encrypt the payload
-		for (int i = 0; i < cmd_packet_payload_size; i += (int)m_cfg.e_aes_key_size) {
-			int enc_byte_count = 0;
-			if (!m_aes_cryptor->encrypt((const unsigned char *)tmp.payload + i, (int)m_cfg.e_aes_key_size, (unsigned char *)rqst.payload + i, &enc_byte_count)
-					|| enc_byte_count != (int)m_cfg.e_aes_key_size) {
-				m_error_log_oss << "Could not encrypt the payload with the AES cipher" << ". " << endl;
-				return false;
-			}
+		int enc_byte_count = 0;
+		if (!m_aes_cryptor->encrypt((const unsigned char *)tmp.payload,
+				cmd_packet_payload_size, (unsigned char *)rqst.payload,
+				&enc_byte_count, (unsigned char *)rqst.cipher_tag)
+			|| enc_byte_count != cmd_packet_payload_size) {
+			m_error_log_oss << "Could not encrypt the payload with the AES cipher" << ". " << endl;
+			return false;
 		}
 	}
-	// Upload the PK encrypted session key
+	// Upload the encrypted command
 	if (!upload_request(&rqst)) {
 		return false;
 	}
@@ -1052,6 +1072,19 @@ bool AlphaRngApi::create_and_upload_session_packet(uint8_t *p, int object_size_b
 		return false;
 	}
 	memcpy((uint8_t *)tmp.payload, p, object_size_bytes);
+
+
+	if (m_cfg.e_aes_key_size != KeySize::None) {
+		if (!m_aes_cryptor->initialize_iv()) {
+			m_error_log_oss << "Could not generate AES IV for the session" << ". " << endl;
+			return false;
+		}
+
+		if (!m_aes_cryptor->get_iv(rqst.cipher_iv)) {
+			m_error_log_oss << "Could not retrieve AES cipher IV for session" << ". " << endl;
+			return false;
+		}
+	}
 
 	int encrypted_size_bytes;
 	// Encrypt session key with the public key
@@ -1075,6 +1108,8 @@ int AlphaRngApi::get_packet_size(int resp_packet_payload_size_bytes) {
 	int packet_size =
 			sizeof(Packet::e_type)
 			+ sizeof(Packet::e_key_size)
+			+ sizeof(Packet::cipher_iv)
+			+ sizeof(Packet::cipher_tag)
 			+ sizeof(Packet::payload_size)
 			+ resp_packet_payload_size_bytes;
 	return packet_size;
@@ -1147,13 +1182,14 @@ int AlphaRngApi::download_response(Response *resp, int resp_packet_payload_size)
 	if (packet.e_key_size == KeySize::None) {
 		memcpy(resp, packet.payload, packet.payload_size);
 	} else {
-		for (int i = 0; i < resp_packet_payload_size; i += (int)packet.e_key_size) {
-			int dec_byte_count;
-			if (!m_aes_cryptor->decrypt((const unsigned char *)packet.payload + i, (int)packet.e_key_size, (unsigned char *)resp + i, &dec_byte_count)
-					|| dec_byte_count != (int)packet.e_key_size) {
-				m_error_log_oss << "Could not decrypt the payload using the AES cipher" << ". " << endl;
-				return -1;
-			}
+		int dec_byte_count = 0;
+		if (!m_aes_cryptor->decrypt((const unsigned char *)packet.payload,
+				resp_packet_payload_size, (unsigned char *)resp,
+				&dec_byte_count, packet.cipher_tag)
+			|| dec_byte_count != resp_packet_payload_size) {
+			m_error_log_oss << "Could not decrypt the payload using the AES cipher" << ". " << endl;
+			ERR_print_errors_fp(stderr);
+			return -1;
 		}
 	}
 
@@ -1192,7 +1228,8 @@ bool AlphaRngApi::is_response_valid(Response *resp) {
 }
 
 bool AlphaRngApi::upload_request(Packet *rqst) {
-	int request_size_bytes = sizeof(rqst->e_type) + sizeof(rqst->e_key_size)  + sizeof(rqst->payload_size) + rqst->payload_size;
+	int request_size_bytes = sizeof(rqst->e_type) + sizeof(rqst->e_key_size) + sizeof(rqst->cipher_iv)
+		+ sizeof(rqst->cipher_tag) + sizeof(rqst->payload_size) + rqst->payload_size;
 	int actual_bytes_sent = 0;
 	if (m_device->send_data((unsigned char *)rqst, request_size_bytes, &actual_bytes_sent)) {
 		m_error_log_oss << "send_data() expected to send  " << request_size_bytes << " bytes, actual bytes sent " << actual_bytes_sent << ". " << endl;

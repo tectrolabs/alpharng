@@ -23,7 +23,7 @@
 #define API_INC_ALPHARNGCONFIG_H_
 
 #include <string>
-#include "Structures.h"
+#include <Structures.h>
 
 namespace alpharng {
 

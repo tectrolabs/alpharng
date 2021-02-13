@@ -24,10 +24,10 @@
 #ifndef COUNTINUOUSHEALTHTEST_H_
 #define COUNTINUOUSHEALTHTEST_H_
 
-#include "Structures.h"
-#include <string.h>
+#include <cstring>
 #include <cstdint>
 #include <iostream>
+#include <Structures.h>
 
 using namespace std;
 namespace alpharng {
