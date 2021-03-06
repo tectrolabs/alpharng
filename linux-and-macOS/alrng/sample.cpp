@@ -1,12 +1,13 @@
 /**
  *    @file sample.cpp
- *    @date 01/10/2020
+ *    @date 03/06/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief A sample program for connecting to an AlphaRNG device and retrieve 10 random bytes over secure channel
  */
 
+#include "pch.h"
 #include <AlphaRngApi.h>
 
 using namespace alpharng;

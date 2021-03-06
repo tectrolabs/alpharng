@@ -22,6 +22,7 @@
  *    @brief Encrypts or decrypts session data using AES-GCM with 128 or 256 bit keys.
  */
 
+#include "pch.h"
 #include <AesCryptor.h>
 
 namespace alpharng {

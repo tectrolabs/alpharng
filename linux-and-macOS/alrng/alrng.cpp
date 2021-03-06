@@ -19,7 +19,7 @@
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
-
+#include "pch.h"
 #include <AlphaRngApi.h>
 #include <AppArguments.h>
 

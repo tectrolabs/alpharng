@@ -12,12 +12,13 @@
 
 /**
  *    @file AppArguments.h
- *    @date 05/06/2020
+ *    @date 03/06/2021
  *    @Author: Andrian Belinski
  *    @version 1.0
  *
  *    @brief Parse application command line arguments
  */
+#include "pch.h"
 #include <AppArguments.h>
 
 namespace alpharng {

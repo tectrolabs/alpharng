@@ -21,6 +21,7 @@
  *    @brief Implements an API used for generating a HmacSHA256 message authentication digest for communicating with the AlphaRNG device.
  */
 
+#include "pch.h"
 #include <HmacSha256.h>
 
 namespace alpharng {

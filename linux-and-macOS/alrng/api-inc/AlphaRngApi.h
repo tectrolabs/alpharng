@@ -25,11 +25,18 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <chrono>
+#include <thread>
 
 #include <RsaCryptor.h>
 #include <AesCryptor.h>
 #include <RsaKeyRepo.h>
+#ifdef _WIN32
+#include <WinUsbSerialDevice.h>
+#else
 #include <UsbSerialDevice.h>
+#endif
+
 #include <HmacInterface.h>
 #include <HmacSha256.h>
 #include <HmacSha1.h>
@@ -110,6 +117,7 @@ private:
 	bool initialize_rsa_keyfile();
 	bool initialize_serial_device();
 	bool create_token(uint64_t *token);
+	void sleep_usecs(int usec);
 
 private:
 	HmacInterface *m_hmac = nullptr;

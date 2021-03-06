@@ -21,6 +21,7 @@
  *    @brief Implements an API used for generating a HmacMD5 message authentication digest for communicating with the AlphaRNG device.
  */
 
+#include "pch.h"
 #include <HmacMD5.h>
 
 namespace alpharng {

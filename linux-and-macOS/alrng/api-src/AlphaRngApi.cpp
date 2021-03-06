@@ -19,6 +19,7 @@
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
 
+#include "pch.h"
 #include <AlphaRngApi.h>
 
 namespace alpharng {
@@ -67,7 +68,13 @@ void AlphaRngApi::initialize(AlphaRngConfig cfg) {
 }
 
 bool AlphaRngApi::initialize_serial_device() {
+#ifdef _WIN32
+	m_device = new (nothrow) WinUsbSerialDevice();
+#else
 	m_device = new (nothrow) UsbSerialDevice();
+#endif
+
+	
 	if (m_device == nullptr) {
 		return false;
 	}
@@ -461,7 +468,7 @@ bool AlphaRngApi::to_file(CommandType cmd_type, const string &file_path_name, in
 		}
 	}
 	if (num_remaining_bytes) {
-		if(!get_data(cmd_type, m_file_buffer, num_remaining_bytes)) {
+		if(!get_data(cmd_type, m_file_buffer, (int)num_remaining_bytes)) {
 			return false;
 		}
 		os_file.write((const char*)m_file_buffer, num_remaining_bytes);
@@ -496,9 +503,9 @@ bool AlphaRngApi::get_unpacked_bytes_with_retry(char cmd, unsigned char *out, in
 		}
 
 		m_op_retry_count++;
-		usleep(1000 * 100);
+		sleep_usecs(1000 * 100);
 		clear_receiver();
-		usleep(1000 * 100);
+		sleep_usecs(1000 * 100);
 	}
 	return false;
 }
@@ -735,7 +742,7 @@ bool AlphaRngApi::connect(int device_number) {
 		if (connect_internal(device_number)) {
 			return true;
 		}
-		usleep(1000 * 100);
+		sleep_usecs(1000 * 100);
 		clear_receiver();
 		m_op_retry_count++;
 	}
@@ -887,9 +894,9 @@ bool AlphaRngApi::execute_command (Response *resp, Command *cmd, int resp_payloa
 			return true;
 		}
 		m_op_retry_count++;
-		usleep(1000 * 100);
+		sleep_usecs(1000 * 100);
 		clear_receiver();
-		usleep(1000 * 100);
+		sleep_usecs(1000 * 100);
 	}
 	return false;
 }
@@ -1314,6 +1321,10 @@ AlphaRngApi::~AlphaRngApi() {
 	if (m_file_buffer) {
 		delete [] m_file_buffer;
 	}
+}
+
+void AlphaRngApi::sleep_usecs(int usec) {
+	std::this_thread::sleep_for(std::chrono::microseconds(usec));
 }
 
 } /* namespace alpharng */

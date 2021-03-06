@@ -18,6 +18,8 @@
  *
  *    @brief Implementation for 'Repetition Count' (RCT) and 'Adaptive Proportion' (APT) tests as described in NIST SP.800-90B
  */
+
+#include "pch.h"
 #include <HealthTests.h>
 
 namespace alpharng {

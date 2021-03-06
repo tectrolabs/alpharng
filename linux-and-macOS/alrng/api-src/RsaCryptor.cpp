@@ -21,6 +21,7 @@
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device.
  */
 
+#include "pch.h"
 #include <RsaCryptor.h>
 
 namespace alpharng {

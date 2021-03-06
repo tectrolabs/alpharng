@@ -8,7 +8,7 @@
 
  This class is used for establishing a secure session between the host computer and the AlphaRNG device.
 
-  */
+*/
 
 /**
  *    @file RsaKeyRepo.cpp
@@ -19,6 +19,7 @@
  *    @brief Used for storing hard-coded RSA 2048 and 1024 public keys used for establishing a secure connection with the AlphaRNG device.
  */
 
+#include "pch.h"
 #include <RsaKeyRepo.h>
 
 namespace alpharng {
