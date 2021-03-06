@@ -25,7 +25,7 @@ namespace alpharng {
 
 
 UsbSerialDevice::UsbSerialDevice() {
-	this-> m_devicees_connected = false;
+	this-> m_device_connected = false;
 	this->m_fd = -1;
 	m_active_device_count = 0;
 	clear_error_log();
@@ -42,7 +42,7 @@ void UsbSerialDevice::clear_error_log() {
  * @return true if connection is established
  */
 bool UsbSerialDevice::is_connected() {
-	return this->m_devicees_connected;
+	return this->m_device_connected;
 }
 
 /**
@@ -92,7 +92,7 @@ bool UsbSerialDevice::connect(const char *device_path_name) {
 		close(m_fd);
 		return false;
 	}
-	this->m_devicees_connected = true;
+	this->m_device_connected = true;
 	return true;
 }
 
@@ -132,7 +132,7 @@ bool UsbSerialDevice::disconnect() {
 	}
 	flock(this->m_fd, LOCK_UN);
 	close(m_fd);
-	this->m_devicees_connected = false;
+	this->m_device_connected = false;
 	clear_error_log();
 	return true;
 }

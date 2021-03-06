@@ -8,7 +8,7 @@
 
  This class implements the access to the AlphaRNG device over a CDC USB interface on Linux and macOS platforms.
 
- */
+*/
 
 /**
  *    @file UsbSerialDevice.h
@@ -18,7 +18,6 @@
  *
  *    @brief Implements the API for communicating with the AlphaRNG device
  */
-
 #ifndef USBSERIALDEVICE_H_
 #define USBSERIALDEVICE_H_
 
@@ -66,7 +65,7 @@ private:
 	int m_lock;
 	char c_device_names[c_max_devices][c_max_size_device_name];
 	int m_active_device_count;
-	bool m_devicees_connected;
+	bool m_device_connected;
 	ostringstream m_error_log_oss;
 	struct termios m_opts;
 	const int c_timeout_mlsecs = 100;

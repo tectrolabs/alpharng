@@ -13,16 +13,15 @@
 
 /**
  *    @file alrng.cpp
- *    @date 01/10/2020
+ *    @date 03/06/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
 
-#include <getopt.h>
-
 #include <AlphaRngApi.h>
+#include <AppArguments.h>
 
 using namespace std;
 using namespace alpharng;
@@ -55,6 +54,23 @@ struct RngConfig {
 	string key_file;
 	RsaKeySize e_rsa_key_size;
 };
+
+AppArguments appArgs ({
+	{"-1", ArgDef::noArgument},
+	{"-2", ArgDef::noArgument},
+	{"-r", ArgDef::noArgument},
+	{"-e", ArgDef::noArgument},
+	{"-o", ArgDef::requiredArgument},
+	{"-n", ArgDef::requiredArgument},
+	{"-d", ArgDef::requiredArgument},
+	{"-l", ArgDef::noArgument},
+	{"-s", ArgDef::noArgument},
+	{"-h", ArgDef::noArgument},
+	{"-m", ArgDef::requiredArgument},
+	{"-k", ArgDef::requiredArgument},
+	{"-c", ArgDef::requiredArgument},
+	{"-p", ArgDef::requiredArgument},
+});
 
 static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv);
 static bool validate_comand(Cmd &cmd);
@@ -153,7 +169,11 @@ int main(int argc, char **argv) {
  * @return true if command and options extracted successfully
  */
 static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv) {
-	int c;
+	appArgs.load_arguments(argc, argv);
+	if (appArgs.is_error()) {
+		cerr << appArgs.get_last_error();
+		return false;
+	}
 
 	cmd.device_number = 0;
 	cmd.num_bytes = 0;
@@ -166,38 +186,26 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv) {
 	cfg.e_aes_key_size = KeySize::k256;
 	cfg.e_rsa_key_size = RsaKeySize::rsa2048;
 
-	while (1) {
-		int option_index = 0;
-		static struct option long_options[] = {
-				{"list-devices",	no_argument,		0,	'l'},
-				{"num-bytes",		required_argument,	0,	'n'},
-				{"get-entropy",		no_argument,		0,	'e'},
-				{"output",			required_argument,	0,	'o'},
-				{"get-noise-1",		no_argument,		0,	'1'},
-				{"get noise-2",		no_argument,		0,	'2'},
-				{"get-noise",		no_argument,		0,	'r'},
-				{"device-number",	required_argument,	0,	'd'},
-				{"log-statistics",	no_argument,		0,	's'},
-				{"help",			no_argument,		0,	'h'},
-				{"mac-type",		required_argument,	0,	'm'},
-				{"cipher-type",		required_argument,	0,	'c'},
-				{"pk-type",			required_argument,	0,	'p'},
-				{"key-file",		required_argument,	0,	'k'},
-				{0,					0,					0,	0}
-		};
 
-		c = getopt_long(argc, argv, "12reo:n:d:lshm:k:c:p:", long_options, &option_index);
-		if (c == -1) {
-			break;
-		}
+	map<string, string> arg_map = appArgs.get_argument_map();
+    for (map<string, string>::iterator it = arg_map.begin(); it != arg_map.end(); it++)	{
+    	string option = it->first;
+    	string value = it->second;
 
-		switch (c) {
+    	if (option.length() <= 1) {
+    		cerr << "Invalid option: " << option << endl;
+    		return false;
+    	}
+
+    	char c = option.at(1);
+
+    	switch(c) {
 		case 'h':
 			cmd.cmd_type = CmdOpt::getHelp;
 			cmd.op_count++;
 			break;
 		case 'o':
-			cmd.out_file_name = optarg;
+			cmd.out_file_name = value;
 			break;
 		case 'e':
 			cmd.cmd_type = CmdOpt::getEntropy;
@@ -220,29 +228,29 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv) {
 			cmd.op_count++;
 			break;
 		case 'n':
-			cmd.num_bytes = atoll(optarg);
+			cmd.num_bytes = atoll(value.c_str());
 			if (cmd.num_bytes == 0LL || cmd.num_bytes > 200000000000LL) {
 				cerr << "unexpected number of bytes requested, must be between 1 and  200000000000" << endl;
 				return false;
 			}
 			break;
 		case 'k':
-			cfg.key_file = optarg;
+			cfg.key_file = value;
 			break;
 		case 'm':
-			if (strcmp("hmacSha160", optarg) == 0) {
+			if (value.compare("hmacSha160") == 0) {
 				cfg.e_mac_type = MacType::hmacSha160;
 				break;
 			}
-			if (strcmp("hmacMD5", optarg) == 0) {
+			if (value.compare("hmacMD5") == 0) {
 				cfg.e_mac_type = MacType::hmacMD5;
 				break;
 			}
-			if (strcmp("hmacSha256", optarg) == 0) {
+			if (value.compare("hmacSha256") == 0) {
 				cfg.e_mac_type = MacType::hmacSha256;
 				break;
 			}
-			if (strcmp("none", optarg) == 0) {
+			if (value.compare("none") == 0) {
 				cfg.e_mac_type = MacType::None;
 				break;
 			}
@@ -250,15 +258,15 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv) {
 			return false;
 			break;
 		case 'c':
-			if (strcmp("aes256", optarg) == 0) {
+			if (value.compare("aes256") == 0) {
 				cfg.e_aes_key_size = KeySize::k256;
 				break;
 			}
-			if (strcmp("aes128", optarg) == 0) {
+			if (value.compare("aes128") == 0) {
 				cfg.e_aes_key_size = KeySize::k128;
 				break;
 			}
-			if (strcmp("none", optarg) == 0) {
+			if (value.compare("none") == 0) {
 				cfg.e_aes_key_size = KeySize::None;
 				break;
 			}
@@ -266,11 +274,11 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv) {
 			return false;
 			break;
 		case 'p':
-			if (strcmp("RSA1024", optarg) == 0) {
+			if (value.compare("RSA1024") == 0) {
 				cfg.e_rsa_key_size = RsaKeySize::rsa1024;
 				break;
 			}
-			if (strcmp("RSA2048", optarg) == 0) {
+			if (value.compare("RSA2048") == 0) {
 				cfg.e_rsa_key_size = RsaKeySize::rsa2048;
 				break;
 			}
@@ -278,27 +286,16 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, int argc, char **argv) {
 			return false;
 			break;
 		case 'd':
-			cmd.device_number = atoi(optarg);
+			cmd.device_number = atoi(value.c_str());
 			break;
 		case 's':
 			cmd.log_statistics = true;
 			break;
-		case '?':
-			break;
 		default:
-			cerr << "unexpected character code " << c << endl;
-		}
-	}
-	if (optind < argc) {
-		cout << "Non option elements provided: ";
-		while (optind < argc)
-		{
-			cout << argv[optind++] << " ";
-		}
-		cout << endl;
-		return false;
-	}
-
+			cerr << "Unexpected option: " << c << endl;
+			return false;
+    	}
+    }
 	return true;
 }
 
@@ -316,7 +313,7 @@ static bool validate_comand(Cmd &cmd) {
 	}
 
 	if (cmd.op_count == 0) {
-		cerr << "No command line option specified. Use option --help or -h for help" << endl;
+		cerr << "No function letter specified. Use -h for help" << endl;
 		return false;
 	}
 
@@ -414,52 +411,52 @@ void display_help() {
 	cout << "FUNCTION LETTERS" << endl;
 	cout << "     Main operation mode:" << endl;
 	cout << endl;
-	cout << "     -l, --list-devices" << endl;
+	cout << "     -l" << endl;
 	cout << "           list all available (not currently in use) AlphaRNG devices." << endl;
 	cout << endl;
-	cout << "     -e, --get-entropy" << endl;
+	cout << "     -e" << endl;
 	cout << "           download entropy bytes from a AlphaRNG device and store " << endl;
 	cout << "           them in a file." << endl;
 	cout << endl;
-	cout << "     -r, --get-noise" << endl;
+	cout << "     -r" << endl;
 	cout << "           download raw (unprocessed) random bytes produced by both noise sources" << endl;
 	cout << "           of a AlphaRNG device and store them in a file. " << endl;
 	cout << endl;
-	cout << "     -1, --get-noise-1" << endl;
+	cout << "     -1" << endl;
 	cout << "           download random, raw (unprocessed) bytes from the first source noise" << endl;
 	cout << "           of a AlphaRNG device and store them in a file." << endl;
 	cout << endl;
-	cout << "     -2, --get-noise-2" << endl;
+	cout << "     -2" << endl;
 	cout << "           download random, raw (unprocessed) bytes from the second source noise " << endl;
 	cout << "           of a AlphaRNG device and store them in a file." << endl;
 	cout << endl;
 	cout << "OPTIONS" << endl;
 	cout << endl;
-	cout << "     -o FILE, --output FILE" << endl;
+	cout << "     -o FILE" << endl;
 	cout << "           a FILE name for storing downloaded bytes." << endl;
 	cout << endl;
-	cout << "     -n NUMBER, --num-bytes NUMBER" << endl;
+	cout << "     -n NUMBER" << endl;
 	cout << "           NUMBER of bytes to download into a file, max value 200000000000" << endl;
 	cout << "           Skip this option for unlimited (continuous) download " << endl;
 	cout << endl;
-	cout << "     -d NUMBER, --device-number NUMBER" << endl;
+	cout << "     -d NUMBER" << endl;
 	cout << "           USB device NUMBER, if more than one. Skip this option if only" << endl;
 	cout << "           one AlphaRNG device is connected, use '-l' to list all available" << endl;
 	cout << "           devices." << endl;
 	cout << endl;
-	cout << "     -m MAC, --mac-type MAC" << endl;
+	cout << "     -m MAC" << endl;
 	cout << "           MAC type: hmacMD5, hmacSha160, hmacSha256 or none - skip this option for none." << endl;
 	cout << endl;
-	cout << "     -p KEYTYPE , --pk-type KEYTYPE" << endl;
+	cout << "     -p KEYTYPE" << endl;
 	cout << "           Public KEYTYPE: RSA1024 or RSA2048 - skip this option for RSA2048." << endl;
 	cout << endl;
-	cout << "     -c CIPHER, --cipher-type CIPHER" << endl;
-	cout << "           Cipher type: aes256, aes128 or none - skip this option for aes256." << endl;
+	cout << "     -c CIPHER" << endl;
+	cout << "           CIPHER type: aes256, aes128 or none - skip this option for aes256." << endl;
 	cout << endl;
-	cout << "     -k FILE, --key-file FILE" << endl;
+	cout << "     -k FILE" << endl;
 	cout << "           FILE pathname with an alternative RSA 2048 public key, supplied by the manufacturer." << endl;
 	cout << endl;
-	cout << "     -s, --log-statistics" << endl;
+	cout << "     -s" << endl;
 	cout << "           Log information such as file name, amount of bytes downloaded, download speed." << endl;
 	cout << endl;
 	cout << "EXAMPLES:" << endl;
