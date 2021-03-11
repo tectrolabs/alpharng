@@ -31,12 +31,7 @@
 #include <RsaCryptor.h>
 #include <AesCryptor.h>
 #include <RsaKeyRepo.h>
-#ifdef _WIN64
-#include <WinUsbSerialDevice.h>
-#else
-#include <UsbSerialDevice.h>
-#endif
-
+#include <DeviceInterface.h>
 #include <HmacInterface.h>
 #include <HmacSha256.h>
 #include <HmacSha1.h>
@@ -44,6 +39,13 @@
 #include <AlphaRngConfig.h>
 #include <HealthTests.h>
 #include <Structures.h>
+
+#ifdef _WIN64
+#include <WinUsbSerialDevice.h>
+#else
+#include <UsbSerialDevice.h>
+#endif
+
 
 using namespace std;
 
@@ -55,7 +57,6 @@ public:
 
 	AlphaRngApi();
 	AlphaRngApi(AlphaRngConfig cfg);
-	AlphaRngApi(AlphaRngConfig cfg, const string &pub_key_file_name);
 	bool is_connected();
 	bool connect(int device_number);
 	bool disconnect();
