@@ -48,7 +48,7 @@ public:
 	int receive_data(unsigned char *rcv, int size_receive, int *bytes_rceived);
 	int get_device_count();
 	void scan_available_devices();
-	bool retrieve_device_path(char *dev_path_name, int device_number);
+	bool retrieve_device_path(char *dev_path_name, int max_dev_path_name_bytes, int device_number);
 	bool set_connection_timeout(int milliseconds);
 
 	UsbSerialDevice();

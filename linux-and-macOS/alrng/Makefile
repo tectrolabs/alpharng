@@ -19,6 +19,7 @@ SRCS=$(wildcard $(SDIR)/*.cpp)
 ALRNGDIAG = alrngdiag
 ALRNG = alrng
 SAMPLE = sample
+ALRNG_PSERVER = run-alrng-pserver.sh
 
 all: $(ALRNGDIAG) $(ALRNG) $(SAMPLE)
 
@@ -37,7 +38,10 @@ clean:
 install:
 	install $(ALRNGDIAG) $(BINDIR)/$(ALRNGDIAG)
 	install $(ALRNG) $(BINDIR)/$(ALRNG)
+	cp $(ALRNG_PSERVER) $(BINDIR)/$(ALRNG_PSERVER)
+	chmod a+x $(BINDIR)/$(ALRNG_PSERVER)
 
 uninstall:
 	rm $(BINDIR)/$(ALRNGDIAG)
 	rm $(BINDIR)/$(ALRNG)
+	rm $(BINDIR)/$(ALRNG_PSERVER)

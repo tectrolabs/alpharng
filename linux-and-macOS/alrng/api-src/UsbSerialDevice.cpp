@@ -277,16 +277,23 @@ int UsbSerialDevice::get_device_count() {
  * It should be called after get_device_count().
  *
  * @param[out] dev_path_name points to location to be filled with null terminated device path
+ * @param[in] max_dev_path_name_bytes destination max size in bytes
  * @param[in] device_number pass 0 for the first device
  *
  * @return true for successful operation
  *
  */
-bool UsbSerialDevice::retrieve_device_path(char *dev_path_name, int device_number) {
+bool UsbSerialDevice::retrieve_device_path(char *dev_path_name, int max_dev_path_name_bytes, int device_number) {
 	if (device_number >= m_active_device_count) {
+		m_error_log_oss << "Device number: " << device_number << " exceeds the maximum limit: " << m_active_device_count  << "." << endl;
 		return false;
 	}
-	strcpy(dev_path_name, c_device_names[device_number]);
+	if(max_dev_path_name_bytes < c_max_size_device_name - 1) {
+		m_error_log_oss << "Destination size too small: " << max_dev_path_name_bytes  << "." << endl;	
+		return false;
+	}
+	memset(dev_path_name, 0, max_dev_path_name_bytes);
+	memcpy(dev_path_name, c_device_names[device_number], c_max_size_device_name);
 	return true;
 }
 
