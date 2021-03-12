@@ -284,16 +284,16 @@ int UsbSerialDevice::get_device_count() {
  *
  */
 bool UsbSerialDevice::retrieve_device_path(char *dev_path_name, int max_dev_path_name_bytes, int device_number) {
-	int actual_bytes_to_copy = strlen(c_device_names[device_number]);
-	if(actual_bytes_to_copy > max_dev_path_name_bytes - 1) {
+	if (device_number >= m_active_device_count) {
+		m_error_log_oss << "Device number: " << device_number << " exceeds the maximum limit: " << m_active_device_count  << "." << endl;
+		return false;
+	}
+	if(max_dev_path_name_bytes < c_max_size_device_name - 1) {
 		m_error_log_oss << "Destination size too small: " << max_dev_path_name_bytes  << "." << endl;	
 		return false;
 	}
-	if (device_number >= m_active_device_count) {
-		m_error_log_oss << "Invalid device number: " << device_number  << "." << endl;
-		return false;
-	}
-	strncpy(dev_path_name, c_device_names[device_number], actual_bytes_to_copy);
+	memset(dev_path_name, 0, max_dev_path_name_bytes);
+	memcpy(dev_path_name, c_device_names[device_number], c_max_size_device_name);
 	return true;
 }
 
