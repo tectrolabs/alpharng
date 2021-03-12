@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# A shell script that serves as a named pipe server for sharing random bytes produced by an AlphaRNG device on Linux based systems.
+# A shell script that serves as a named pipe server for distributing random bytes produced by an AlphaRNG device on Linux based systems.
 # Last updated on 10/Feb/2021
 # Configure with 'sudo crontab -e' like the following:
 # @reboot /usr/local/bin/run-alrng-pserver.sh >> /var/log/run-alrng-pserver.log 2>&1
