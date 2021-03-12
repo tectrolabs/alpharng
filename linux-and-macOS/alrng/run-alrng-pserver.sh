@@ -2,7 +2,7 @@
 
 # A shell script that serves as a named pipe server for sharing random bytes produced by an AlphaRNG device on Linux based systems.
 # Last updated on 10/Feb/2021
-# Configure with 'crontab -e' like the following:
+# Configure with 'sudo crontab -e' like the following:
 # @reboot /usr/local/bin/run-alrng-pserver.sh >> /var/log/run-alrng-pserver.log 2>&1
 
 # Named pipe used.   
@@ -13,8 +13,8 @@ APPDIR=/usr/local/bin
 # The application that populates the named pipe with random numbers downloaded from an AlphaRNG device 
 APPNAME=alrng
 
-# Application name and command line arguments. Add option '-c none' to disable security and increase performance.
-APPCMD="$APPDIR/$APPNAME -e -o $PIPEFILE "
+# Application name and command line arguments. Remove option '-c none' to enable security.
+APPCMD="$APPDIR/$APPNAME -e -c none -o $PIPEFILE "
 
 if [ ! -e "$PIPEFILE" ]; then
  mkfifo $PIPEFILE
