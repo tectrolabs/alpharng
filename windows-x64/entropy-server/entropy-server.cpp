@@ -230,7 +230,7 @@ static bool validate_comand(Cmd& cmd) {
 	}
 
 	if (cmd.pipe_instances < 0 || cmd.pipe_instances > EntropyServer::c_max_pipe_instances) {
-		cerr << "Invalid amount of pipe instances specified: " << cmd.device_number << endl;
+		cerr << "Invalid amount of pipe instances specified: " << cmd.pipe_instances << endl;
 		return false;
 	}
 

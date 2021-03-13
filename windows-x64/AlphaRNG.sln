@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "entropy-server", "entropy-s
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "entropy-client-test", "entropy-client-test\entropy-client-test.vcxproj", "{82F82059-9C39-4D9E-B58B-9B467C702EA0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "entropy-client-sample", "entropy-client-sample\entropy-client-sample.vcxproj", "{C598DB49-60F2-47E9-A490-56C0D630BB64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -77,6 +79,14 @@ Global
 		{82F82059-9C39-4D9E-B58B-9B467C702EA0}.Release|x64.Build.0 = Release|x64
 		{82F82059-9C39-4D9E-B58B-9B467C702EA0}.Release|x86.ActiveCfg = Release|Win32
 		{82F82059-9C39-4D9E-B58B-9B467C702EA0}.Release|x86.Build.0 = Release|Win32
+		{C598DB49-60F2-47E9-A490-56C0D630BB64}.Debug|x64.ActiveCfg = Debug|x64
+		{C598DB49-60F2-47E9-A490-56C0D630BB64}.Debug|x64.Build.0 = Debug|x64
+		{C598DB49-60F2-47E9-A490-56C0D630BB64}.Debug|x86.ActiveCfg = Debug|Win32
+		{C598DB49-60F2-47E9-A490-56C0D630BB64}.Debug|x86.Build.0 = Debug|Win32
+		{C598DB49-60F2-47E9-A490-56C0D630BB64}.Release|x64.ActiveCfg = Release|x64
+		{C598DB49-60F2-47E9-A490-56C0D630BB64}.Release|x64.Build.0 = Release|x64
+		{C598DB49-60F2-47E9-A490-56C0D630BB64}.Release|x86.ActiveCfg = Release|Win32
+		{C598DB49-60F2-47E9-A490-56C0D630BB64}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
