@@ -12,7 +12,7 @@ The AlphaRNG device works with virtual machines using software such as VMware Pl
 ## Contents
 
 * `linux-and-macOS/alrng` contains all necessary files and source code for building `alrng` and `alrngdiag` utilities used with Linux and macOS distributions.
-* `windows-x64` contains all necessary files and source code for building `alrng`, `alrngdiag` and `entropy-server` utilities used with 64 bit Windows distributions.
+* `windows-x64` contains all necessary files and source code for building `alrng`, `alrngdiag`, `entropy-server` and `entropy-client-test` utilities used with 64 bit Windows distributions.
 
 
 ## Authors
