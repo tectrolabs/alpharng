@@ -81,6 +81,7 @@ public:
 	bool noise_to_file(const string &file_path_name, int64_t num_bytes);
 	HealthTests get_health_tests() {return m_health_test;}
 	int get_operation_retry_count() {return m_op_retry_count;}
+	AlphaRngConfig& get_configuration() { return m_cfg; }
 
 	virtual	~AlphaRngApi();
 	bool is_initialized() {return m_is_initialized;}
