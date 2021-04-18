@@ -16,7 +16,7 @@
  *    @file RsaCryptor.cpp
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device.
  */
@@ -26,14 +26,6 @@
 
 namespace alpharng {
 
-void RsaCryptor::initialize() {
-	m_rsa = nullptr;
-	m_bignum = nullptr;
-	m_kbio_rsa = nullptr;
-	m_padding = RSA_NO_PADDING;
-	m_is_key_initialized = false;
-}
-
 /**
  * Construct using a key provided as bytes
  *
@@ -42,15 +34,26 @@ void RsaCryptor::initialize() {
  * @param[in] is_public true if the key is public, false if the key is private
  */
 RsaCryptor::RsaCryptor(const unsigned char *key, int key_size_bytes, bool is_public) {
-	initialize();
-	m_kbio_rsa = BIO_new_mem_buf((char *)key, key_size_bytes);
+	initialize_with_key(key, key_size_bytes, is_public);
+}
+
+/**
+ * Initialize using a key provided as bytes
+ *
+ * @param[in] key points to location of the key
+ * @param[in] key_size_bytes size of the key in bytes
+ * @param[in] is_public true if the key is public, false if the key is private
+ */
+void RsaCryptor::initialize_with_key(const unsigned char* key, int key_size_bytes, bool is_public) {
+	m_kbio_rsa = BIO_new_mem_buf((char*)key, key_size_bytes);
 	if (m_kbio_rsa == nullptr) {
 		return;
 	}
 
 	if (is_public) {
 		m_rsa = PEM_read_bio_RSAPublicKey(m_kbio_rsa, nullptr, 0, nullptr);
-	} else {
+	}
+	else {
 		m_rsa = PEM_read_bio_RSAPrivateKey(m_kbio_rsa, nullptr, 0, nullptr);
 	}
 
@@ -69,39 +72,36 @@ RsaCryptor::RsaCryptor(const unsigned char *key, int key_size_bytes, bool is_pub
  *
  */
 RsaCryptor::RsaCryptor(const string &key_file_name, bool is_public) {
-	initialize();
 
-	FILE *fp = nullptr;
-	m_is_public_key_file = is_public;
-
-#ifdef _WIN64
-    errno_t err = fopen_s(&fp, key_file_name.c_str(), "r");
-    if (err != 0) {
-#else
-    fp = fopen(key_file_name.c_str(), "r");
-    if (fp == nullptr) {
-#endif  
+	ifstream is_file(key_file_name.c_str(), ios::in | ios::binary);
+	if (!is_file.good()) {
 		return;
 	}
-	if (is_public) {
-		if (PEM_read_RSAPublicKey(fp, &m_rsa, nullptr, nullptr) == nullptr) {
-			fclose(fp);
-			return;
-		} else {
-			fclose(fp);
-			m_is_key_initialized = true;
-			return;
-		}
+
+
+	m_file_pub_key_bytes = new (nothrow) unsigned char[c_m_file_pub_key_max_size_bytes];
+	if (m_file_pub_key_bytes == nullptr) {
+		return;
 	}
 
-	if (PEM_read_RSAPrivateKey(fp, &m_rsa, nullptr, nullptr) == nullptr) {
-		fclose(fp);
-		return;
-	} else {
-		fclose(fp);
-		m_is_key_initialized = true;
+	is_file.seekg(0, is_file.end);
+	int length = is_file.tellg();
+	is_file.seekg(0, is_file.beg);
+
+	if (length <= 0 || length > c_m_file_pub_key_max_size_bytes) {
 		return;
 	}
+
+	is_file.read((char*)m_file_pub_key_bytes, length);
+	if (!is_file.good()) {
+		return;
+	}
+
+	initialize_with_key(m_file_pub_key_bytes, length, is_public);
+	if (m_is_key_initialized) {
+		m_is_public_key_file = is_public;
+	}
+
 }
 
 /**
@@ -206,7 +206,6 @@ bool RsaCryptor::decrypt_with_private_key(unsigned char *in, int in_size_bytes,	
  *
  */
 RsaCryptor::RsaCryptor(int key_size) {
-	initialize();
 	crete_new_key(key_size);
 }
 
@@ -216,7 +215,6 @@ RsaCryptor::RsaCryptor(int key_size) {
  *
  */
 RsaCryptor::RsaCryptor() {
-	initialize();
 	crete_new_key(2048);
 }
 
@@ -311,6 +309,9 @@ RsaCryptor::~RsaCryptor() {
 	}
 	if (m_kbio_rsa) {
 		BIO_free(m_kbio_rsa);
+	}
+	if (m_file_pub_key_bytes) {
+		delete[] m_file_pub_key_bytes;
 	}
 }
 

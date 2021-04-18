@@ -25,7 +25,7 @@ int main() {
 	cout << "--- Sample C++ program for retrieving random bytes from the entropy server ---" << endl;
 	cout << "------------------------------------------------------------------------------" << endl;
 
-	// Connecting to the first AlphaRNG device found
+	// Connecting to the entropy server
 	if (!pipe.open_named_pipe()) {
 		cerr << pipe.get_last_error() << endl;
 		cerr << "Is entropy server running?" << endl;
