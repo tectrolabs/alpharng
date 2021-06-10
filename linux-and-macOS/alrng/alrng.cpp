@@ -340,6 +340,8 @@ static bool list_connected_devices(RngConfig cfg) {
 
 /**
  * Reset statistics, fill it with zeros
+ * @param[in] ds pointer to DeviceStatistics structure
+ *
  */
 static void reset_statistics(DeviceStatistics *ds) {
 	memset(ds, 0x0, sizeof(DeviceStatistics));
@@ -394,11 +396,11 @@ void display_help() {
 	cout << "           of a AlphaRNG device and store them in a file. " << endl;
 	cout << endl;
 	cout << "     -1" << endl;
-	cout << "           download random, raw (unprocessed) bytes from the first source noise" << endl;
+	cout << "           download random, raw (unprocessed) bytes from the first noise source" << endl;
 	cout << "           of a AlphaRNG device and store them in a file." << endl;
 	cout << endl;
 	cout << "     -2" << endl;
-	cout << "           download random, raw (unprocessed) bytes from the second source noise " << endl;
+	cout << "           download random, raw (unprocessed) bytes from the second noise source" << endl;
 	cout << "           of a AlphaRNG device and store them in a file." << endl;
 	cout << endl;
 	cout << "OPTIONS" << endl;

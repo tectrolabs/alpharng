@@ -45,7 +45,7 @@ int main() {
 	cout << "-------------------------------------------------------------------" << endl;
 	cout << "------ TectroLabs - alrngdiag - AlphaRNG diagnostics utility ------" << endl;
 	cout << "-------------------------------------------------------------------" << endl;
-	cout << "Searching for devices -----------------";
+	cout << "Searching for devices ----------------- ";
 
 	int count = rng.get_device_count();
 	if (count > 0) {
@@ -191,7 +191,7 @@ static bool display_frequency_table_summary(uint16_t frequency_table[]) {
 	return true;
 }
 
-/**inspect_raw_data
+/**
  * Retrieve and display AlphaRNG device information
  *
  * @param[in] RNG API instance
