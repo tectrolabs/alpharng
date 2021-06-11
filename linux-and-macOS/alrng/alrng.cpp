@@ -370,7 +370,7 @@ static void generate_statistics(DeviceStatistics &ds, Cmd &cmd) {
  */
 void display_help() {
 	cout << "*********************************************************************************" << endl;
-	cout << "             TectroLabs - alrng - AlphaRNG download utility Ver 1.0  " << endl;
+	cout << "             TectroLabs - alrng - AlphaRNG download utility Ver 1.1  " << endl;
 	cout << "*********************************************************************************" << endl;
 	cout << "NAME" << endl;
 	cout << "     alrng  - True Random Number Generator AlphaRNG download utility" << endl;

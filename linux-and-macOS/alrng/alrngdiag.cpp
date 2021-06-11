@@ -15,7 +15,7 @@
  *    @file alrngdiag.cpp
  *    @date 03/06/2020
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief A utility used for running the AlphaRNG device diagnostics
  *
