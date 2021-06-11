@@ -16,7 +16,7 @@
  *    @file RsaCryptor.cpp
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device.
  */
@@ -85,7 +85,7 @@ RsaCryptor::RsaCryptor(const string &key_file_name, bool is_public) {
 	}
 
 	is_file.seekg(0, is_file.end);
-	int length = is_file.tellg();
+	int length = (int)is_file.tellg();
 	is_file.seekg(0, is_file.beg);
 
 	if (length <= 0 || length > c_m_file_pub_key_max_size_bytes) {
