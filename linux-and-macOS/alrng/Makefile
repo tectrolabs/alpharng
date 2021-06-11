@@ -18,10 +18,11 @@ SRCS=$(wildcard $(SDIR)/*.cpp)
 
 ALRNGDIAG = alrngdiag
 ALRNG = alrng
+ALPERFTEST = alperftest
 SAMPLE = sample
 ALRNG_PSERVER = run-alrng-pserver.sh
 
-all: $(ALRNGDIAG) $(ALRNG) $(SAMPLE)
+all: $(ALRNGDIAG) $(ALRNG) $(SAMPLE) $(ALPERFTEST)
 
 $(ALRNGDIAG): alrngdiag.cpp
 	$(CC) alrngdiag.cpp $(SRCS) -o $(ALRNGDIAG) $(CPPFLAGS)
@@ -32,16 +33,21 @@ $(ALRNG): alrng.cpp
 $(SAMPLE): sample.cpp
 	$(CC) sample.cpp $(SRCS) -o $(SAMPLE) $(CPPFLAGS)
 
+$(ALPERFTEST): alperftest.cpp
+	$(CC) alperftest.cpp $(SRCS) -o $(ALPERFTEST) $(CPPFLAGS)
+
 clean:
-	rm -f *.o ; rm $(ALRNGDIAG) $(ALRNG) $(SAMPLE)
+	rm -f *.o ; rm $(ALRNGDIAG) $(ALRNG) $(SAMPLE) $(ALPERFTEST)
 
 install:
 	install $(ALRNGDIAG) $(BINDIR)/$(ALRNGDIAG)
 	install $(ALRNG) $(BINDIR)/$(ALRNG)
+	install $(ALPERFTEST) $(BINDIR)/$(ALPERFTEST)
 	cp $(ALRNG_PSERVER) $(BINDIR)/$(ALRNG_PSERVER)
 	chmod a+x $(BINDIR)/$(ALRNG_PSERVER)
 
 uninstall:
 	rm $(BINDIR)/$(ALRNGDIAG)
 	rm $(BINDIR)/$(ALRNG)
+	rm $(BINDIR)/$(ALPERFTEST)
 	rm $(BINDIR)/$(ALRNG_PSERVER)
