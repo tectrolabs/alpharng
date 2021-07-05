@@ -25,7 +25,7 @@
 #include <time.h>
 #include <thread>
 
-using namespace alpharng;
+using namespace entropy::server::api;
 
 static const int entropy_buffer_size = 100000;
 static const int num_pipe_test_threads = 50;
@@ -81,9 +81,6 @@ int main(int argc, char** argv) {
 
 	cout << "-------- Testing connectivity to the entropy server using named pipes ------" << endl;
 
-	//
-	// Step 1
-	//
 	cout << "Connecting to the entropy server pipe .............................. ";
 	status = pipe.open_named_pipe();
 	if (status == true) {
@@ -95,10 +92,66 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
-	//
-	// Step 2
-	//
-	cout << "Retrieving 100000 bytes from the entropy server .................... ";
+	cout << "Retrieving server version ..........................................";
+	int server_minor, server_major;
+	status = pipe.get_server_minor_version(server_minor);
+	if (status == true) {
+		status = pipe.get_server_major_version(server_major);
+		if (status == true) {
+			cout << ".... " << server_major << "." << server_minor << endl;
+		}
+		else {
+			cout << ". failed" << endl;
+			return -1;
+		}
+	}
+	else {
+		cout << ". failed" << endl;
+		cout << "Expected a newer version of Entropy Server ..." << endl;
+		return -1;
+	}
+
+	cout << "Retrieving device identifier ...............................";
+	string identifier;
+	status = pipe.get_device_serial_number(identifier);
+	if (status == true) {
+		cout << " " << identifier << endl;
+	}
+	else {
+		cout << "......... failed" << endl;
+		return -1;
+	}
+
+	cout << "Retrieving device model .....................................";
+	string model;
+	status = pipe.get_device_model(model);
+	if (status == true) {
+		cout << " " << model << endl;
+	}
+	else {
+		cout << "........ failed" << endl;
+		return -1;
+	}
+
+	cout << "Retrieving device version ..........................................";
+	int device_minor, device_major;
+	status = pipe.get_device_minor_version(device_minor);
+	if (status == true) {
+		status = pipe.get_device_major_version(device_major);
+		if (status == true) {
+			cout << ".... " << device_major << "." << device_minor << endl;
+		}
+		else {
+			cout << ". failed" << endl;
+			return -1;
+		}
+	}
+	else {
+		cout << ". failed" << endl;
+		return -1;
+	}
+
+	cout << "Retrieving 100000 bytes of entropy from device ..................... ";
 	status = pipe.get_entropy(entropy_buffer, entropy_buffer_size);
 	if (status == true) {
 		cout << "SUCCESS" << endl;
@@ -108,9 +161,26 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
-	//
-	// Step 3
-	//
+	cout << "Retrieving 100000 bytes of noise from device source 1 .............. ";
+	status = pipe.get_noise_source_1(entropy_buffer, entropy_buffer_size);
+	if (status == true) {
+		cout << "SUCCESS" << endl;
+	}
+	else {
+		cout << " failed" << endl;
+		return -1;
+	}
+
+	cout << "Retrieving 100000 bytes of noise from device source 2 .............. ";
+	status = pipe.get_noise_source_2(entropy_buffer, entropy_buffer_size);
+	if (status == true) {
+		cout << "SUCCESS" << endl;
+	}
+	else {
+		cout << " failed" << endl;
+		return -1;
+	}
+
 	cout << "Running pipe communication diagnostics ............................. ";
 	status = pipe.get_test_bytes(entropy_buffer, entropy_buffer_size);
 	if (status == true) {
@@ -128,9 +198,6 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
-	//
-	// Step 3
-	//
 	cout << "Running pipe communication diagnostics using " << setw(2) << num_pipe_test_threads << " threads ............";
 	thread pipe_threads[num_pipe_test_threads];
 	for (auto i = 0; i < num_pipe_test_threads; i++) {
@@ -148,9 +215,6 @@ int main(int argc, char** argv) {
 		cout << " FAILED" << endl;
 	}
 
-	//
-	// Step 4.1
-	//
 	cout << "Calculating minimum entropy download speed ......................";
 	double download_speed_mbps;
 	if (compute_download_speed(pipe, num_test_blocks, download_speed_mbps) == false) {
@@ -166,7 +230,7 @@ int main(int argc, char** argv) {
 }
 
 /*
-* Compoute and display download performance
+* Compute and display download performance
 * 
 * @return true if successful
 */
