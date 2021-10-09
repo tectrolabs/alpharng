@@ -15,16 +15,20 @@
  *    @file alrng.cpp
  *    @date 03/06/2020
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
 #include <AlphaRngApi.h>
 #include <AppArguments.h>
+#include <iomanip>
 
 using namespace std;
 using namespace alpharng;
 
+/**
+* Valid command line arguments
+*/
 AppArguments appArgs ({
 	{"-1", ArgDef::noArgument},
 	{"-2", ArgDef::noArgument},
@@ -42,6 +46,14 @@ AppArguments appArgs ({
 	{"-p", ArgDef::requireArgument},
 });
 
+/**
+* Current version of this utility application
+*/
+static double const version = 1.2;
+
+/**
+* Local functions used
+*/
 static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char **argv);
 static bool validate_comand(Cmd &cmd);
 static bool list_connected_devices(RngConfig cfg);
@@ -370,7 +382,8 @@ static void generate_statistics(DeviceStatistics &ds, Cmd &cmd) {
  */
 void display_help() {
 	cout << "*********************************************************************************" << endl;
-	cout << "             TectroLabs - alrng - AlphaRNG download utility Ver 1.1  " << endl;
+	cout << "             TectroLabs - alrng - AlphaRNG download utility Ver ";
+	cout << std::fixed << std::setw(2) << std::setprecision(1) << version << endl;
 	cout << "*********************************************************************************" << endl;
 	cout << "NAME" << endl;
 	cout << "     alrng  - True Random Number Generator AlphaRNG download utility" << endl;
@@ -379,7 +392,7 @@ void display_help() {
 	cout << endl;
 	cout << "DESCRIPTION" << endl;
 	cout << "     alrng establishes a secure data communication channel with AlphaRNG devices" << endl;
-	cout << "          connected through a USB interface and downloads data in a file." << endl;
+	cout << "          connected through USB interface and downloads device data to a file." << endl;
 	cout << endl;
 	cout << "FUNCTION LETTERS" << endl;
 	cout << "     Main operation mode:" << endl;
@@ -388,20 +401,21 @@ void display_help() {
 	cout << "           list all available (not currently in use) AlphaRNG devices." << endl;
 	cout << endl;
 	cout << "     -e" << endl;
-	cout << "           download entropy bytes from a AlphaRNG device and store " << endl;
-	cout << "           them in a file." << endl;
+	cout << "           download entropy bytes from an AlphaRNG device to a file." << endl;
 	cout << endl;
 	cout << "     -r" << endl;
-	cout << "           download raw (unprocessed) random bytes produced by both noise sources" << endl;
-	cout << "           of a AlphaRNG device and store them in a file. " << endl;
+	cout << "           download raw random bytes from an AlphaRNG device to a file." << endl;
 	cout << endl;
 	cout << "     -1" << endl;
-	cout << "           download random, raw (unprocessed) bytes from the first noise source" << endl;
-	cout << "           of a AlphaRNG device and store them in a file." << endl;
+	cout << "           download raw random bytes from the first noise source." << endl;
+	cout << "           of an AlphaRNG device to a file." << endl;
 	cout << endl;
 	cout << "     -2" << endl;
-	cout << "           download random, raw (unprocessed) bytes from the second noise source" << endl;
-	cout << "           of a AlphaRNG device and store them in a file." << endl;
+	cout << "           download raw random bytes from the second noise source." << endl;
+	cout << "           of an AlphaRNG device to a file." << endl;
+	cout << endl;
+	cout << "     -h" << endl;
+	cout << "           display help." << endl;
 	cout << endl;
 	cout << "OPTIONS" << endl;
 	cout << endl;
@@ -409,37 +423,39 @@ void display_help() {
 	cout << "           a FILE name for storing downloaded bytes." << endl;
 	cout << endl;
 	cout << "     -n NUMBER" << endl;
-	cout << "           NUMBER of bytes to download into a file, max value 200000000000" << endl;
-	cout << "           Skip this option for unlimited (continuous) download " << endl;
+	cout << "           NUMBER of bytes to download, max value 200000000000" << endl;
+	cout << "           Skip this option for unlimited (continuous) download. " << endl;
 	cout << endl;
 	cout << "     -d NUMBER" << endl;
 	cout << "           USB device NUMBER, if more than one. Skip this option if only" << endl;
-	cout << "           one AlphaRNG device is connected, use '-l' to list all available" << endl;
-	cout << "           devices." << endl;
+	cout << "           one AlphaRNG device is connected, use '-l' to list all available devices." << endl;
 	cout << endl;
 	cout << "     -m MAC" << endl;
 	cout << "           MAC type: hmacMD5, hmacSha160, hmacSha256 or none - skip this option for none." << endl;
 	cout << endl;
 	cout << "     -p KEYTYPE" << endl;
 	cout << "           Public KEYTYPE: RSA1024 or RSA2048 - skip this option for RSA2048." << endl;
+	cout << "           RSA is used for establishing a secure session with an AlphaRNG device." << endl;
 	cout << endl;
 	cout << "     -c CIPHER" << endl;
 	cout << "           CIPHER type: aes256, aes128 or none - skip this option for aes256." << endl;
+	cout << "           aes256 refers to AES-256-GCM implementation. aes128 refers to AES-128-GCM implementation. " << endl;
+	cout << "           AES cipher is used for securing the data communication within an AlphaRNG session." << endl;
 	cout << endl;
 	cout << "     -k FILE" << endl;
 	cout << "           FILE pathname with an alternative RSA 2048 public key, supplied by the manufacturer." << endl;
 	cout << endl;
 	cout << "     -s" << endl;
-	cout << "           Log information such as file name, amount of bytes downloaded, download speed." << endl;
+	cout << "           Log statistics such as file name, amount of bytes downloaded, download speed, e.t.c " << endl;
 	cout << endl;
 	cout << "EXAMPLES:" << endl;
-	cout << "     To list all available AlphaRNG (not currently in use) devices." << endl;
+	cout << "     To list all available AlphaRNG (not currently in use) devices:" << endl;
 	cout << "           alrng -l" << endl;
 	cout << "     To download 1 MB of entropy bytes to 'rnd.bin' file using a non secure mode" << endl;
 	cout << "           alrng  -e -o rnd.bin -n 1000000 -c none" << endl;
-	cout << "     To download 1 MB of entropy bytes to 'rnd.bin' file" << endl;
-	cout << "           alrng  -e -o rnd.bin -n 1000000" << endl;
-	cout << "     To download 1 MB of raw (unprocessed) random bytes to 'rnd.bin' file" << endl;
+	cout << "     To download 1 MB of entropy bytes to 'rnd.bin' file using AES-128-GCM cipher and hmacSha256 digest:" << endl;
+	cout << "           alrng  -e -o rnd.bin -n 1000000 -c aes128 -m hmacSha256" << endl;
+	cout << "     To download 1 MB of raw (unprocessed) random bytes to 'rnd.bin' file using AES-256-GCM cipher:" << endl;
 	cout << "           alrng  -r -o rnd.bin -n 1000000" << endl;
 	cout << endl;
 }
