@@ -14,7 +14,7 @@
  *    @file UsbSerialDevice.cpp
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Implements the API for communicating with the CDC USB interface
  */
@@ -219,7 +219,9 @@ UsbSerialDevice::~UsbSerialDevice() {
  */
 void UsbSerialDevice::scan_available_devices() {
 	m_active_device_count = 0;
-#ifdef __linux__
+#if defined __FreeBSD__
+	char command[] = "usbconfig show_ifdrv | grep -E \"TectroLabs Alpha RNG|VCOM\" | grep -vi \"(tectrolabs)\" | paste -d \" \"  - - | cut -d ':'  -f 3 | cut -d ' ' -f 2 | cut -d 'm' -f 3 | grep -v VCOM | grep -E '[0-9]'";
+#elif defined __linux__
 	char command[] = "/bin/ls -1l /dev/serial/by-id 2>&1 | grep -i \"TectroLabs_Alpha_RNG\"";
 #else
 	char command[] = "/bin/ls -1a /dev/cu.usbmodemALPHARNG* /dev/cu.usbmodemFD* 2>&1";
@@ -231,7 +233,9 @@ void UsbSerialDevice::scan_available_devices() {
 
 	char line[512];
 	while (fgets(line, sizeof(line), pf) && m_active_device_count < c_max_devices) {
-#ifdef __linux__
+#if defined __FreeBSD__
+		// Do nothing
+#elif defined __linux__
 		char *tty = strstr(line, "ttyACM");
 		if (tty == nullptr) {
 			continue;
@@ -244,13 +248,28 @@ void UsbSerialDevice::scan_available_devices() {
 		}
 		char *tty = line;
 #endif
+
+#ifndef __FreeBSD__
 		int size_tty = strlen(tty);
 		for (int i = 0; i < size_tty; i++) {
 			if(tty[i] < 33 || tty[i] > 125) {
 				tty[i] = 0;
+				break;
 			}
 		}
-#ifdef __linux__
+#endif
+
+#if defined __FreeBSD__
+		int size_dev_num = strlen(line);
+		for (int i = 0; i < size_dev_num; i++) {
+			if (line[i] < '0' || line[i] > '9') {
+				line[i] = 0;
+				break;
+			}
+		}
+		strcpy(c_device_names[m_active_device_count], "/dev/cuaU");
+		strcat(c_device_names[m_active_device_count], line);
+#elif defined __linux__
 		strcpy(c_device_names[m_active_device_count], "/dev/");
 		strcat(c_device_names[m_active_device_count], tty);
 #else
