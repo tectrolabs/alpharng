@@ -220,7 +220,7 @@ UsbSerialDevice::~UsbSerialDevice() {
 void UsbSerialDevice::scan_available_devices() {
 	m_active_device_count = 0;
 #if defined __FreeBSD__
-	char command[] = "usbconfig show_ifdrv | grep -E \"TectroLabs Alpha RNG|VCOM\" | paste -d \" \"  - - | cut -d ':'  -f 3 | cut -d ' ' -f 2 | cut -d 'm' -f 3 | grep -v VCOM | grep -E '[0-9]'";
+	char command[] = "usbconfig show_ifdrv | grep -E \"TectroLabs Alpha RNG|VCOM\" | grep -vi \"(tectrolabs)\" | paste -d \" \"  - - | cut -d ':'  -f 3 | cut -d ' ' -f 2 | cut -d 'm' -f 3 | grep -v VCOM | grep -E '[0-9]'";
 #elif defined __linux__
 	char command[] = "/bin/ls -1l /dev/serial/by-id 2>&1 | grep -i \"TectroLabs_Alpha_RNG\"";
 #else
