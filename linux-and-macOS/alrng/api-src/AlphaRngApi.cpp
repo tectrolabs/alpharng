@@ -32,7 +32,7 @@ AlphaRngApi::AlphaRngApi() {
 	initialize(AlphaRngConfig {MacType::hmacSha256, RsaKeySize::rsa2048, KeySize::k256, ""});
 }
 
-void AlphaRngApi::initialize(AlphaRngConfig cfg) {
+void AlphaRngApi::initialize(const AlphaRngConfig &cfg) {
 	m_cfg = cfg;
 	if (m_cfg.pub_key_file_name.size() > 0) {
 		if (!initialize_rsa_keyfile()) {
@@ -110,11 +110,11 @@ bool AlphaRngApi::initialize_rsa() {
 	return true;
 }
 
-PacketType AlphaRngApi::get_aes_request_type() {
+PacketType AlphaRngApi::get_aes_request_type() const {
 	return PacketType::aes;
 }
 
-PacketType AlphaRngApi::get_rsa_request_type() {
+PacketType AlphaRngApi::get_rsa_request_type() const {
 	if (m_rsa_cryptor->is_public_key_file()) {
 		return PacketType::pkAltRSA2048;
 	}
@@ -214,11 +214,11 @@ bool AlphaRngApi::retrieve_rng_status(unsigned char *status) {
 }
 
 
-void AlphaRngApi::clear_command(Command *cmd) {
+void AlphaRngApi::clear_command(Command *cmd) const {
 	memset(cmd, 0x7f, sizeof(Command));
 }
 
-void AlphaRngApi::clear_response(Response *resp) {
+void AlphaRngApi::clear_response(Response *resp) const {
 	memset(resp, 0x5c, sizeof(Response));
 }
 
@@ -1111,7 +1111,7 @@ bool AlphaRngApi::create_and_upload_session_packet(uint8_t *p, int object_size_b
 	return true;
 }
 
-int AlphaRngApi::get_packet_size(int resp_packet_payload_size_bytes) {
+int AlphaRngApi::get_packet_size(int resp_packet_payload_size_bytes) const {
 	int packet_size =
 			sizeof(Packet::e_type)
 			+ sizeof(Packet::e_key_size)
@@ -1122,7 +1122,7 @@ int AlphaRngApi::get_packet_size(int resp_packet_payload_size_bytes) {
 	return packet_size;
 }
 
-int AlphaRngApi::get_cmd_packet_payload_size(int cmd_struct_size_bytes) {
+int AlphaRngApi::get_cmd_packet_payload_size(int cmd_struct_size_bytes) const {
 	int packet_size = cmd_struct_size_bytes;
 	if (m_cfg.e_aes_key_size != KeySize::None) {
 		// Add bytes for padding if needed
@@ -1134,7 +1134,7 @@ int AlphaRngApi::get_cmd_packet_payload_size(int cmd_struct_size_bytes) {
 	return packet_size;
 }
 
-int AlphaRngApi::get_resp_packet_payload_size(int actual_payload_size_bytes) {
+int AlphaRngApi::get_resp_packet_payload_size(int actual_payload_size_bytes) const {
 	int packet_size =
 			  sizeof(Response::e_mac_type)
 			+ sizeof(Response::mac)
@@ -1324,7 +1324,7 @@ AlphaRngApi::~AlphaRngApi() {
 	}
 }
 
-void AlphaRngApi::sleep_usecs(int usec) {
+void AlphaRngApi::sleep_usecs(int usec) const {
 	std::this_thread::sleep_for(std::chrono::microseconds(usec));
 }
 

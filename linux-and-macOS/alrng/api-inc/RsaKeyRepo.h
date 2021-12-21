@@ -22,15 +22,19 @@
 #ifndef API_INC_RSAKEYREPO_H_
 #define API_INC_RSAKEYREPO_H_
 
+#include <cstring>
+
 namespace alpharng {
 
 class RsaKeyRepo {
 public:
-	const unsigned char *c_rsapub_2048_pem;
-	const unsigned char *c_rsapub_1024_pem;
 	const unsigned int c_rsapub_2048_pem_len = 426;
 	const unsigned int c_rsapub_1024_pem_len = 251;
+	const unsigned char *c_rsapub_2048_pem;
+	const unsigned char *c_rsapub_1024_pem;
 	RsaKeyRepo();
+	RsaKeyRepo(const RsaKeyRepo &repo) = delete;
+	RsaKeyRepo & operator=(const RsaKeyRepo &repo) = delete;
 	virtual ~RsaKeyRepo();
 };
 

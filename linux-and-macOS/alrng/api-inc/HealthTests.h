@@ -36,10 +36,10 @@ class HealthTests {
 public:
 	void test(uint8_t *in, int in_length);
 	void restart();
-	bool is_error();
-	uint8_t get_health_status();
-	uint16_t get_max_rct_failures() {return m_max_rct_failures_per_block;}
-	uint16_t get_max_apt_failures() {return m_max_apt_failures_per_block;}
+	bool is_error() const;
+	uint8_t get_health_status() const;
+	uint16_t get_max_rct_failures() const {return m_max_rct_failures_per_block;}
+	uint16_t get_max_apt_failures() const {return m_max_apt_failures_per_block;}
 
 	HealthTests();
 	virtual ~HealthTests();

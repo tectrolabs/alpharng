@@ -42,6 +42,9 @@ public:
 	bool generate_new_key() override;
 	bool is_initialized() override {return m_initialized;}
 	HmacSha256();
+	HmacSha256(const HmacSha256 &hmac) = delete;
+	HmacSha256 & operator=(const HmacSha256 &hmac) = delete;
+
 	virtual ~HmacSha256();
 private:
 	bool m_initialized = false;

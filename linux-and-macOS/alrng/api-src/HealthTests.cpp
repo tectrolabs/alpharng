@@ -37,7 +37,7 @@ HealthTests::HealthTests() {
  *
  * @return 0 if no test has failed, 2 - APT test error, 1 - RCT test error
  */
-uint8_t HealthTests::get_health_status() {
+uint8_t HealthTests::get_health_status() const {
 	if (m_rct.status_byte != 0) {
 		return m_rct.status_byte;
 	}
@@ -52,7 +52,7 @@ uint8_t HealthTests::get_health_status() {
  *
  * @return true if at least one test has failed, false otherwise
  */
-bool HealthTests::is_error() {
+bool HealthTests::is_error() const {
 	if (m_rct.status_byte != 0) {
 		return true;
 	}
@@ -65,8 +65,8 @@ bool HealthTests::is_error() {
 /**
  * Run an array of bytes trough the tests
  *
- * @param[in]  in points to an array of bytes to be tested
- * @param[in]  in_length amount of bytes to be tested
+ * @param[in] in points to an array of bytes to be tested
+ * @param[in] in_length amount of bytes to be tested
  */
 void HealthTests::test(uint8_t *in, int in_length) {
 	for (int i = 0; i < in_length; ++i) {

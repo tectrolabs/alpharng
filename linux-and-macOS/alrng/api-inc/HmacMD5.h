@@ -42,6 +42,8 @@ public:
 	bool generate_new_key() override;
 	bool is_initialized() override {return m_initialized;}
 	HmacMD5();
+	HmacMD5(const HmacMD5 &hmac) = delete;
+	HmacMD5 & operator=(const HmacMD5 &hmac) = delete;
 	virtual ~HmacMD5();
 private:
 	bool m_initialized = false;

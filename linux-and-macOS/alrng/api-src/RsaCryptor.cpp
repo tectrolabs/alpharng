@@ -293,7 +293,7 @@ void RsaCryptor::crete_new_key(int key_size) {
  * @return true if initialized
  *
  */
-bool RsaCryptor::is_initialized() {
+bool RsaCryptor::is_initialized() const {
 	return m_is_key_initialized;
 }
 

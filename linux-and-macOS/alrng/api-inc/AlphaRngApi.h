@@ -62,7 +62,7 @@ public:
 	bool disconnect();
 	int get_device_count();
 	bool retrieve_device_path(char *dev_path_name, int max_dev_path_name_bytes, int device_number);
-	string get_last_error() {return m_error_log_oss.str();}
+	string get_last_error() const {return m_error_log_oss.str();}
 	bool retrieve_rng_status(unsigned char *status);
 	bool retrieve_device_id(string &id);
 	bool retrieve_device_model(string &model);
@@ -79,16 +79,16 @@ public:
 	bool noise_source_one_to_file(const string &file_path_name, const int64_t num_bytes);
 	bool noise_source_two_to_file(const string &file_path_name, const int64_t num_bytes);
 	bool noise_to_file(const string &file_path_name, int64_t num_bytes);
-	HealthTests get_health_tests() {return m_health_test;}
-	int get_operation_retry_count() {return m_op_retry_count;}
+	HealthTests get_health_tests() const {return m_health_test;}
+	int get_operation_retry_count() const {return m_op_retry_count;}
 	AlphaRngConfig& get_configuration() { return m_cfg; }
 
 	virtual	~AlphaRngApi();
-	bool is_initialized() {return m_is_initialized;}
+	bool is_initialized() const {return m_is_initialized;}
 
 
 private:
-	void initialize(AlphaRngConfig cfg);
+	void initialize(const AlphaRngConfig &cfg);
 	bool initialize_rsa();
 	bool initialize_hash(MacType e_mac_type);
 	bool initialize_aes(KeySize e_aes_key_size);
@@ -97,18 +97,18 @@ private:
 	bool upload_request(Packet *rqst);
 	int download_response(Response *resp, int resp_packet_payload_size);
 	bool is_response_valid(Response *resp);
-	int get_resp_packet_payload_size(int actual_payload_size_bytes);
-	int get_cmd_packet_payload_size(int cmd_struct_size_bytes);
-	PacketType get_rsa_request_type();
-	PacketType get_aes_request_type();
-	int get_packet_size(int resp_packet_payload_size_bytes);
+	int get_resp_packet_payload_size(int actual_payload_size_bytes) const;
+	int get_cmd_packet_payload_size(int cmd_struct_size_bytes) const;
+	PacketType get_rsa_request_type() const;
+	PacketType get_aes_request_type() const;
+	int get_packet_size(int resp_packet_payload_size_bytes) const;
 	bool create_and_upload_session_packet(uint8_t *p, int object_size_bytes);
 	bool create_and_upload_command_packet(uint8_t *p, int object_size_bytes);
 	bool execute_command (Response *resp, Command *cmd, int resp_payload_size_bytes);
 	bool clear_receiver();
 	bool retrieve_device_info(DeviceInfo *device_info);
-	void clear_command(Command *cmd);
-	void clear_response(Response *resp);
+	void clear_command(Command *cmd) const;
+	void clear_response(Response *resp) const;
 	bool get_bytes(CommandType cmd_type, unsigned char *out, int out_length, int block_size_bytes, bool test_data);
 	bool get_unpacked_bytes(char cmd, unsigned char *out, int out_length, int block_size_bytes, bool test_data);
 	bool get_unpacked_bytes_with_retry(char cmd, unsigned char *out, int out_length);
@@ -119,7 +119,7 @@ private:
 	bool initialize_rsa_keyfile();
 	bool initialize_serial_device();
 	bool create_token(uint64_t *new_token);
-	void sleep_usecs(int usec);
+	void sleep_usecs(int usec) const;
 
 private:
 	HmacInterface *m_hmac = nullptr;

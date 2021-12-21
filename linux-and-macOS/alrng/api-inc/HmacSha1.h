@@ -42,6 +42,9 @@ public:
 	bool generate_new_key() override;
 	bool is_initialized() override {return m_initialized;}
 	HmacSha1();
+	HmacSha1(const HmacSha1 &hmac) = delete;
+	HmacSha1 & operator=(const HmacSha1 &hmac) = delete;
+
 	virtual ~HmacSha1();
 private:
 	bool m_initialized = false;

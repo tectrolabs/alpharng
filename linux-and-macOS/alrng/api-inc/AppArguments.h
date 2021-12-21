@@ -36,10 +36,10 @@ class AppArguments {
 public:
 	explicit AppArguments(const map<string, ArgDef> &definitions) : m_definition_map(definitions), m_is_error(false) {}
 	void load_arguments(const int argc, const char **argv);
-	string get_last_error() {return m_error_log_oss.str();}
+	const string get_last_error() const {return m_error_log_oss.str();}
 	map<string, string> & get_argument_map() {return m_argument_map;}
 	map<string, ArgDef>& get_definition_map() { return m_definition_map; }
-	bool is_error() {return m_is_error;}
+	bool is_error() const {return m_is_error;}
 	string& get_app_name() { return m_app_name; }
 	virtual ~AppArguments();
 

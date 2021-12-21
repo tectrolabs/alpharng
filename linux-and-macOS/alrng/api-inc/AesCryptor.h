@@ -41,11 +41,11 @@ class AesCryptor {
 public:
 	bool encrypt(const unsigned char *in, int in_byte_count, unsigned char *out, int *out_byte_count, unsigned char *out_tag);
 	bool decrypt(const unsigned char *in, int in_byte_count, unsigned char *out, int *out_byte_count, unsigned char *in_tag);
-	bool is_initialized() {return m_initialized;}
+	bool is_initialized() const {return m_initialized;}
 	bool get_key(unsigned char* out);
 	bool get_iv(unsigned char* out);
 	bool get_aad(unsigned char* out);
-	int get_key_size_bytes() {return (int)m_e_key_size;}
+	int get_key_size_bytes() const {return (int)m_e_key_size;}
 	bool initialize_iv();
 	explicit AesCryptor(KeySize e_key_size);
 	AesCryptor();
