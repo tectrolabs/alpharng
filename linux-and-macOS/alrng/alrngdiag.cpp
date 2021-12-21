@@ -31,7 +31,7 @@ using namespace std;
 
 static bool display_device_info(AlphaRngApi &rng);
 static bool run_device_diagnostics(AlphaRngApi &rng);
-static bool display_frequency_table_summary(uint16_t frequency_table[]);
+static bool display_frequency_table_summary(const uint16_t frequency_table[]);
 static bool inspect_raw_data(unsigned char raw_data_1[], unsigned char raw_data_2[]);
 static bool retrieve_entropy_bytes(AlphaRngApi &rng);
 static bool retrieve_noise_bytes(AlphaRngApi &rng);
@@ -145,7 +145,7 @@ int main() {
  *
  * @return true for successful operation
  */
-static bool display_frequency_table_summary(uint16_t frequency_table[]) {
+static bool display_frequency_table_summary(const uint16_t frequency_table[]) {
 	int min_freq;
 	int max_freq;
 	int total_samples;

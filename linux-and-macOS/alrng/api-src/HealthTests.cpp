@@ -68,7 +68,7 @@ bool HealthTests::is_error() const {
  * @param[in] in points to an array of bytes to be tested
  * @param[in] in_length amount of bytes to be tested
  */
-void HealthTests::test(uint8_t *in, int in_length) {
+void HealthTests::test(const uint8_t *in, int in_length) {
 	for (int i = 0; i < in_length; ++i) {
 		uint8_t value = in[i];
 

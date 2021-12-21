@@ -34,7 +34,7 @@ namespace alpharng {
 
 class HealthTests {
 public:
-	void test(uint8_t *in, int in_length);
+	void test(const uint8_t *in, int in_length);
 	void restart();
 	bool is_error() const;
 	uint8_t get_health_status() const;
