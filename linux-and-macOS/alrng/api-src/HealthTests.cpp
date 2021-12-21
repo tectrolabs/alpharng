@@ -69,9 +69,8 @@ bool HealthTests::is_error() {
  * @param[in]  in_length amount of bytes to be tested
  */
 void HealthTests::test(uint8_t *in, int in_length) {
-	uint8_t value;
 	for (int i = 0; i < in_length; ++i) {
-		value = in[i];
+		uint8_t value = in[i];
 
 		//
 		// Run 'repetition count' test

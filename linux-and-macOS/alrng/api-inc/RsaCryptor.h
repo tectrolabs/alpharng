@@ -36,7 +36,7 @@ namespace alpharng {
 class RsaCryptor {
 public:
 	RsaCryptor();
-	RsaCryptor(int key_size);
+	explicit RsaCryptor(int key_size);
 	RsaCryptor(const string &key_file_name, bool is_public);
 	RsaCryptor(const unsigned char *key, int key_size_bytes, bool is_public);
 	bool is_initialized();

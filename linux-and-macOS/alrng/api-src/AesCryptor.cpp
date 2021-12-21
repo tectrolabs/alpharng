@@ -124,6 +124,7 @@ AesCryptor::AesCryptor() {
  * Encrypt bytes with AES using the current key.
  *
  * @param[in] in points to the bytes to be encrypted
+ * @param[in] in_byte_count how many bytes to encrypt
  * @param[out] out points to location for encrypted bytes
  * @param[out] out_byte_count points to location for storing the number of encrypted bytes
  * @param[out] out_tag points to location for storing 16 bytes tag
@@ -195,6 +196,7 @@ bool AesCryptor::initialize_iv() {
  * Decrypt bytes with AES using the current key
  *
  * @param[in] in points to the bytes to be decrypted
+ * @param[in] in_byte_count how many bytes to decrypt
  * @param[out] out points to location for decrypted bytes
  * @param[out] out_byte_count points to location for storing the number of decrypted bytes
  * @param[in] in_tag points to location for 16 bytes tag

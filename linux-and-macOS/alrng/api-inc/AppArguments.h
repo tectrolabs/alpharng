@@ -34,7 +34,7 @@ enum class ArgDef {noArgument, requireArgument};
 class AppArguments {
 
 public:
-	AppArguments(map<string, ArgDef> definitions) : m_definition_map(definitions), m_is_error(false) {}
+	explicit AppArguments(const map<string, ArgDef> &definitions) : m_definition_map(definitions), m_is_error(false) {}
 	void load_arguments(const int argc, const char **argv);
 	string get_last_error() {return m_error_log_oss.str();}
 	map<string, string> & get_argument_map() {return m_argument_map;}

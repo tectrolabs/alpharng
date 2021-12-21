@@ -117,7 +117,7 @@ int main() {
 		}
 
 
-		if (!rng.retrieve_frequency_tables(freq_tables)) {
+		if (!rng.retrieve_frequency_tables(&freq_tables)) {
 			cerr << "err: " << rng.get_last_error() << endl;
 		}
 		cout << endl << "-------- Retrieving frequency table for noise source 1 ------------" << endl;

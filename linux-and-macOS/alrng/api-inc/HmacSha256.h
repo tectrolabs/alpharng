@@ -36,11 +36,11 @@ namespace alpharng {
 
 class HmacSha256 : public HmacInterface {
 public:
-	bool hmac(const unsigned char *in, int in_byte_count, unsigned char *out);
-	int get_mac_size();
-	bool get_mac_key(unsigned char* out);
-	bool generate_new_key();
-	bool is_initialized() {return m_initialized;}
+	bool hmac(const unsigned char *in, int in_byte_count, unsigned char *out) override;
+	int get_mac_size() override;
+	bool get_mac_key(unsigned char* out) override;
+	bool generate_new_key() override;
+	bool is_initialized() override {return m_initialized;}
 	HmacSha256();
 	virtual ~HmacSha256();
 private:

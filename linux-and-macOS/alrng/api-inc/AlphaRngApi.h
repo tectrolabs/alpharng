@@ -56,7 +56,7 @@ class AlphaRngApi {
 public:
 
 	AlphaRngApi();
-	AlphaRngApi(AlphaRngConfig cfg);
+	explicit AlphaRngApi(const AlphaRngConfig &cfg);
 	bool is_connected();
 	bool connect(int device_number);
 	bool disconnect();
@@ -69,15 +69,15 @@ public:
 	bool retrieve_device_major_version(unsigned char *major_version);
 	bool retrieve_device_minor_version(unsigned char *minor_version);
 	bool run_health_test();
-	bool retrieve_frequency_tables(FrequencyTables &freq_tables);
+	bool retrieve_frequency_tables(FrequencyTables *freq_tables);
 	bool get_noise_source_1(unsigned char *out, int out_length);
 	bool get_noise_source_2(unsigned char *out, int out_length);
 	bool get_entropy(unsigned char *out, int out_length);
 	bool get_noise(unsigned char *out, int out_length);
 	bool get_test_data(unsigned char *out, int out_length);
 	bool entropy_to_file(const string &file_path_name, int64_t num_bytes);
-	bool noise_source_one_to_file(string &file_path_name, int64_t num_bytes);
-	bool noise_source_two_to_file(string &file_path_name, int64_t num_bytes);
+	bool noise_source_one_to_file(const string &file_path_name, const int64_t num_bytes);
+	bool noise_source_two_to_file(const string &file_path_name, const int64_t num_bytes);
 	bool noise_to_file(const string &file_path_name, int64_t num_bytes);
 	HealthTests get_health_tests() {return m_health_test;}
 	int get_operation_retry_count() {return m_op_retry_count;}
@@ -97,7 +97,7 @@ private:
 	bool upload_request(Packet *rqst);
 	int download_response(Response *resp, int resp_packet_payload_size);
 	bool is_response_valid(Response *resp);
-	int get_resp_packet_payload_size(int actual_payload_size);
+	int get_resp_packet_payload_size(int actual_payload_size_bytes);
 	int get_cmd_packet_payload_size(int cmd_struct_size_bytes);
 	PacketType get_rsa_request_type();
 	PacketType get_aes_request_type();
@@ -118,7 +118,7 @@ private:
 	bool connect_internal(int device_number);
 	bool initialize_rsa_keyfile();
 	bool initialize_serial_device();
-	bool create_token(uint64_t *token);
+	bool create_token(uint64_t *new_token);
 	void sleep_usecs(int usec);
 
 private:

@@ -24,7 +24,7 @@
 
 namespace alpharng {
 
-AlphaRngApi::AlphaRngApi(AlphaRngConfig cfg) {
+AlphaRngApi::AlphaRngApi(const AlphaRngConfig &cfg) {
 	initialize(cfg);
 }
 
@@ -386,12 +386,12 @@ bool AlphaRngApi::get_data(CommandType cmd_type, unsigned char *out, int out_len
  * and store the bytes received into a file.
  * It is used to evaluate the quality of the first random noise source.
  *
- * @param[out] file_path_name file path name for storing the retrieved bytes
- * @param[in] out_length how many bytes to retrieve, 0 - for continuous operation
+ * @param[in] file_path_name file path name for storing the retrieved bytes
+ * @param[in] num_bytes how many bytes to retrieve, 0 - for continuous operation
  *
  * @return true for successful operation
  */
-bool AlphaRngApi::noise_source_one_to_file(string &file_path_name, int64_t num_bytes) {
+bool AlphaRngApi::noise_source_one_to_file(const string &file_path_name, const int64_t num_bytes) {
 	if (!is_initialized() || !is_connected()) {
 		return false;
 	}
@@ -403,12 +403,12 @@ bool AlphaRngApi::noise_source_one_to_file(string &file_path_name, int64_t num_b
  * and store the bytes received into a file.
  * It is used to evaluate the quality of the second random noise source.
  *
- * @param[out] file_path_name file path name for storing the retrieved bytes
- * @param[in] out_length how many bytes to retrieve, 0 - for continuous operation
+ * @param[in] file_path_name file path name for storing the retrieved bytes
+ * @param[in] num_bytes how many bytes to retrieve, 0 - for continuous operation
  *
  * @return true for successful operation
  */
-bool AlphaRngApi::noise_source_two_to_file(string &file_path_name, int64_t num_bytes) {
+bool AlphaRngApi::noise_source_two_to_file(const string &file_path_name, const int64_t num_bytes) {
 	if (!is_initialized() || !is_connected()) {
 		return false;
 	}
@@ -641,11 +641,11 @@ bool AlphaRngApi::get_bytes(CommandType cmd_type, unsigned char *out, int out_le
  * That information can be used for evaluating the quality of
  * noise sources.
  *
- * @param[out] freq_tables all the frequency values will be stored in that structure
+ * @param[out] freq_tables points to a FrequencyTables structure for storing frequency values
  *
  * @return true for successful operation
  */
-bool AlphaRngApi::retrieve_frequency_tables(FrequencyTables &freq_tables) {
+bool AlphaRngApi::retrieve_frequency_tables(FrequencyTables *freq_tables) {
 	if (!is_initialized() || !is_connected()) {
 		return false;
 	}
@@ -669,7 +669,7 @@ bool AlphaRngApi::retrieve_frequency_tables(FrequencyTables &freq_tables) {
 		return false;
 	}
 
-	memcpy(freq_tables.freq_table_1, resp.payload, sizeof(FrequencyTables));
+	memcpy(freq_tables->freq_table_1, resp.payload, sizeof(FrequencyTables));
 
 	return true;
 
@@ -901,7 +901,7 @@ bool AlphaRngApi::execute_command (Response *resp, Command *cmd, int resp_payloa
 	return false;
 }
 
-bool AlphaRngApi::create_token(uint64_t *out) {
+bool AlphaRngApi::create_token(uint64_t *new_token) {
 	time_t seconds = time(NULL);
 	uint64_t token = seconds;
 	uint16_t rnd;
@@ -909,7 +909,7 @@ bool AlphaRngApi::create_token(uint64_t *out) {
 		return false;
 	}
 	token  = (token << 32) | (m_token_serial_number++ << 16) | rnd;
-	*out = token;
+	*new_token = token;
 	return true;
 }
 
@@ -1256,8 +1256,8 @@ bool AlphaRngApi::disconnect() {
 		return false;
 	}
 	clear_error_log();
-	return m_device->disconnect();
 	m_device_count = 0;
+	return m_device->disconnect();
 }
 
 /**
