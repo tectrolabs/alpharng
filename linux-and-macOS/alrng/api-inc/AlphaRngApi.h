@@ -100,15 +100,14 @@ private:
 	int get_resp_packet_payload_size(int actual_payload_size_bytes) const;
 	int get_cmd_packet_payload_size(int cmd_struct_size_bytes) const;
 	PacketType get_rsa_request_type() const;
-	PacketType get_aes_request_type() const;
-	int get_packet_size(int resp_packet_payload_size_bytes) const;
+	static PacketType get_aes_request_type() {return PacketType::aes;};
 	bool create_and_upload_session_packet(uint8_t *p, int object_size_bytes);
 	bool create_and_upload_command_packet(uint8_t *p, int object_size_bytes);
 	bool execute_command (Response *resp, Command *cmd, int resp_payload_size_bytes);
 	bool clear_receiver();
 	bool retrieve_device_info(DeviceInfo *device_info);
-	void clear_command(Command *cmd) const;
-	void clear_response(Response *resp) const;
+	static void clear_command(Command *cmd) {memset(cmd, 0x7f, sizeof(Command));}
+	static void clear_response(Response *resp) {memset(resp, 0x5c, sizeof(Response));}
 	bool get_bytes(CommandType cmd_type, unsigned char *out, int out_length, int block_size_bytes, bool test_data);
 	bool get_unpacked_bytes(char cmd, unsigned char *out, int out_length, int block_size_bytes, bool test_data);
 	bool get_unpacked_bytes_with_retry(char cmd, unsigned char *out, int out_length);
@@ -119,7 +118,10 @@ private:
 	bool initialize_rsa_keyfile();
 	bool initialize_serial_device();
 	bool create_token(uint64_t *new_token);
-	void sleep_usecs(int usec) const;
+	static void sleep_usecs(int usec) {std::this_thread::sleep_for(std::chrono::microseconds(usec));}
+	static int get_packet_size(int resp_packet_payload_size_bytes) {
+		return sizeof(Packet::e_type) + sizeof(Packet::e_key_size) + sizeof(Packet::cipher_iv)
+		+ sizeof(Packet::cipher_tag) + sizeof(Packet::payload_size)	+ resp_packet_payload_size_bytes;}
 
 private:
 	HmacInterface *m_hmac = nullptr;
