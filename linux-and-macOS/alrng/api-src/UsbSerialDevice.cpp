@@ -272,7 +272,7 @@ void UsbSerialDevice::scan_available_devices() {
  */
 void UsbSerialDevice::scan_available_devices() {
 	m_active_device_count = 0;
-	boolean device_candidate = false;
+	bool device_candidate = false;
 	char command[] = "usbconfig show_ifdrv | grep -E \"TectroLabs Alpha RNG|VCOM\" | grep -vi \"(tectrolabs)\"";
 	FILE *pf = popen(command,"r");
 	if (pf == nullptr) {
