@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs, https://tectrolabs.com
+ Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,7 +14,7 @@
   *    @file WinUsbSerialDevice.cpp
   *    @date 03/06/2020
   *    @Author: Andrian Belinski
-  *    @version 1.0
+  *    @version 1.1
   *
   *    @brief Implements the API for communicating with the CDC USB interface
   */
@@ -30,6 +30,7 @@ namespace alpharng {
 		m_active_device_count = 0;
 		m_cdc_device_handle = nullptr;
 		clear_error_log();
+		m_comm_error = 0;
 	}
 
 	void WinUsbSerialDevice::clear_error_log() {
@@ -257,7 +258,6 @@ void WinUsbSerialDevice::get_connected_ports(int ports[], int max_ports, int* ac
 		SP_DEVINFO_DATA dev_info_data;
 		BYTE current_hardware_id[1024] = { 0 };
 		DEVPROPTYPE dev_prop_type;
-		DWORD error = 0;
 		DWORD dw_size;
 
 		h_dev_info = SetupDiGetClassDevs(
@@ -285,7 +285,6 @@ void WinUsbSerialDevice::get_connected_ports(int ports[], int max_ports, int* ac
 				h_device_registry_key = SetupDiOpenDevRegKey(h_dev_info, &dev_info_data, DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_READ);
 				if (h_device_registry_key == INVALID_HANDLE_VALUE)
 				{
-					error = GetLastError();
 					break;
 				}
 				else

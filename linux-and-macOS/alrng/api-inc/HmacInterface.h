@@ -14,7 +14,7 @@
  *    @file HmacInterface.h
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Provides an API for generating message authentication digests for communicating with the AlphaRNG device.
  */

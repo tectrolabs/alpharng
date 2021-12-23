@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs, https://tectrolabs.com
+ Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,7 +14,7 @@
  *    @file HealthTests.cpp
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Implementation for 'Repetition Count' (RCT) and 'Adaptive Proportion' (APT) tests as described in NIST SP.800-90B
  */
@@ -37,7 +37,7 @@ HealthTests::HealthTests() {
  *
  * @return 0 if no test has failed, 2 - APT test error, 1 - RCT test error
  */
-uint8_t HealthTests::get_health_status() {
+uint8_t HealthTests::get_health_status() const {
 	if (m_rct.status_byte != 0) {
 		return m_rct.status_byte;
 	}
@@ -52,7 +52,7 @@ uint8_t HealthTests::get_health_status() {
  *
  * @return true if at least one test has failed, false otherwise
  */
-bool HealthTests::is_error() {
+bool HealthTests::is_error() const {
 	if (m_rct.status_byte != 0) {
 		return true;
 	}
@@ -65,13 +65,12 @@ bool HealthTests::is_error() {
 /**
  * Run an array of bytes trough the tests
  *
- * @param[in]  in points to an array of bytes to be tested
- * @param[in]  in_length amount of bytes to be tested
+ * @param[in] in points to an array of bytes to be tested
+ * @param[in] in_length amount of bytes to be tested
  */
-void HealthTests::test(uint8_t *in, int in_length) {
-	uint8_t value;
+void HealthTests::test(const uint8_t *in, int in_length) {
 	for (int i = 0; i < in_length; ++i) {
-		value = in[i];
+		uint8_t value = in[i];
 
 		//
 		// Run 'repetition count' test

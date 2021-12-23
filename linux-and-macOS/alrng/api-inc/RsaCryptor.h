@@ -16,7 +16,7 @@
  *    @file RsaCryptor.h
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device suing RSA PK encryption.
  */

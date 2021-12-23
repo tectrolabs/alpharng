@@ -14,7 +14,7 @@
  *    @file AlphaRngApi.h
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief AlphaRNG configuration structure used for establishing a session with the AlphaRNG device
  */

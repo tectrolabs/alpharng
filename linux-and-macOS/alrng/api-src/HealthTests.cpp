@@ -14,7 +14,7 @@
  *    @file HealthTests.cpp
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Implementation for 'Repetition Count' (RCT) and 'Adaptive Proportion' (APT) tests as described in NIST SP.800-90B
  */

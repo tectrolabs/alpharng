@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs, https://tectrolabs.com
+ Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,7 +14,7 @@
  *    @file AlphaRngApi.cpp
  *    @date 03/11/2020
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -24,7 +24,7 @@
 
 namespace alpharng {
 
-AlphaRngApi::AlphaRngApi(AlphaRngConfig cfg) {
+AlphaRngApi::AlphaRngApi(const AlphaRngConfig &cfg) {
 	initialize(cfg);
 }
 
@@ -32,7 +32,7 @@ AlphaRngApi::AlphaRngApi() {
 	initialize(AlphaRngConfig {MacType::hmacSha256, RsaKeySize::rsa2048, KeySize::k256, ""});
 }
 
-void AlphaRngApi::initialize(AlphaRngConfig cfg) {
+void AlphaRngApi::initialize(const AlphaRngConfig &cfg) {
 	m_cfg = cfg;
 	if (m_cfg.pub_key_file_name.size() > 0) {
 		if (!initialize_rsa_keyfile()) {
@@ -110,11 +110,7 @@ bool AlphaRngApi::initialize_rsa() {
 	return true;
 }
 
-PacketType AlphaRngApi::get_aes_request_type() {
-	return PacketType::aes;
-}
-
-PacketType AlphaRngApi::get_rsa_request_type() {
+PacketType AlphaRngApi::get_rsa_request_type() const {
 	if (m_rsa_cryptor->is_public_key_file()) {
 		return PacketType::pkAltRSA2048;
 	}
@@ -211,15 +207,6 @@ bool AlphaRngApi::retrieve_rng_status(unsigned char *status) {
 	}
 	*status = resp.payload[0];
 	return true;
-}
-
-
-void AlphaRngApi::clear_command(Command *cmd) {
-	memset(cmd, 0x7f, sizeof(Command));
-}
-
-void AlphaRngApi::clear_response(Response *resp) {
-	memset(resp, 0x5c, sizeof(Response));
 }
 
 /**
@@ -386,12 +373,12 @@ bool AlphaRngApi::get_data(CommandType cmd_type, unsigned char *out, int out_len
  * and store the bytes received into a file.
  * It is used to evaluate the quality of the first random noise source.
  *
- * @param[out] file_path_name file path name for storing the retrieved bytes
- * @param[in] out_length how many bytes to retrieve, 0 - for continuous operation
+ * @param[in] file_path_name file path name for storing the retrieved bytes
+ * @param[in] num_bytes how many bytes to retrieve, 0 - for continuous operation
  *
  * @return true for successful operation
  */
-bool AlphaRngApi::noise_source_one_to_file(string &file_path_name, int64_t num_bytes) {
+bool AlphaRngApi::noise_source_one_to_file(const string &file_path_name, const int64_t num_bytes) {
 	if (!is_initialized() || !is_connected()) {
 		return false;
 	}
@@ -403,12 +390,12 @@ bool AlphaRngApi::noise_source_one_to_file(string &file_path_name, int64_t num_b
  * and store the bytes received into a file.
  * It is used to evaluate the quality of the second random noise source.
  *
- * @param[out] file_path_name file path name for storing the retrieved bytes
- * @param[in] out_length how many bytes to retrieve, 0 - for continuous operation
+ * @param[in] file_path_name file path name for storing the retrieved bytes
+ * @param[in] num_bytes how many bytes to retrieve, 0 - for continuous operation
  *
  * @return true for successful operation
  */
-bool AlphaRngApi::noise_source_two_to_file(string &file_path_name, int64_t num_bytes) {
+bool AlphaRngApi::noise_source_two_to_file(const string &file_path_name, const int64_t num_bytes) {
 	if (!is_initialized() || !is_connected()) {
 		return false;
 	}
@@ -641,11 +628,11 @@ bool AlphaRngApi::get_bytes(CommandType cmd_type, unsigned char *out, int out_le
  * That information can be used for evaluating the quality of
  * noise sources.
  *
- * @param[out] freq_tables all the frequency values will be stored in that structure
+ * @param[out] freq_tables points to a FrequencyTables structure for storing frequency values
  *
  * @return true for successful operation
  */
-bool AlphaRngApi::retrieve_frequency_tables(FrequencyTables &freq_tables) {
+bool AlphaRngApi::retrieve_frequency_tables(FrequencyTables *freq_tables) {
 	if (!is_initialized() || !is_connected()) {
 		return false;
 	}
@@ -669,7 +656,7 @@ bool AlphaRngApi::retrieve_frequency_tables(FrequencyTables &freq_tables) {
 		return false;
 	}
 
-	memcpy(freq_tables.freq_table_1, resp.payload, sizeof(FrequencyTables));
+	memcpy(freq_tables->freq_table_1, resp.payload, sizeof(FrequencyTables));
 
 	return true;
 
@@ -901,7 +888,7 @@ bool AlphaRngApi::execute_command (Response *resp, Command *cmd, int resp_payloa
 	return false;
 }
 
-bool AlphaRngApi::create_token(uint64_t *out) {
+bool AlphaRngApi::create_token(uint64_t *new_token) {
 	time_t seconds = time(NULL);
 	uint64_t token = seconds;
 	uint16_t rnd;
@@ -909,7 +896,7 @@ bool AlphaRngApi::create_token(uint64_t *out) {
 		return false;
 	}
 	token  = (token << 32) | (m_token_serial_number++ << 16) | rnd;
-	*out = token;
+	*new_token = token;
 	return true;
 }
 
@@ -1111,18 +1098,7 @@ bool AlphaRngApi::create_and_upload_session_packet(uint8_t *p, int object_size_b
 	return true;
 }
 
-int AlphaRngApi::get_packet_size(int resp_packet_payload_size_bytes) {
-	int packet_size =
-			sizeof(Packet::e_type)
-			+ sizeof(Packet::e_key_size)
-			+ sizeof(Packet::cipher_iv)
-			+ sizeof(Packet::cipher_tag)
-			+ sizeof(Packet::payload_size)
-			+ resp_packet_payload_size_bytes;
-	return packet_size;
-}
-
-int AlphaRngApi::get_cmd_packet_payload_size(int cmd_struct_size_bytes) {
+int AlphaRngApi::get_cmd_packet_payload_size(int cmd_struct_size_bytes) const {
 	int packet_size = cmd_struct_size_bytes;
 	if (m_cfg.e_aes_key_size != KeySize::None) {
 		// Add bytes for padding if needed
@@ -1134,7 +1110,7 @@ int AlphaRngApi::get_cmd_packet_payload_size(int cmd_struct_size_bytes) {
 	return packet_size;
 }
 
-int AlphaRngApi::get_resp_packet_payload_size(int actual_payload_size_bytes) {
+int AlphaRngApi::get_resp_packet_payload_size(int actual_payload_size_bytes) const {
 	int packet_size =
 			  sizeof(Response::e_mac_type)
 			+ sizeof(Response::mac)
@@ -1256,8 +1232,8 @@ bool AlphaRngApi::disconnect() {
 		return false;
 	}
 	clear_error_log();
-	return m_device->disconnect();
 	m_device_count = 0;
+	return m_device->disconnect();
 }
 
 /**
@@ -1322,10 +1298,6 @@ AlphaRngApi::~AlphaRngApi() {
 	if (m_file_buffer) {
 		delete [] m_file_buffer;
 	}
-}
-
-void AlphaRngApi::sleep_usecs(int usec) {
-	std::this_thread::sleep_for(std::chrono::microseconds(usec));
 }
 
 } /* namespace alpharng */

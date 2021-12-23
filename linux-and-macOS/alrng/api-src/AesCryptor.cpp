@@ -17,7 +17,7 @@
  *    @file AesCryptor.cpp
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Encrypts or decrypts session data using AES-GCM with 128 or 256 bit keys.
  */

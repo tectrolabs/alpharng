@@ -15,7 +15,7 @@
  *    @file alperftest.cpp
  *    @date 06/7/2021
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief A utility used for measuring performance of the AlphaRNG device in different transmission modes.
  */

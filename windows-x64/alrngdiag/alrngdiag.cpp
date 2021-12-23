@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs, https://tectrolabs.com
+ Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -15,7 +15,7 @@
  *    @file alrngdiag.cpp
  *    @date 03/06/2020
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief A utility used for running the AlphaRNG device diagnostics
  *
@@ -31,7 +31,7 @@ using namespace std;
 
 static bool display_device_info(AlphaRngApi &rng);
 static bool run_device_diagnostics(AlphaRngApi &rng);
-static bool display_frequency_table_summary(uint16_t frequency_table[]);
+static bool display_frequency_table_summary(const uint16_t frequency_table[]);
 static bool inspect_raw_data(unsigned char raw_data_1[], unsigned char raw_data_2[]);
 static bool retrieve_entropy_bytes(AlphaRngApi &rng);
 static bool retrieve_noise_bytes(AlphaRngApi &rng);
@@ -117,7 +117,7 @@ int main() {
 		}
 
 
-		if (!rng.retrieve_frequency_tables(freq_tables)) {
+		if (!rng.retrieve_frequency_tables(&freq_tables)) {
 			cerr << "err: " << rng.get_last_error() << endl;
 		}
 		cout << endl << "-------- Retrieving frequency table for noise source 1 ------------" << endl;
@@ -145,7 +145,7 @@ int main() {
  *
  * @return true for successful operation
  */
-static bool display_frequency_table_summary(uint16_t frequency_table[]) {
+static bool display_frequency_table_summary(const uint16_t frequency_table[]) {
 	int min_freq;
 	int max_freq;
 	int total_samples;

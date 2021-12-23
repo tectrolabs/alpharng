@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs, https://tectrolabs.com
+ Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,7 +14,7 @@
   *    @file EntropyServerConnector.h
   *    @date 07/04/2021
   *    @Author: Andrian Belinski
-  *    @version 1.1
+  *    @version 1.2
   *
   *    @brief A pipe service client for downloading true random bytes from the entropy server.
   */
@@ -50,8 +50,8 @@ namespace entropy {
 			{
 			public:
 				EntropyServerConnector() : m_pipe_endpoint(L"\\\\.\\pipe\\AlphaRNG") {}
-				EntropyServerConnector(const string& pipe_endpoint);
-				EntropyServerConnector(const wstring& pipe_endpoint) : m_pipe_endpoint(pipe_endpoint) {}
+				explicit EntropyServerConnector(const string& pipe_endpoint);
+				explicit EntropyServerConnector(const wstring& pipe_endpoint) : m_pipe_endpoint(pipe_endpoint) {}
 				bool is_connected() { return m_is_connected; }
 				bool open_named_pipe();
 				void close_named_pipe();

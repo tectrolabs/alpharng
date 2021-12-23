@@ -16,7 +16,7 @@
  *    @file HmacMD5.h
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Implements an API used for generating a HmacMD5 message authentication digest for communicating with the AlphaRNG device.
  */

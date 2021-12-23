@@ -14,7 +14,7 @@
  *    @file Structures.h
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Data structures used in the API implementation.
  */

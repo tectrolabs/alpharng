@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs, https://tectrolabs.com
+ Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,7 +14,7 @@
   *    @file entropy-client-test.cpp
   *    @date 03/06/2021
   *    @Author: Andrian Belinski
-  *    @version 1.0
+  *    @version 1.1
   *
   *    @brief A test program for checking the connectivity to the entropy server and for measuring data transfer performance.
   */
@@ -93,9 +93,10 @@ int main(int argc, char** argv) {
 	}
 
 	cout << "Retrieving server version ..........................................";
-	int server_minor, server_major;
+	int server_minor;
 	status = pipe.get_server_minor_version(server_minor);
 	if (status == true) {
+		int server_major;
 		status = pipe.get_server_major_version(server_major);
 		if (status == true) {
 			cout << ".... " << server_major << "." << server_minor << endl;
@@ -134,9 +135,10 @@ int main(int argc, char** argv) {
 	}
 
 	cout << "Retrieving device version ..........................................";
-	int device_minor, device_major;
+	int device_minor;
 	status = pipe.get_device_minor_version(device_minor);
 	if (status == true) {
+		int device_major;
 		status = pipe.get_device_major_version(device_major);
 		if (status == true) {
 			cout << ".... " << device_major << "." << device_minor << endl;
@@ -236,10 +238,9 @@ int main(int argc, char** argv) {
 */
 bool compute_download_speed(EntropyServerConnector &pipe, int block_count, double &download_speed_mbps) {
 	time_t start = time(NULL);
-	bool status = false;
 	for (auto l = 0; l < block_count; ++l) {
-		status = pipe.get_entropy(entropy_buffer, entropy_buffer_size);
-		if (status == false) {
+		if (false == pipe.get_entropy(entropy_buffer, entropy_buffer_size))
+		{
 			cout << " failed" << endl;
 			return false;
 		}
