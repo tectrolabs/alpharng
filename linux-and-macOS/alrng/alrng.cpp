@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs, https://tectrolabs.com
+ Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -15,7 +15,7 @@
  *    @file alrng.cpp
  *    @date 03/06/2020
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
@@ -49,7 +49,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.3;
+static double const version = 1.4;
 
 /**
 * Local functions used
@@ -58,7 +58,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 static bool validate_comand(Cmd &cmd);
 static bool list_connected_devices(RngConfig cfg);
 static void reset_statistics(DeviceStatistics *ds);
-static void generate_statistics(DeviceStatistics &ds, Cmd &cmd);
+static void generate_statistics(DeviceStatistics &ds, const Cmd &cmd);
 static void display_help();
 
 /**
@@ -171,7 +171,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 
 
 	map<string, string> arg_map = appArgs.get_argument_map();
-    for (map<string, string>::iterator it = arg_map.begin(); it != arg_map.end(); it++)	{
+    for (map<string, string>::iterator it = arg_map.begin(); it != arg_map.end(); ++it)	{
     	string option = it->first;
     	string value = it->second;
 
@@ -368,7 +368,7 @@ static void reset_statistics(DeviceStatistics *ds) {
  *
  *
  */
-static void generate_statistics(DeviceStatistics &ds, Cmd &cmd) {
+static void generate_statistics(DeviceStatistics &ds, const Cmd &cmd) {
 	time(&ds.end_time);
 	ds.total_time = ds.end_time - ds.begin_time;
 	if (ds.total_time == 0) {

@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs, https://tectrolabs.com
+ Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -17,7 +17,7 @@
  *    @file AesCryptor.h
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Encrypts or decrypts session data using AES-GCM with 128 or 256 bit keys.
  */
@@ -40,14 +40,14 @@ namespace alpharng {
 class AesCryptor {
 public:
 	bool encrypt(const unsigned char *in, int in_byte_count, unsigned char *out, int *out_byte_count, unsigned char *out_tag);
-	bool decrypt(const unsigned char *in, int in_byte_count, unsigned char *out, int *out_byte_count, unsigned char *out_tag);
-	bool is_initialized() {return m_initialized;}
+	bool decrypt(const unsigned char *in, int in_byte_count, unsigned char *out, int *out_byte_count, unsigned char *in_tag);
+	bool is_initialized() const {return m_initialized;}
 	bool get_key(unsigned char* out);
 	bool get_iv(unsigned char* out);
 	bool get_aad(unsigned char* out);
-	int get_key_size_bytes() {return (int)m_e_key_size;}
+	int get_key_size_bytes() const {return (int)m_e_key_size;}
 	bool initialize_iv();
-	AesCryptor(KeySize e_key_size);
+	explicit AesCryptor(KeySize e_key_size);
 	AesCryptor();
 	virtual ~AesCryptor();
 private:

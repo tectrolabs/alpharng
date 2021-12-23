@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs, https://tectrolabs.com
+ Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,7 +14,7 @@
  *    @file AppArguments.h
  *    @date 03/06/2021
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Parse application command line arguments
  */
@@ -34,12 +34,12 @@ enum class ArgDef {noArgument, requireArgument};
 class AppArguments {
 
 public:
-	AppArguments(map<string, ArgDef> definitions) : m_definition_map(definitions), m_is_error(false) {}
+	explicit AppArguments(const map<string, ArgDef> &definitions) : m_definition_map(definitions), m_is_error(false) {}
 	void load_arguments(const int argc, const char **argv);
-	string get_last_error() {return m_error_log_oss.str();}
+	const string get_last_error() const {return m_error_log_oss.str();}
 	map<string, string> & get_argument_map() {return m_argument_map;}
 	map<string, ArgDef>& get_definition_map() { return m_definition_map; }
-	bool is_error() {return m_is_error;}
+	bool is_error() const {return m_is_error;}
 	string& get_app_name() { return m_app_name; }
 	virtual ~AppArguments();
 

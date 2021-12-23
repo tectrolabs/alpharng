@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs, https://tectrolabs.com
+ Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -39,17 +39,17 @@ namespace alpharng {
 class UsbSerialDevice : public DeviceInterface {
 public:
 
-	bool is_connected();
-	bool connect(const char *device_path_name);
-	bool disconnect();
-	string get_error_log();
-	void clear_error_log();
-	int send_data(unsigned char *snd, int size_snd, int *bytes_sent);
-	int receive_data(unsigned char *rcv, int size_receive, int *bytes_rceived);
-	int get_device_count();
-	void scan_available_devices();
-	bool retrieve_device_path(char *dev_path_name, int max_dev_path_name_bytes, int device_number);
-	bool set_connection_timeout(int milliseconds);
+	bool is_connected() override;
+	bool connect(const char *device_path_name) override;
+	bool disconnect() override;
+	string get_error_log() override;
+	void clear_error_log() override;
+	int send_data(unsigned char *snd, int size_snd, int *bytes_sent) override;
+	int receive_data(unsigned char *rcv, int size_receive, int *bytes_rceived) override;
+	int get_device_count() override;
+	void scan_available_devices() override;
+	bool retrieve_device_path(char *dev_path_name, int max_dev_path_name_bytes, int device_number) override;
+	bool set_connection_timeout(int milliseconds) override;
 
 	UsbSerialDevice();
 	virtual ~UsbSerialDevice();

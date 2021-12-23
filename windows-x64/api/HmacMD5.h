@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs, https://tectrolabs.com
+ Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -16,7 +16,7 @@
  *    @file HmacMD5.h
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Implements an API used for generating a HmacMD5 message authentication digest for communicating with the AlphaRNG device.
  */
@@ -36,12 +36,14 @@ namespace alpharng {
 
 class HmacMD5 : public HmacInterface {
 public:
-	bool hmac(const unsigned char *in, int in_byte_count, unsigned char *out);
-	int get_mac_size();
-	bool get_mac_key(unsigned char* out);
-	bool generate_new_key();
-	bool is_initialized() {return m_initialized;}
+	bool hmac(const unsigned char *in, int in_byte_count, unsigned char *out) override;
+	int get_mac_size() override;
+	bool get_mac_key(unsigned char* out) override;
+	bool generate_new_key() override;
+	bool is_initialized() override {return m_initialized;}
 	HmacMD5();
+	HmacMD5(const HmacMD5 &hmac) = delete;
+	HmacMD5 & operator=(const HmacMD5 &hmac) = delete;
 	virtual ~HmacMD5();
 private:
 	bool m_initialized = false;
