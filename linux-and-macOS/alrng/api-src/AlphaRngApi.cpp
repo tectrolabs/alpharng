@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,7 +14,7 @@
  *    @file AlphaRngApi.cpp
  *    @date 03/11/2020
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -228,7 +228,7 @@ bool AlphaRngApi::get_noise_source_1(unsigned char *out, int out_length) {
 	if (m_cfg.e_mac_type != MacType::None || m_cfg.e_aes_key_size != KeySize::None) {
 		return get_bytes(CommandType::getNoiseSourceOne, out, out_length, c_rnd_data_block_size_bytes, true);
 	} else {
-		return get_unpacked_bytes('1', out, out_length, c_rnd_data_block_size_bytes, true);
+		return get_unpacked_bytes_with_retry('1', out, out_length, c_rnd_data_block_size_bytes, true);
 	}
 }
 
@@ -249,7 +249,7 @@ bool AlphaRngApi::get_noise_source_2(unsigned char *out, int out_length) {
 	if (m_cfg.e_mac_type != MacType::None || m_cfg.e_aes_key_size != KeySize::None) {
 		return get_bytes(CommandType::getNoiseSourceTwo, out, out_length, c_rnd_data_block_size_bytes, true);
 	} else {
-		return get_unpacked_bytes('2', out, out_length, c_rnd_data_block_size_bytes, true);
+		return get_unpacked_bytes_with_retry('2', out, out_length, c_rnd_data_block_size_bytes, true);
 	}
 }
 
@@ -271,7 +271,7 @@ bool AlphaRngApi::get_entropy(unsigned char *out, int out_length) {
 	if (m_cfg.e_mac_type != MacType::None || m_cfg.e_aes_key_size != KeySize::None) {
 		return get_bytes(CommandType::getEntropy, out, out_length, c_rnd_data_block_size_bytes, true);
 	} else {
-		return get_unpacked_bytes('x', out, out_length, c_rnd_data_block_size_bytes, true);
+		return get_unpacked_bytes_with_retry('x', out, out_length, c_rnd_data_block_size_bytes, true);
 	}
 }
 
@@ -294,7 +294,7 @@ bool AlphaRngApi::get_noise(unsigned char *out, int out_length) {
 	if (m_cfg.e_mac_type != MacType::None || m_cfg.e_aes_key_size != KeySize::None) {
 		return get_bytes(CommandType::getNoise, out, out_length, c_rnd_data_block_size_bytes, true);
 	} else {
-		return get_unpacked_bytes('n', out, out_length, c_rnd_data_block_size_bytes, true);
+		return get_unpacked_bytes_with_retry('n', out, out_length, c_rnd_data_block_size_bytes, true);
 	}
 }
 
@@ -473,7 +473,7 @@ bool AlphaRngApi::to_file(CommandType cmd_type, const string &file_path_name, in
 	return true;
 }
 
-bool AlphaRngApi::get_unpacked_bytes_with_retry(char cmd, unsigned char *out, int out_length) {
+bool AlphaRngApi::get_payload_bytes_with_retry(char cmd, unsigned char *out, int out_length) {
 	for (int tries = 0; tries < c_max_command_retry_count; ++tries) {
 		clear_error_log();
 
@@ -497,11 +497,26 @@ bool AlphaRngApi::get_unpacked_bytes_with_retry(char cmd, unsigned char *out, in
 	return false;
 }
 
-bool AlphaRngApi::get_unpacked_bytes(char cmd, unsigned char *out, int out_length, int block_size_bytes, bool test_data) {
+bool AlphaRngApi::get_unpacked_bytes_with_retry(char cmd, unsigned char *out, int out_length, int block_size_bytes, bool test_data) {
 	if (out_length < 1) {
 		m_error_log_oss << "Amount of bytes requested is invalid: " << out_length << ". " << endl;
 		return false;
 	}
+
+	for (int tries = 0; tries < c_max_command_retry_count; ++tries) {
+		if(get_unpacked_bytes(cmd, out, out_length, block_size_bytes, test_data)) {
+			return true;
+		}
+
+		sleep_usecs(1000);
+		clear_receiver();
+		sleep_usecs(1000);
+	}
+	return false;
+
+}
+
+bool AlphaRngApi::get_unpacked_bytes(char cmd, unsigned char *out, int out_length, int block_size_bytes, bool test_data) {
 
 	Response resp;
 	unsigned char *dest = out;
@@ -512,7 +527,7 @@ bool AlphaRngApi::get_unpacked_bytes(char cmd, unsigned char *out, int out_lengt
 		if (test_data) {
 			m_health_test.restart();
 		}
-		if (!get_unpacked_bytes_with_retry(cmd, resp.payload, block_size_bytes + 1)) {
+		if (!get_payload_bytes_with_retry(cmd, resp.payload, block_size_bytes + 1)) {
 			return false;
 		}
 		uint8_t rng_status = resp.payload[block_size_bytes];
@@ -525,7 +540,7 @@ bool AlphaRngApi::get_unpacked_bytes(char cmd, unsigned char *out, int out_lengt
 		if (test_data) {
 			m_health_test.test(resp.payload, block_size_bytes);
 			if (m_health_test.is_error()) {
-				m_error_log_oss << "Step 1 Health test error : " << (int)m_health_test.get_health_status() << ". " << endl;
+				m_error_log_oss << "Health test error 1: " << (int)m_health_test.get_health_status() << ". " << endl;
 				return false;
 			}
 		}
@@ -535,7 +550,7 @@ bool AlphaRngApi::get_unpacked_bytes(char cmd, unsigned char *out, int out_lengt
 		if (test_data) {
 			m_health_test.restart();
 		}
-		if (!get_unpacked_bytes_with_retry(cmd, resp.payload, block_size_bytes + 1)) {
+		if (!get_payload_bytes_with_retry(cmd, resp.payload, block_size_bytes + 1)) {
 			return false;
 		}
 		uint8_t rng_status = resp.payload[block_size_bytes];
@@ -547,7 +562,7 @@ bool AlphaRngApi::get_unpacked_bytes(char cmd, unsigned char *out, int out_lengt
 		if (test_data) {
 			m_health_test.test(resp.payload, ramaining_bytes);
 			if (m_health_test.is_error()) {
-				m_error_log_oss << "Step 2 Health test error : " << (int)m_health_test.get_health_status() << ". " << endl;
+				m_error_log_oss << "Health test error 2: " << (int)m_health_test.get_health_status() << ". " << endl;
 				return false;
 			}
 		}

@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -15,7 +15,7 @@
  *    @file alrng.cpp
  *    @date 03/06/2020
  *    @Author: Andrian Belinski
- *    @version 1.4
+ *    @version 1.5
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
@@ -49,7 +49,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.4;
+static double const version = 1.5;
 
 /**
 * Local functions used
@@ -90,7 +90,7 @@ int main(const int argc, const char **argv) {
 		}
 	}
 
-	AlphaRngApi rng(AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file});
+	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
 
 	if (cmd.cmd_type != CmdOpt::listDevices && cmd.cmd_type != CmdOpt::getHelp) {
 		if (!rng.connect(cmd.device_number)) {
@@ -319,7 +319,7 @@ static bool validate_comand(Cmd &cmd) {
  * @return true for successful operation
  */
 static bool list_connected_devices(RngConfig cfg) {
-	AlphaRngApi rng(AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file});
+	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
 	string id;
 	string model;
 	unsigned char major_version;

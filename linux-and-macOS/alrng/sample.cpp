@@ -2,7 +2,7 @@
  *    @file sample.cpp
  *    @date 03/06/2020
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief A sample program for connecting to an AlphaRNG device and retrieve 10 random bytes over secure channel
  */
@@ -18,7 +18,7 @@ int main() {
 
 	const int count = 10;
 	unsigned char rnd_byte_buffer[count];
-	AlphaRngApi rng; // Using default constructor to achieve maximum security data connectivity.
+	AlphaRngApi rng;
 
 	cout << "----------------------------------------------------------------------------" << endl;
 	cout << "--- Sample C program for retrieving random bytes from an AlphaRNG device ---" << endl;

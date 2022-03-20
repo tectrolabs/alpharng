@@ -9,7 +9,11 @@ BINDIR = $(PREFIX)/bin
 
 OS:=$(shell uname -s)
 ifeq ($(OS),Darwin)
-OPENSSL_DIR = /usr/local/opt/openssl@1.1
+  ifneq ($(wildcard /usr/local/opt/openssl/.),)
+   OPENSSL_DIR = /usr/local/opt/openssl
+  else
+   OPENSSL_DIR = /opt/homebrew/opt/openssl
+  endif
 OPENSSL_SUPPORT = -I$(OPENSSL_DIR)/include -L$(OPENSSL_DIR)/lib
 CPPFLAGS += $(OPENSSL_SUPPORT) 
 endif
@@ -40,6 +44,8 @@ clean:
 	rm -f *.o ; rm $(ALRNGDIAG) $(ALRNG) $(SAMPLE) $(ALPERFTEST)
 
 install:
+
+	install -d $(BINDIR)
 	install $(ALRNGDIAG) $(BINDIR)/$(ALRNGDIAG)
 	install $(ALRNG) $(BINDIR)/$(ALRNG)
 	install $(ALPERFTEST) $(BINDIR)/$(ALPERFTEST)
