@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -15,7 +15,7 @@
  *    @file alperftest.cpp
  *    @date 06/7/2021
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief A utility used for measuring performance of the AlphaRNG device in different transmission modes.
  */
@@ -233,7 +233,7 @@ static bool run_device_perf_tests(int device_num) {
  */
 static bool run_device_perf_test(int device_num, RngConfig &cfg) {
 	DeviceStatistics ds;
-	AlphaRngApi rng(AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file});
+	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
 	bool slow_dwld = false;
 	unsigned char rnd_buffer[100000];
 

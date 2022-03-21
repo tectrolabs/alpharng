@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,7 +14,7 @@
  *    @file AlphaRngApi.h
  *    @date 01/10/2020
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.3
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -109,8 +109,9 @@ private:
 	static void clear_command(Command *cmd) {memset(cmd, 0x7f, sizeof(Command));}
 	static void clear_response(Response *resp) {memset(resp, 0x5c, sizeof(Response));}
 	bool get_bytes(CommandType cmd_type, unsigned char *out, int out_length, int block_size_bytes, bool test_data);
+	bool get_unpacked_bytes_with_retry(char cmd, unsigned char *out, int out_length, int block_size_bytes, bool test_data);
 	bool get_unpacked_bytes(char cmd, unsigned char *out, int out_length, int block_size_bytes, bool test_data);
-	bool get_unpacked_bytes_with_retry(char cmd, unsigned char *out, int out_length);
+	bool get_payload_bytes_with_retry(char cmd, unsigned char *out, int out_length);
 	bool to_file(CommandType cmd_type, const string &file_path_name, int64_t num_bytes);
 	bool get_data(CommandType cmd_type, unsigned char *out, int out_length);
 	bool execute_command_internal (Response *resp, Command *cmd, int resp_payload_size_bytes);
