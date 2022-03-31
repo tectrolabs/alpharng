@@ -13,9 +13,9 @@
 
 /**
  *    @file alrng.cpp
- *    @date 03/06/2020
+ *    @date 03/30/2022
  *    @Author: Andrian Belinski
- *    @version 1.5
+ *    @version 1.6
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
@@ -34,6 +34,7 @@ AppArguments appArgs ({
 	{"-2", ArgDef::noArgument},
 	{"-r", ArgDef::noArgument},
 	{"-e", ArgDef::noArgument},
+	{"-t", ArgDef::noArgument},
 	{"-o", ArgDef::requireArgument},
 	{"-n", ArgDef::requireArgument},
 	{"-d", ArgDef::requireArgument},
@@ -49,7 +50,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.5;
+static double const version = 1.6;
 
 /**
 * Local functions used
@@ -114,6 +115,9 @@ int main(const int argc, const char **argv) {
 		break;
 	case CmdOpt::getNoise:
 		status = rng.noise_to_file(cmd.out_file_name, cmd.num_bytes);
+		break;
+	case CmdOpt::runDiagnostics:
+		status = rng.run_health_test();
 		break;
 	case CmdOpt::listDevices:
 		cmd.log_statistics = false;
@@ -200,6 +204,10 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 			break;
 		case '2':
 			cmd.cmd_type = CmdOpt::getNoiseSourceTwo;
+			cmd.op_count++;
+			break;
+		case 't':
+			cmd.cmd_type = CmdOpt::runDiagnostics;
 			cmd.op_count++;
 			break;
 		case 'r':
@@ -300,7 +308,8 @@ static bool validate_comand(Cmd &cmd) {
 		return false;
 	}
 
-	if (cmd.out_file_name.length() == 0 && cmd.cmd_type != CmdOpt::listDevices && cmd.cmd_type != CmdOpt::getHelp ) {
+	if (cmd.out_file_name.length() == 0 && cmd.cmd_type != CmdOpt::listDevices
+			&& cmd.cmd_type != CmdOpt::getHelp && cmd.cmd_type != CmdOpt::runDiagnostics) {
 		cerr << "Output file name not specified" << endl;
 		return false;
 	}
@@ -413,6 +422,9 @@ void display_help() {
 	cout << "     -2" << endl;
 	cout << "           download raw random bytes from the second noise source." << endl;
 	cout << "           of an AlphaRNG device to a file." << endl;
+	cout << endl;
+	cout << "     -t" << endl;
+	cout << "           run AlphaRNG device internal diagnostics." << endl;
 	cout << endl;
 	cout << "     -h" << endl;
 	cout << "           display help." << endl;
