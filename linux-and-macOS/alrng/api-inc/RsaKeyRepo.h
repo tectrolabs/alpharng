@@ -12,9 +12,9 @@
 
 /**
  *    @file RsaKeyRepo.h
- *    @date 01/10/2020
+ *    @date 05/29/2022
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Used for storing hard-coded RSA 2048 and 1024 public keys used for establishing a secure connection with the AlphaRNG device.
  */
