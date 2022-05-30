@@ -26,7 +26,7 @@ namespace alpharng {
 
 class RsaKeyRepo {
 public:
-	const unsigned int c_rsapub_2048_pem_len = 426;
+	const unsigned int c_rsapub_2048_pem_len = 427;
 	const unsigned int c_rsapub_1024_pem_len = 251;
 	const unsigned char *c_rsapub_2048_pem;
 	const unsigned char *c_rsapub_1024_pem;
