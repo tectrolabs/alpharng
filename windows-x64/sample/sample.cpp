@@ -1,13 +1,5 @@
-/**
- *    @file sample.cpp
- *    @date 03/06/2020
- *    @Author: Andrian Belinski
- *    @version 1.2
- *
- *    @brief A sample program for connecting to an AlphaRNG device and retrieve 10 random bytes over secure channel
- */
-
 #include <AlphaRngApi.h>
+#include <array>
 
 using namespace alpharng;
 
@@ -16,36 +8,25 @@ using namespace alpharng;
  */
 int main() {
 
-	const int count = 10;
-	unsigned char rnd_byte_buffer[count];
-	AlphaRngApi rng;
+    //A sample code that retrieves entropy bytes from an AlphaRNG device and store those into a file
 
-	cout << "----------------------------------------------------------------------------" << endl;
-	cout << "--- Sample C program for retrieving random bytes from an AlphaRNG device ---" << endl;
-	cout << "----------------------------------------------------------------------------" << endl;
+    // Create a new AlphaRngApi instance using default constructor (using HMAC-SHA256, RSA2048, and AES-256-GCM)
+    AlphaRngApi rng { };
 
-	// Connecting to the first AlphaRNG device found
-	if (!rng.connect(0)) {
-		cerr << rng.get_last_error() << endl;
-		return -1;
-	}
+    // Connecting to the first AlphaRNG device found
+    if (!rng.connect(0)) {
+        cerr << rng.get_last_error() << endl;
+        return -1;
+    }
 
-	cout << endl << "AlphaRNG device open successfully" << endl << endl;
+    cout << endl << "AlphaRNG device open successfully" << endl << endl;
 
-	cout << "*** Generating " << count << " random bytes ***" << endl;
+    cout << "*** Retrieving 256 bytes of entropy from AlphaRNG device and storing to entropy_bytes.bin file ***"  << endl;
 
-	// Retrieve random bytes from device
-	if (!rng.get_entropy(rnd_byte_buffer, sizeof(rnd_byte_buffer))) {
-		cerr << rng.get_last_error() << endl;
-		return -1;
-	}
+    if (!rng.entropy_to_file("entropy_bytes.bin", 256)) {
+        cerr << rng.get_last_error() << endl;
+        return -1;
+    }
 
-	for (int i = 0; i < count; i++) {
-		cout << "random byte " <<  i << "-> " << (int)rnd_byte_buffer[i] << endl;
-	}
-
-	return 0;
+    return 0;
 }
-
-
-
