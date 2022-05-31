@@ -14,9 +14,9 @@
 
 /**
  *    @file RsaCryptor.h
- *    @date 01/10/2020
+ *    @date 05/31/2022
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device suing RSA PK encryption.
  */
@@ -62,7 +62,7 @@ private:
 #if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
 	EVP_PKEY *m_rsa = nullptr;
 #else
-    RSA
+    RSA *m_rsa = nullptr;
     BIGNUM *m_bignum = nullptr;
 #endif
 

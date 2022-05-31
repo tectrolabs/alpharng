@@ -14,9 +14,9 @@
 
 /**
  *    @file RsaCryptor.cpp
- *    @date 01/10/2020
+ *    @date 05/31/2022
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device.
  */
