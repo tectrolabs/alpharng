@@ -44,19 +44,29 @@ public:
 	bool is_initialized() const;
 	bool export_private_key_to_file(const string &key_file_name);
 	bool export_public_key_to_file(const string &key_file_name);
-	bool encrypt_with_public_key(unsigned char *in, int in_size_bytes,	unsigned char *out, int *out_size_bytes);
-	bool decrypt_with_public_key(unsigned char *in, int in_size_bytes,	unsigned char *out, int *out_size_bytes);
-	bool encrypt_with_private_key(unsigned char *in, int in_size_bytes,	unsigned char *out, int *out_size_bytes);
-	bool decrypt_with_private_key(unsigned char *in, int in_size_bytes,	unsigned char *out, int *out_size_bytes);
+	bool encrypt_with_public_key(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
+	bool decrypt_with_public_key(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
+	bool encrypt_with_private_key(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
+	bool decrypt_with_private_key(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
 	bool is_public_key_file() const {return m_is_public_key_file;}
 	virtual ~RsaCryptor();
 private:
 	void crete_new_key(int key_size);
 	void initialize_with_key(const unsigned char* key, int key_size_bytes, bool is_public);
+#if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
+	bool evp_key_encrypt(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
+	bool evp_key_decrypt(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
+#endif
+
 private:
-    RSA *m_rsa = nullptr;
-    BIO *m_kbio_rsa = nullptr;
+#if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
+	EVP_PKEY *m_rsa = nullptr;
+#else
+    RSA
     BIGNUM *m_bignum = nullptr;
+#endif
+
+    BIO *m_kbio_rsa = nullptr;
     bool m_is_key_initialized = false;
     int m_padding = RSA_NO_PADDING;
     bool m_is_public_key_file = false;
