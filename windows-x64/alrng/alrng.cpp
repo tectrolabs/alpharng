@@ -13,9 +13,9 @@
 
 /**
  *    @file alrng.cpp
- *    @date 05/31/2022
+ *    @date 07/25/2022
  *    @Author: Andrian Belinski
- *    @version 1.6
+ *    @version 1.7
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
@@ -50,7 +50,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.6;
+static double const version = 1.7;
 
 /**
 * Local functions used

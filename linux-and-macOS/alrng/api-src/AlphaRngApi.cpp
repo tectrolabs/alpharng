@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.cpp
- *    @date 03/11/2020
+ *    @date 07/25/2022
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -1076,6 +1076,7 @@ bool AlphaRngApi::create_and_upload_session_packet(uint8_t *p, int object_size_b
 	rqst.payload_size = (uint16_t)m_cfg.e_rsa_key_size;
 	Packet tmp;
 	memset(&tmp, 0x00, sizeof(tmp));
+	RAND_bytes(tmp.payload, sizeof(tmp.payload));
 	if ((int)sizeof(tmp.payload) < object_size_bytes) {
 		m_error_log_oss << "The actual payload size " << sizeof(tmp.payload) << " won't fit for " << object_size_bytes << ". " << endl;
 		return false;
