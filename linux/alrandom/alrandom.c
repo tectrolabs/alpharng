@@ -150,7 +150,7 @@ static ssize_t device_read(struct file *file, char __user *buffer, size_t length
       complete(&threadData->to_thread_event);
    } else {
       retval = -EBUSY;
-      goto return_lable;
+      goto return_on_error;
    }
 
    waitStatus = wait_for_completion_timeout(&threadData->from_thread_event, msecs_to_jiffies(5000));
@@ -171,7 +171,7 @@ static ssize_t device_read(struct file *file, char __user *buffer, size_t length
       }
    }
 
-return_lable:
+return_on_error:
    isDeviceOpPending = false;
    mutex_unlock(&dataOpLock);
 
