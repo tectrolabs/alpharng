@@ -105,7 +105,7 @@ static int create_proc(void);
 static void remove_proc(void);
 static void probe_init(void);
 static void log_device_connect_message(void);
-int thread_function(void *data);
+static int thread_function(void *data);
 static ssize_t thread_device_read(char *buffer, size_t length);
 static void clear_receive_buffer(int opTimeoutSecs);
 
@@ -144,7 +144,7 @@ static struct file *acm_open(const char *path, int flags);
 static struct mutex dataOpLock;
 
 // Reference to the character device
-struct cdev *cdv = NULL;
+static struct cdev *cdv = NULL;
 
 // Reference to the character device class
 static struct class *dev_class = NULL;
