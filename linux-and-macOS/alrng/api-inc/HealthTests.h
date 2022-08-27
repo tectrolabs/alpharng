@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -8,21 +8,21 @@
 
  This class implements health tests 'Repetition Count' and 'Adaptive Proportion' according to NIST SP.800-90B
 
- The health tests are used for inspecting entropy random bytes retrieved form the AlphaRNG device.
+ The health tests are used for inspecting entropy random bytes retrieved from the AlphaRNG device.
 
  */
 
 /**
  *    @file HealthTests.h
- *    @date 01/10/2020
+ *    @date 08/27/2022
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implementation for 'Repetition Count' and 'Adaptive Proportion' tests as described in NIST SP.800-90B
  */
 
-#ifndef COUNTINUOUSHEALTHTEST_H_
-#define COUNTINUOUSHEALTHTEST_H_
+#ifndef ALPHARNG_COUNTINUOUSHEALTHTEST_H_
+#define ALPHARNG_COUNTINUOUSHEALTHTEST_H_
 
 #include <cstring>
 #include <cstdint>
@@ -59,4 +59,4 @@ private:
 
 } /* namespace alpharng */
 
-#endif /* COUNTINUOUSHEALTHTEST_H_ */
+#endif /* ALPHARNG_COUNTINUOUSHEALTHTEST_H_ */
