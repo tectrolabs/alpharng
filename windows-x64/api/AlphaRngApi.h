@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.h
- *    @date 01/10/2020
+ *    @date 08/27/2022
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -39,6 +39,10 @@
 #include <AlphaRngConfig.h>
 #include <HealthTests.h>
 #include <Structures.h>
+#include <Sha256.h>
+#include <Sha512.h>
+#include <ShaInterface.h>
+#include <ShaEntropyExtractor.h>
 
 #ifdef _WIN64
 #include <WinUsbSerialDevice.h>
@@ -51,6 +55,7 @@ using namespace std;
 
 namespace alpharng {
 
+class ShaEntropyExtractor;
 
 class AlphaRngApi {
 public:
@@ -73,9 +78,13 @@ public:
 	bool get_noise_source_1(unsigned char *out, int out_length);
 	bool get_noise_source_2(unsigned char *out, int out_length);
 	bool get_entropy(unsigned char *out, int out_length);
+	bool extract_sha256_entropy(unsigned char *out, int out_length);
+	bool extract_sha512_entropy(unsigned char *out, int out_length);
 	bool get_noise(unsigned char *out, int out_length);
 	bool get_test_data(unsigned char *out, int out_length);
 	bool entropy_to_file(const string &file_path_name, int64_t num_bytes);
+	bool extract_sha256_entropy_to_file(const string &file_path_name, int64_t num_bytes);
+	bool extract_sha512_entropy_to_file(const string &file_path_name, int64_t num_bytes);
 	bool noise_source_one_to_file(const string &file_path_name, const int64_t num_bytes);
 	bool noise_source_two_to_file(const string &file_path_name, const int64_t num_bytes);
 	bool noise_to_file(const string &file_path_name, int64_t num_bytes);
@@ -90,8 +99,10 @@ public:
 private:
 	void initialize(const AlphaRngConfig &cfg);
 	bool initialize_rsa();
-	bool initialize_hash(MacType e_mac_type);
+	bool initialize_sha();
+	bool initialize_hmac(MacType e_mac_type);
 	bool initialize_aes(KeySize e_aes_key_size);
+	bool initialize_entropy_extractor(ShaInterface *sha_api);
 	void clear_error_log();
 	bool upload_session_key();
 	bool upload_request(Packet *rqst);
@@ -99,6 +110,7 @@ private:
 	bool is_response_valid(Response *resp);
 	int get_resp_packet_payload_size(int actual_payload_size_bytes) const;
 	int get_cmd_packet_payload_size(int cmd_struct_size_bytes) const;
+	bool extract_entropy(ShaInterface *sha_api, unsigned char *out, int out_length);
 	PacketType get_rsa_request_type() const;
 	static PacketType get_aes_request_type() {return PacketType::aes;};
 	bool create_and_upload_session_packet(uint8_t *p, int object_size_bytes);
@@ -148,6 +160,10 @@ private:
 	HealthTests m_health_test;
 	int m_op_retry_count;
 	AlphaRngConfig m_cfg;
+	ShaInterface *m_sha_256 = nullptr;
+	ShaInterface *m_sha_512 = nullptr;
+	ShaEntropyExtractor *m_sha_ent_extr = nullptr;
+
 };
 
 } /* namespace alpharng */

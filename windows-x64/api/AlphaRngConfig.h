@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,15 +12,15 @@
 
 /**
  *    @file AlphaRngApi.h
- *    @date 01/10/2020
+ *    @date 08/27/2022
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief AlphaRNG configuration structure used for establishing a session with the AlphaRNG device
  */
 
-#ifndef API_INC_ALPHARNGCONFIG_H_
-#define API_INC_ALPHARNGCONFIG_H_
+#ifndef ALPHARNG_API_INC_ALPHARNGCONFIG_H_
+#define ALPHARNG_API_INC_ALPHARNGCONFIG_H_
 
 #include <string>
 #include <Structures.h>
@@ -37,4 +37,4 @@ struct AlphaRngConfig {
 
 } /* namespace alpharng */
 
-#endif /* API_INC_ALPHARNGCONFIG_H_ */
+#endif /* ALPHARNG_API_INC_ALPHARNGCONFIG_H_ */

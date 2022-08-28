@@ -177,6 +177,10 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="RsaCryptor.h" />
     <ClInclude Include="RsaKeyRepo.h" />
+    <ClInclude Include="Sha256.h" />
+    <ClInclude Include="Sha512.h" />
+    <ClInclude Include="ShaEntropyExtractor.h" />
+    <ClInclude Include="ShaInterface.h" />
     <ClInclude Include="Structures.h" />
     <ClInclude Include="WinUsbSerialDevice.h" />
   </ItemGroup>
@@ -197,6 +201,9 @@
     </ClCompile>
     <ClCompile Include="RsaCryptor.cpp" />
     <ClCompile Include="RsaKeyRepo.cpp" />
+    <ClCompile Include="Sha256.cpp" />
+    <ClCompile Include="Sha512.cpp" />
+    <ClCompile Include="ShaEntropyExtractor.cpp" />
     <ClCompile Include="WinUsbSerialDevice.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,9 +14,9 @@
 
 /**
  *    @file HmacMD5.cpp
- *    @date 01/10/2020
+ *    @date 08/27/2022
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implements an API used for generating a HmacMD5 message authentication digest for communicating with the AlphaRNG device.
  */
@@ -82,6 +82,22 @@ bool HmacMD5::get_mac_key(unsigned char* out) {
 		return false;
 	}
 	memcpy(out, m_key, c_key_size_bytes);
+	return true;
+}
+
+/**
+ * Set new MAC key
+ *
+ * @param[in] in points to the byte array of the new key
+ * @param[in] in_byte_count size of the new key in bytes
+ *
+ * @return true for successful operation
+ */
+bool HmacMD5::set_key(unsigned char* in, int in_byte_count) {
+	if (in_byte_count != c_key_size_bytes) {
+		return false;
+	}
+	memcpy(m_key, in, c_key_size_bytes);
 	return true;
 }
 

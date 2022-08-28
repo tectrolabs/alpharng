@@ -13,9 +13,9 @@
 
 /**
  *    @file alrng.cpp
- *    @date 07/25/2022
+ *    @date 08/27/2022
  *    @Author: Andrian Belinski
- *    @version 1.7
+ *    @version 1.8
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
@@ -34,6 +34,8 @@ AppArguments appArgs ({
 	{"-2", ArgDef::noArgument},
 	{"-r", ArgDef::noArgument},
 	{"-e", ArgDef::noArgument},
+	{"-x", ArgDef::noArgument},
+	{"-X", ArgDef::noArgument},
 	{"-t", ArgDef::noArgument},
 	{"-o", ArgDef::requireArgument},
 	{"-n", ArgDef::requireArgument},
@@ -50,7 +52,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.7;
+static double const version = 1.8;
 
 /**
 * Local functions used
@@ -106,6 +108,12 @@ int main(const int argc, const char **argv) {
 	switch (cmd.cmd_type) {
 	case CmdOpt::getEntropy:
 		status = rng.entropy_to_file(cmd.out_file_name, cmd.num_bytes);
+		break;
+	case CmdOpt::extractSha256Entropy:
+		status = rng.extract_sha256_entropy_to_file(cmd.out_file_name, cmd.num_bytes);
+		break;
+	case CmdOpt::extractSha512Entropy:
+		status = rng.extract_sha512_entropy_to_file(cmd.out_file_name, cmd.num_bytes);
 		break;
 	case CmdOpt::getNoiseSourceOne:
 		status = rng.noise_source_one_to_file(cmd.out_file_name, cmd.num_bytes);
@@ -196,6 +204,14 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 			break;
 		case 'e':
 			cmd.cmd_type = CmdOpt::getEntropy;
+			cmd.op_count++;
+			break;
+		case 'x':
+			cmd.cmd_type = CmdOpt::extractSha256Entropy;
+			cmd.op_count++;
+			break;
+		case 'X':
+			cmd.cmd_type = CmdOpt::extractSha512Entropy;
 			cmd.op_count++;
 			break;
 		case '1':
@@ -410,10 +426,21 @@ void display_help() {
 	cout << "           list all available (not currently in use) AlphaRNG devices." << endl;
 	cout << endl;
 	cout << "     -e" << endl;
-	cout << "           download entropy bytes from an AlphaRNG device to a file." << endl;
+	cout << "           download entropy bytes extracted from an AlphaRNG device to a file." << endl;
+	cout << endl;
+	cout << "     -x" << endl;
+	cout << "           extract entropy bytes into a file by applying SHA-256 method" << endl;
+	cout << "           to concatenated RAW random bytes of both noise sources retrieved from" << endl;
+	cout << "           an AlphaRNG device. The SHA input/output extraction ratio used is 2/1 ." << endl;
+	cout << endl;
+	cout << "     -X" << endl;
+	cout << "           extract entropy bytes into a file by applying SHA-512 method" << endl;
+	cout << "           to concatenated RAW random bytes of both noise sources retrieved from" << endl;
+	cout << "           an AlphaRNG device. The SHA input/output extraction ratio used is 2/1 ." << endl;
 	cout << endl;
 	cout << "     -r" << endl;
-	cout << "           download raw random bytes from an AlphaRNG device to a file." << endl;
+	cout << "           download concatenated raw random bytes of both noise sources" << endl;
+	cout << "           from an AlphaRNG device to a file." << endl;
 	cout << endl;
 	cout << "     -1" << endl;
 	cout << "           download raw random bytes from the first noise source." << endl;

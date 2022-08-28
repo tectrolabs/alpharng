@@ -12,15 +12,15 @@
 
 /**
  *    @file Structures.h
- *    @date 03/30/2022
+ *    @date 08/27/2022
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief Data structures used in the API implementation.
  */
 
-#ifndef API_INC_STRUCTURES_H_
-#define API_INC_STRUCTURES_H_
+#ifndef ALPHARNG_API_INC_STRUCTURES_H_
+#define ALPHARNG_API_INC_STRUCTURES_H_
 
 #include <cstdint>
 #include <string>
@@ -38,7 +38,9 @@ enum class CommandType : uint16_t {
 	getNoiseSourceTwo = 305,
 	getEntropy = 306,
 	getTestData = 307,
-	getNoise = 308
+	getNoise = 308,
+	extractSha256Entropy = 309,
+	extractSha512Entropy = 310
 };
 enum class KeySize : uint8_t {None = 0, k128 = 16, k256 = 32};
 enum class MacType : uint8_t {None = 0, hmacMD5 =16, hmacSha160 = 20, hmacSha256 = 32};
@@ -96,7 +98,9 @@ enum class CmdOpt : uint8_t {
 	getNoiseSourceTwo = 4,
 	listDevices = 5,
 	getHelp = 6,
-	runDiagnostics = 7
+	runDiagnostics = 7,
+	extractSha256Entropy = 8,
+	extractSha512Entropy = 9
 };
 
 struct Cmd {

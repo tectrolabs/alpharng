@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.cpp
- *    @date 07/25/2022
+ *    @date 08/27/2022
  *    @Author: Andrian Belinski
- *    @version 1.4
+ *    @version 1.5
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -49,12 +49,17 @@ void AlphaRngApi::initialize(const AlphaRngConfig &cfg) {
 		m_error_log_oss << "Could not initialize cipher" << ". " << endl;
 		return;
 	}
-	if (!initialize_hash(m_cfg.e_mac_type)) {
+	if (!initialize_hmac(m_cfg.e_mac_type)) {
 		m_error_log_oss << "Could not initialize MAC generator" << ". " << endl;
 		return;
 	}
 	if (!initialize_serial_device()) {
 		m_error_log_oss << "Could not initialize serial device" << ". " << endl;
+		return;
+	}
+
+	if (!initialize_sha()) {
+		m_error_log_oss << "Could not initialize serial SHA" << ". " << endl;
 		return;
 	}
 
@@ -94,6 +99,20 @@ bool AlphaRngApi::initialize_rsa_keyfile() {
 	return true;
 }
 
+bool AlphaRngApi::initialize_sha() {
+	m_sha_256 = new (nothrow) Sha256();
+	if (m_sha_256 == nullptr) {
+		return false;
+	}
+
+	m_sha_512 = new (nothrow) Sha512();
+	if (m_sha_512 == nullptr) {
+		return false;
+	}
+
+	return true;
+}
+
 bool AlphaRngApi::initialize_rsa() {
 	switch(m_cfg.e_rsa_key_size) {
 	case RsaKeySize::rsa2048:
@@ -123,7 +142,7 @@ PacketType AlphaRngApi::get_rsa_request_type() const {
 	}
 }
 
-bool AlphaRngApi::initialize_hash(MacType e_mac_type) {
+bool AlphaRngApi::initialize_hmac(MacType e_mac_type) {
 	switch(e_mac_type) {
 	case MacType::hmacSha256:
 	default:
@@ -155,6 +174,22 @@ bool AlphaRngApi::initialize_aes(KeySize e_aes_key_size) {
 		}
 		m_aes_cryptor = new (nothrow) AesCryptor(e_aes_key_size);
 		if (m_aes_cryptor == nullptr || !m_aes_cryptor->is_initialized()) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool AlphaRngApi::initialize_entropy_extractor(ShaInterface *sha_api) {
+
+	if (m_sha_ent_extr != nullptr && m_sha_ent_extr->get_hash_size() != sha_api->get_hash_size()) {
+		// The SHA implementation has changed, create a new instance
+		delete m_sha_ent_extr;
+		m_sha_ent_extr = nullptr;
+	}
+	if (m_sha_ent_extr == nullptr) {
+		m_sha_ent_extr = new (nothrow) ShaEntropyExtractor(this, sha_api);
+		if (m_sha_ent_extr == nullptr) {
 			return false;
 		}
 	}
@@ -210,7 +245,7 @@ bool AlphaRngApi::retrieve_rng_status(unsigned char *status) {
 }
 
 /**
- * Retrieve raw (unprocessed) bytes form the AlphaRNG device and store those into a file.
+ * Retrieve raw (unprocessed) bytes from the AlphaRNG device and store those into a file.
  * It is used to evaluate the quality of the raw random byte stream produced by both noise sources
  * before any post-processing or conditioning.
  * The byte stream can also be used as an input for alternative post-processing or conditioning algorithms.
@@ -254,7 +289,7 @@ bool AlphaRngApi::get_noise_source_2(unsigned char *out, int out_length) {
 }
 
 /**
- * Retrieve entropy bytes form the AlphaRNG device.
+ * Retrieve entropy bytes from the AlphaRNG device.
  * This is the method for retrieving high quality, non biased, random bytes that can be directly used in applications
  * or can feed the entropy inputs of DRBG(s).
  *
@@ -276,10 +311,80 @@ bool AlphaRngApi::get_entropy(unsigned char *out, int out_length) {
 }
 
 /**
- * Retrieve digitized random bytes form the AlphaRNG device.
+ * Extract entropy bytes by applying SHA-256 method to RAW random bytes retrieved from an AlphaRNG device.
+ * This is the method for generating high quality, non biased, random bytes that can be directly used in applications
+ * or feed entropy inputs of DRBG(s).
+ *
+ * @param[out] out points to a byte array for storing the random bytes extracted
+ * @param[in] out_length how many entropy bytes to retrieve
+ *
+ * @return true for successful operation
+ */
+bool AlphaRngApi::extract_sha256_entropy(unsigned char *out, int out_length) {
+	if (!is_initialized() || !is_connected()) {
+		return false;
+	}
+	clear_error_log();
+	return extract_entropy(m_sha_256, out, out_length);
+}
+
+/**
+ * Extract entropy bytes by applying SHA-512 method to RAW random bytes retrieved from an AlphaRNG device.
+ * This is the method for generating high quality, non biased, random bytes that can be directly used in applications
+ * or feed entropy inputs of DRBG(s).
+ *
+ * @param[out] out points to a byte array for storing the random bytes extracted
+ * @param[in] out_length how many entropy bytes to retrieve
+ *
+ * @return true for successful operation
+ */
+bool AlphaRngApi::extract_sha512_entropy(unsigned char *out, int out_length) {
+	if (!is_initialized() || !is_connected()) {
+		return false;
+	}
+	clear_error_log();
+	return extract_entropy(m_sha_512, out, out_length);
+}
+
+/**
+ * Extract entropy bytes by applying SHA specific method to RAW random bytes retrieved from an AlphaRNG device.
+ * This is the method for generating high quality, non biased, random bytes that can be directly used in applications
+ * or feed entropy inputs of DRBG(s).
+ *
+ * @param[in] hash_api SHA specific implementation
+ * @param[out] out points to a byte array for storing the random bytes extracted
+ * @param[in] out_length how many entropy bytes to retrieve
+ *
+ * @return true for successful operation
+ */
+bool AlphaRngApi::extract_entropy(ShaInterface *sha_api, unsigned char *out, int out_length) {
+	if (out == nullptr) {
+		m_error_log_oss << "AlphaRngApi.extract_entropy(): 'out' argument cannot be null" << endl;
+		return false;
+	}
+	if (out_length < 1) {
+		m_error_log_oss << "AlphaRngApi.extract_entropy(): invalid 'out_length' argument value" << endl;
+		return false;
+	}
+
+	if (!initialize_entropy_extractor(sha_api)) {
+		m_error_log_oss << "AlphaRngApi.extract_entropy(): could not initialize entropy extractor" << endl;
+		return false;
+	}
+
+	if (!m_sha_ent_extr->extract_entropy(out, out_length)) {
+		m_error_log_oss << m_sha_ent_extr->get_last_error();
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Retrieve concatenated raw random bytes of both noise sources from the AlphaRNG device.
  * It is used to evaluate the quality of the raw random byte stream produced by both noise sources
  * before any post-processing or conditioning.
- * The byte stream can also be used as an input for alternative post-processing or conditioning algorithms.
+ * The byte stream can also be used as an input for alternative post-processing or conditioning algorithms
+ * such as SHA and HMAC extractors.
  *
  * @param[out] out points to a byte array for storing the random bytes retrieved
  * @param[in] out_length how many random bytes to retrieve
@@ -318,7 +423,7 @@ bool AlphaRngApi::get_test_data(unsigned char *out, int out_length) {
 }
 
 /**
- * Retrieve entropy bytes form the AlphaRNG device and store those into a file.
+ * Retrieve entropy bytes from the AlphaRNG device and store those into a file.
  * This is the method for retrieving high quality, non biased, random bytes that can be directly used in applications
  * or can feed the entropy inputs of DRBG(s).
  *
@@ -335,7 +440,41 @@ bool AlphaRngApi::entropy_to_file(const string &file_path_name, int64_t num_byte
 }
 
 /**
- * Retrieve raw (unprocessed) bytes form the AlphaRNG device and store those into a file.
+ * Extract entropy bytes into a file by applying SHA-256 method to RAW random bytes retrieved from an AlphaRNG device.
+ * This is the method for retrieving high quality, non biased, random bytes that can be directly used in applications
+ * or feed entropy inputs of DRBG(s).
+ *
+ * @param[out] out file_path_name file path name for storing entropy bytes
+ * @param[in] num_bytes how many entropy bytes to retrieve, 0 - for continuous operation
+ *
+ * @return true for successful operation
+ */
+bool AlphaRngApi::extract_sha256_entropy_to_file(const string &file_path_name, int64_t num_bytes) {
+	if (!is_initialized() || !is_connected()) {
+		return false;
+	}
+	return to_file(CommandType::extractSha256Entropy, file_path_name, num_bytes);
+}
+
+/**
+ * Extract entropy bytes into a file by applying SHA-512 method to RAW random bytes retrieved from an AlphaRNG device.
+ * This is the method for retrieving high quality, non biased, random bytes that can be directly used in applications
+ * or feed entropy inputs of DRBG(s).
+ *
+ * @param[out] out file_path_name file path name for storing entropy bytes
+ * @param[in] num_bytes how many entropy bytes to retrieve, 0 - for continuous operation
+ *
+ * @return true for successful operation
+ */
+bool AlphaRngApi::extract_sha512_entropy_to_file(const string &file_path_name, int64_t num_bytes) {
+	if (!is_initialized() || !is_connected()) {
+		return false;
+	}
+	return to_file(CommandType::extractSha512Entropy, file_path_name, num_bytes);
+}
+
+/**
+ * Retrieve raw (unprocessed) bytes from the AlphaRNG device and store those into a file.
  * It is used to evaluate the quality of the raw random byte stream produced by both noise sources
  * before any post-processing or conditioning.
  * The byte stream can also be used as an input for alternative post-processing or conditioning algorithms.
@@ -358,6 +497,10 @@ bool AlphaRngApi::get_data(CommandType cmd_type, unsigned char *out, int out_len
 		return get_entropy(out, out_length);
 	case CommandType::getNoise:
 		return get_noise(out, out_length);
+	case CommandType::extractSha256Entropy:
+		return extract_sha256_entropy(out, out_length);
+	case CommandType::extractSha512Entropy:
+		return extract_sha512_entropy(out, out_length);
 	case CommandType::getNoiseSourceOne:
 		return get_noise_source_1(out, out_length);
 	case CommandType::getNoiseSourceTwo:
