@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
  /**
   *    @file entropy-client-test.cpp
-  *    @date 03/06/2021
+  *    @date 08/28/2021
   *    @Author: Andrian Belinski
-  *    @version 1.1
+  *    @version 1.2
   *
   *    @brief A test program for checking the connectivity to the entropy server and for measuring data transfer performance.
   */
@@ -155,6 +155,26 @@ int main(int argc, char** argv) {
 
 	cout << "Retrieving 100000 bytes of entropy from device ..................... ";
 	status = pipe.get_entropy(entropy_buffer, entropy_buffer_size);
+	if (status == true) {
+		cout << "SUCCESS" << endl;
+	}
+	else {
+		cout << " failed" << endl;
+		return -1;
+	}
+
+	cout << "Extracting 100000 bytes of entropy using SHA-256 method ............ ";
+	status = pipe.extract_sha256_entropy(entropy_buffer, entropy_buffer_size);
+	if (status == true) {
+		cout << "SUCCESS" << endl;
+	}
+	else {
+		cout << " failed" << endl;
+		return -1;
+	}
+
+	cout << "Extracting 100000 bytes of entropy using SHA-512 method ............ ";
+	status = pipe.extract_sha512_entropy(entropy_buffer, entropy_buffer_size);
 	if (status == true) {
 		cout << "SUCCESS" << endl;
 	}

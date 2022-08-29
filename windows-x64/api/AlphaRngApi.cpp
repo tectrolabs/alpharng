@@ -1457,6 +1457,15 @@ AlphaRngApi::~AlphaRngApi() {
 	if (m_file_buffer) {
 		delete [] m_file_buffer;
 	}
+	if (m_sha_256) {
+		delete m_sha_256;
+	}
+	if (m_sha_512) {
+		delete m_sha_512;
+	}
+	if (m_sha_ent_extr) {
+		delete  m_sha_ent_extr;
+	}
 }
 
 } /* namespace alpharng */

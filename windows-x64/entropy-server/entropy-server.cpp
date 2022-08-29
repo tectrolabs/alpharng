@@ -33,8 +33,6 @@ using namespace alpharng;
 AppArguments appArgs({
 	{"-d", ArgDef::requireArgument},
 	{"-e", ArgDef::noArgument},
-	{"-x", ArgDef::noArgument},
-	{"-X", ArgDef::noArgument},
 	{"-h", ArgDef::noArgument},
 	{"-m", ArgDef::requireArgument},
 	{"-k", ArgDef::requireArgument},
@@ -138,14 +136,6 @@ static bool extract_command(Cmd& cmd, RngConfig& cfg, const int argc, const char
 			break;
 		case 'e':
 			cmd.cmd_type = CmdOpt::getEntropy;
-			cmd.op_count++;
-			break;
-		case 'x':
-			cmd.cmd_type = CmdOpt::extractSha256Entropy;
-			cmd.op_count++;
-			break;
-		case 'X':
-			cmd.cmd_type = CmdOpt::extractSha512Entropy;
 			cmd.op_count++;
 			break;
 		case 'k':
@@ -252,7 +242,7 @@ static bool validate_comand(const Cmd& cmd) {
  */
 void display_help() {
 	cout << "*********************************************************************************" << endl;
-	cout << "                       AlphaRNG entropy-server Ver 1.1  " << endl;
+	cout << "                       AlphaRNG entropy-server Ver 1.3  " << endl;
 	cout << "*********************************************************************************" << endl;
 	cout << "NAME" << endl;
 	cout << "     entropy-server - An application server for distributing random bytes" << endl;
@@ -269,20 +259,8 @@ void display_help() {
 	cout << "     Main operation mode:" << endl;
 	cout << endl;
 	cout << "     -e" << endl;
-	cout << "           download entropy bytes from an AlphaRNG device and make them available " << endl;
-	cout << "           using a named pipe. " << endl;
-	cout << endl;
-	cout << "     -x" << endl;
-	cout << "           extract entropy bytes from an AlphaRNG device by applying SHA-256 method" << endl;
-	cout << "           to concatenated RAW random bytes of both noise sources retrieved from" << endl;
-	cout << "           the device. The SHA input/output extraction ratio used is 2/1 ." << endl;
-	cout << "           Make entropy bytes available using a named pipe." << endl;
-	cout << endl;
-	cout << "     -X" << endl;
-	cout << "           extract entropy bytes from an AlphaRNG device by applying SHA-512 method" << endl;
-	cout << "           to concatenated RAW random bytes of both noise sources retrieved from" << endl;
-	cout << "           the device. The SHA input/output extraction ratio used is 2/1 ." << endl;
-	cout << "           Make entropy bytes available using a named pipe." << endl;
+	cout << "           start the entropy server for retrieving/extracting and distributing" << endl;
+	cout << "           entropy bytes from an AlhaRNG device using a named pipe." << endl;
 	cout << endl;
 	cout << "OPTIONS" << endl;
 	cout << endl;

@@ -324,6 +324,36 @@ bool EntropyServer::fill_entropy_for_write(DWORD idx) {
 			}
 		}
 		break;
+	case c_cmd_entropy_sha256_extract_id:
+		devStatus = extract_sha256_entropy(idx);
+		if (devStatus != true) {
+			m_rng->disconnect();
+			devStatus = m_rng->connect(m_cmd->device_number);
+			if (devStatus == true) {
+				devStatus = extract_sha256_entropy(idx);
+			}
+		}
+		break;
+	case c_cmd_entropy_sha512_extract_id:
+		devStatus = extract_sha512_entropy(idx);
+		if (devStatus != true) {
+			m_rng->disconnect();
+			devStatus = m_rng->connect(m_cmd->device_number);
+			if (devStatus == true) {
+				devStatus = extract_sha512_entropy(idx);
+			}
+		}
+		break;
+	case c_cmd_noise_id:
+		devStatus = retrieve_noise(idx);
+		if (devStatus != true) {
+			m_rng->disconnect();
+			devStatus = m_rng->connect(m_cmd->device_number);
+			if (devStatus == true) {
+				devStatus = retrieve_noise(idx);
+			}
+		}
+		break;
 	case c_cmd_dev_ser_num_id:
 		devStatus = retrieve_device_serial_number(idx);
 		if (devStatus != true) {
@@ -419,20 +449,35 @@ bool EntropyServer::fill_entropy_for_write(DWORD idx) {
 }
 
 /**
-* Populate the entropy buffer
+* Populate the entropy buffer with entropy bytes retrieved directly from the device.
 *
 * @param idx - pipe instance index
 * @return true when run successfully
 */
 bool EntropyServer::retrieve_entropy(DWORD idx) {
-	switch (m_cmd->cmd_type) {
-	case CmdOpt::extractSha256Entropy:
-		return m_rng->extract_sha256_entropy(m_pipe[idx].chReply, m_pipe[idx].chRequest.cbReqData);
-	case CmdOpt::extractSha512Entropy:
-		return m_rng->extract_sha512_entropy(m_pipe[idx].chReply, m_pipe[idx].chRequest.cbReqData);
-	default:
-		return m_rng->get_entropy(m_pipe[idx].chReply, m_pipe[idx].chRequest.cbReqData);
-	}
+	return m_rng->get_entropy(m_pipe[idx].chReply, m_pipe[idx].chRequest.cbReqData);
+}
+
+/**
+* Populate the entropy buffer with entropy bytes by applying SHA-256 method to RAW
+* random bytes retrieved from the AlphaRNG device.
+*
+* @param idx - pipe instance index
+* @return true when run successfully
+*/
+bool EntropyServer::extract_sha256_entropy(DWORD idx) {
+	return m_rng->extract_sha256_entropy(m_pipe[idx].chReply, m_pipe[idx].chRequest.cbReqData);
+}
+
+/**
+* Populate the entropy buffer with entropy bytes by applying SHA-512 method to RAW 
+* random bytes retrieved from the AlphaRNG device.
+*
+* @param idx - pipe instance index
+* @return true when run successfully
+*/
+bool EntropyServer::extract_sha512_entropy(DWORD idx) {
+	return m_rng->extract_sha512_entropy(m_pipe[idx].chReply, m_pipe[idx].chRequest.cbReqData);
 }
 
 /**
@@ -443,6 +488,16 @@ bool EntropyServer::retrieve_entropy(DWORD idx) {
 */
 bool EntropyServer::retrieve_noise_source_1(DWORD idx) {
 	return m_rng->get_noise_source_1(m_pipe[idx].chReply, m_pipe[idx].chRequest.cbReqData);
+}
+
+/**
+* Populate the buffer with concatenated raw random bytes of both noise sources.
+*
+* @param idx - pipe instance index
+* @return true when run successfully
+*/
+bool EntropyServer::retrieve_noise(DWORD idx) {
+	return m_rng->get_noise(m_pipe[idx].chReply, m_pipe[idx].chRequest.cbReqData);
 }
 
 /**

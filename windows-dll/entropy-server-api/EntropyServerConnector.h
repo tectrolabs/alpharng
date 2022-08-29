@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
  /**
   *    @file EntropyServerConnector.h
-  *    @date 07/04/2021
+  *    @date 08/28/2022
   *    @Author: Andrian Belinski
-  *    @version 1.2
+  *    @version 1.3
   *
   *    @brief A pipe service client for downloading true random bytes from the entropy server.
   */
@@ -43,7 +43,10 @@ namespace entropy {
 				getServerMinorVersion = 6,
 				getServerMajorVersion = 7,
 				getNoiseSourceOne = 8,
-				getNoiseSourceTwo = 9
+				getNoiseSourceTwo = 9,
+				extractSha256Entropy = 10,
+				extractSha512Entropy = 11,
+				getNoise = 12
 			};
 
 			class EntropyServerConnector
@@ -57,8 +60,11 @@ namespace entropy {
 				void close_named_pipe();
 				string get_last_error() { return m_error_log_oss.str(); }
 				bool get_entropy(unsigned char* rcv_buffer, DWORD byte_count);
+				bool extract_sha256_entropy(unsigned char* rcv_buffer, DWORD byte_count);
+				bool extract_sha512_entropy(unsigned char* rcv_buffer, DWORD byte_count);
 				bool get_noise_source_1(unsigned char* rcv_buffer, DWORD byte_count);
 				bool get_noise_source_2(unsigned char* rcv_buffer, DWORD byte_count);
+				bool get_noise(unsigned char* rcv_buffer, DWORD byte_count);
 				bool get_test_bytes(unsigned char* rcv_buffer, DWORD byte_count);
 				bool get_device_serial_number(string& device_serial_number);
 				bool get_device_model(string& device_model);

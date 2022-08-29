@@ -156,4 +156,4 @@ struct AptData {
 
 } /* namespace alpharng */
 
-#endif /* API_INC_STRUCTURES_H_ */
+#endif /* ALPHARNG_API_INC_STRUCTURES_H_ */

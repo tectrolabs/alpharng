@@ -42,8 +42,11 @@ private:
 	bool create_pipe_instances();
 	bool fill_entropy_for_write(DWORD idx);
 	bool retrieve_entropy(DWORD idx);
+	bool extract_sha256_entropy(DWORD idx);
+	bool extract_sha512_entropy(DWORD idx);
 	bool retrieve_noise_source_1(DWORD idx);
 	bool retrieve_noise_source_2(DWORD idx);
+	bool retrieve_noise(DWORD idx);
 	bool retrieve_device_serial_number(DWORD idx);
 	bool retrieve_device_model(DWORD idx);
 	bool retrieve_device_minor_version(DWORD idx);
@@ -60,7 +63,7 @@ private:
 	Cmd *m_cmd;
 
 	static const char c_server_major_version = 1;
-	static const char c_server_minor_version = 1;
+	static const char c_server_minor_version = 2;
 
 	static const int c_pipe_timeout = 5000;
 	static const int c_write_buff_size_bytes = 100000;
@@ -77,6 +80,9 @@ private:
 	static const int c_cmd_serv_major_version_id = 7;
 	static const int c_cmd_noise_src_one_id = 8;
 	static const int c_cmd_noise_src_two_id = 9;
+	static const int c_cmd_entropy_sha256_extract_id = 10;
+	static const int c_cmd_entropy_sha512_extract_id = 11;
+	static const int c_cmd_noise_id = 12;
 
 	typedef struct
 	{
