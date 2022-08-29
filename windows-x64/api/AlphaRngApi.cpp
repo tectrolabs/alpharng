@@ -1464,7 +1464,7 @@ AlphaRngApi::~AlphaRngApi() {
 		delete m_sha_512;
 	}
 	if (m_sha_ent_extr) {
-		delete  m_sha_ent_extr;
+		delete m_sha_ent_extr;
 	}
 }
 
