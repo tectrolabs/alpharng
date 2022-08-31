@@ -107,7 +107,7 @@ namespace entropy {
 			}
 
 			/*
-			* Retrieve SHA-256 extracted entropy bytes from the pipe server
+			* Retrieve SHA-512 extracted entropy bytes from the pipe server
 			*
 			* @param rcv_buffer buffer for the incoming bytes
 			* @param byte_count - number of bytes to receive
