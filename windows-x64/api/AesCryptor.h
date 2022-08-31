@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -15,15 +15,15 @@
 
 /**
  *    @file AesCryptor.h
- *    @date 01/10/2020
+ *    @date 08/27/2022
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Encrypts or decrypts session data using AES-GCM with 128 or 256 bit keys.
  */
 
-#ifndef API_SRC_AESCRYPTOR_H_
-#define API_SRC_AESCRYPTOR_H_
+#ifndef ALPHARNG_API_SRC_AESCRYPTOR_H_
+#define ALPHARNG_API_SRC_AESCRYPTOR_H_
 
 #include <openssl/conf.h>
 #include <openssl/evp.h>
@@ -70,4 +70,4 @@ private:
 
 } /* namespace alpharng */
 
-#endif /* API_SRC_AESCRYPTOR_H_ */
+#endif /* ALPHARNG_API_SRC_AESCRYPTOR_H_ */

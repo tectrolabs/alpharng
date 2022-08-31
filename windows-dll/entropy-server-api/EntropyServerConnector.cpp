@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
  /**
   *    @file EntropyServerConnector.cpp
-  *    @date 07/04/2021
+  *    @date 08/28/2022
   *    @Author: Andrian Belinski
-  *    @version 1.2
+  *    @version 1.3
   *
   *    @brief A pipe service client for downloading true random bytes from the entropy server.
   */
@@ -96,6 +96,29 @@ namespace entropy {
 			}
 
 			/*
+			* Retrieve SHA-256 extracted entropy bytes from the pipe server
+			*
+			* @param rcv_buffer buffer for the incoming bytes
+			* @param byte_count - number of bytes to receive
+			* @return true if successful
+			*/
+			bool EntropyServerConnector::extract_sha256_entropy(unsigned char* rcv_buffer, DWORD byte_count) {
+				return get_bytes(EntropyServerCommand::extractSha256Entropy, rcv_buffer, byte_count);
+			}
+
+			/*
+			* Retrieve SHA-512 extracted entropy bytes from the pipe server
+			*
+			* @param rcv_buffer buffer for the incoming bytes
+			* @param byte_count - number of bytes to receive
+			* @return true if successful
+			*/
+			bool EntropyServerConnector::extract_sha512_entropy(unsigned char* rcv_buffer, DWORD byte_count) {
+				return get_bytes(EntropyServerCommand::extractSha512Entropy, rcv_buffer, byte_count);
+			}
+
+
+			/*
 			* Retrieve random bytes from first noise source
 			*
 			* @param rcv_buffer buffer for the incoming bytes
@@ -115,6 +138,21 @@ namespace entropy {
 			*/
 			bool EntropyServerConnector::get_noise_source_2(unsigned char* rcv_buffer, DWORD byte_count) {
 				return get_bytes(EntropyServerCommand::getNoiseSourceTwo, rcv_buffer, byte_count);
+			}
+
+			/*
+			* Retrieve concatenated raw random bytes of both noise sources from the AlphaRNG device.
+			* It is used to evaluate the quality of the raw random byte stream produced by both noise sources
+			* before any post-processing or conditioning.
+			* The byte stream can also be used as an input for alternative post-processing or conditioning algorithms
+			* such as SHA and HMAC extractors.
+			*
+			* @param rcv_buffer buffer for the incoming bytes
+			* @param byte_count - number of bytes to receive
+			* @return true if successful
+			*/
+			bool EntropyServerConnector::get_noise(unsigned char* rcv_buffer, DWORD byte_count) {
+				return get_bytes(EntropyServerCommand::getNoise, rcv_buffer, byte_count);
 			}
 
 			/*

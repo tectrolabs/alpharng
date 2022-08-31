@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs, https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs, https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
  /**
   *    @file dllmain.h
-  *    @date 07/04/2021
+  *    @date 08/28/2022
   *    @Author: Andrian Belinski
-  *    @version 1.0
+  *    @version 1.1
   *
   *    @brief DLL implementation for interacting with the entropy server using named pipes.
   */
@@ -53,6 +53,50 @@ __declspec(dllexport) int getEntropy(unsigned char* buffer, long length) {
 		return -1;
 	}
 	if (!pipe.get_entropy(buffer, length)) {
+		return -1;
+	}
+	return 0;
+}
+
+/*
+* Extract entropy bytes by applying SHA-256 method to concatenated RAW random bytes of both noise sources 
+* retrieved from an AlphaRNG device. The SHA input/output extraction ratio used is 2/1.
+* 
+* There should be an entropy server running to successfully call the function.
+*
+* @param[out] buffer a pointer to the data receive buffer
+* @param[in] length how many bytes expected to receive (must not be greater than 100,000)
+* @return 0 successful operation, otherwise the error code
+*
+*/
+__declspec(dllexport) int extractSha256Entropy(unsigned char* buffer, long length) {
+	EntropyServerConnector pipe(defaultPipeEndpoint);
+	if (!pipe.open_named_pipe()) {
+		return -1;
+	}
+	if (!pipe.extract_sha256_entropy(buffer, length)) {
+		return -1;
+	}
+	return 0;
+}
+
+/*
+* Extract entropy bytes by applying SHA-512 method to concatenated RAW random bytes of both noise sources
+* retrieved from an AlphaRNG device. The SHA input/output extraction ratio used is 2/1.
+*
+* There should be an entropy server running to successfully call the function.
+*
+* @param[out] buffer a pointer to the data receive buffer
+* @param[in] length how many bytes expected to receive (must not be greater than 100,000)
+* @return 0 successful operation, otherwise the error code
+*
+*/
+__declspec(dllexport) int extractSha512Entropy(unsigned char* buffer, long length) {
+	EntropyServerConnector pipe(defaultPipeEndpoint);
+	if (!pipe.open_named_pipe()) {
+		return -1;
+	}
+	if (!pipe.extract_sha256_entropy(buffer, length)) {
 		return -1;
 	}
 	return 0;

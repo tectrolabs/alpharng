@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,15 +14,15 @@
 
 /**
  *    @file HmacMD5.h
- *    @date 01/10/2020
+ *    @date 08/27/2022
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implements an API used for generating a HmacMD5 message authentication digest for communicating with the AlphaRNG device.
  */
 
-#ifndef HMACMD5_H_
-#define HMACMD5_H_
+#ifndef ALPHARNG_HMACMD5_H_
+#define ALPHARNG_HMACMD5_H_
 
 #include <openssl/rand.h>
 #include <openssl/hmac.h>
@@ -40,6 +40,7 @@ public:
 	int get_mac_size() override;
 	bool get_mac_key(unsigned char* out) override;
 	bool generate_new_key() override;
+	bool set_key(unsigned char* in, int in_byte_count) override;
 	bool is_initialized() override {return m_initialized;}
 	HmacMD5();
 	HmacMD5(const HmacMD5 &hmac) = delete;
@@ -55,4 +56,4 @@ private:
 
 } /* namespace alpharng */
 
-#endif /* HMACMD5_H_ */
+#endif /* ALPHARNG_HMACMD5_H_ */

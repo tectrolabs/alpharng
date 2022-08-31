@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,15 +12,15 @@
 
 /**
  *    @file HmacInterface.h
- *    @date 01/10/2020
+ *    @date 08/27/2022
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Provides an API for generating message authentication digests for communicating with the AlphaRNG device.
  */
 
-#ifndef API_INC_HMACINTERFACE_H_
-#define API_INC_HMACINTERFACE_H_
+#ifndef ALPHARNG_API_INC_HMACINTERFACE_H_
+#define ALPHARNG_API_INC_HMACINTERFACE_H_
 
 namespace alpharng {
 
@@ -30,6 +30,7 @@ public:
 	virtual int get_mac_size() = 0;
 	virtual bool get_mac_key(unsigned char* out) = 0;
 	virtual bool generate_new_key() = 0;
+	virtual bool set_key(unsigned char* in, int in_byte_count) = 0;
 	virtual bool is_initialized() = 0;
 
 	HmacInterface() {};
@@ -38,4 +39,4 @@ public:
 
 } /* namespace alpharng */
 
-#endif /* API_INC_HMACINTERFACE_H_ */
+#endif /* ALPHARNG_API_INC_HMACINTERFACE_H_ */

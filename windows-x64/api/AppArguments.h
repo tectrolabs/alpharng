@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,14 +12,14 @@
 
 /**
  *    @file AppArguments.h
- *    @date 03/06/2021
+ *    @date 08/27/2022
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Parse application command line arguments
  */
-#ifndef API_INC_APPARGUMENTS_H_
-#define API_INC_APPARGUMENTS_H_
+#ifndef ALPHARNG_API_INC_APPARGUMENTS_H_
+#define ALPHARNG_API_INC_APPARGUMENTS_H_
 
 #include <string>
 #include <map>
@@ -56,4 +56,4 @@ private:
 
 } /* namespace alpharng */
 
-#endif /* API_INC_APPARGUMENTS_H_ */
+#endif /* ALPHARNG_API_INC_APPARGUMENTS_H_ */

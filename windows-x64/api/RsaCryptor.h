@@ -14,15 +14,15 @@
 
 /**
  *    @file RsaCryptor.h
- *    @date 05/31/2022
+ *    @date 08/27/2022
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device suing RSA PK encryption.
  */
 
-#ifndef RSACRYPTOR_H_
-#define RSACRYPTOR_H_
+#ifndef ALPHARNG_RSACRYPTOR_H_
+#define ALPHARNG_RSACRYPTOR_H_
 
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
@@ -76,4 +76,4 @@ private:
 
 } /* namespace alpharng */
 
-#endif /* RSACRYPTOR_H_ */
+#endif /* ALPHARNG_RSACRYPTOR_H_ */

@@ -1,8 +1,8 @@
 /**
  *    @file entropy-client-sample.cpp
- *    @date 03/12/2020
+ *    @date 08/28/2022
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief A sample program for connecting to the entropy server and retrieving 10 random bytes 
  */
@@ -91,15 +91,42 @@ int main() {
 
 	cout << "*** Generating " << count << " random bytes ***" << endl;
 
-	// Retrieve random bytes from device
+	// Retrieve entropy bytes from device
 	if (!pipe.get_entropy(rnd_byte_buffer, sizeof(rnd_byte_buffer))) {
 		cerr << pipe.get_last_error() << endl;
 		return -1;
 	}
 
-	for (int i = 0; i < count; i++) {
-		cout << "random byte " << i << "-> " << (int)rnd_byte_buffer[i] << endl;
+	cout << "entropy bytes: ";
+	for (int i = 0; i < sizeof(rnd_byte_buffer); i++) {
+		cout << (int)rnd_byte_buffer[i] << " ";
 	}
+	cout << endl;
+
+	// Extract entropy bytes using SHA-256 extractor
+	if (!pipe.extract_sha256_entropy(rnd_byte_buffer, sizeof(rnd_byte_buffer))) {
+		cerr << pipe.get_last_error() << endl;
+		return -1;
+	}
+
+	cout << "extracted entropy bytes using SHA-256: ";
+	for (int i = 0; i < sizeof(rnd_byte_buffer); i++) {
+		cout << (int)rnd_byte_buffer[i] << " ";
+	}
+	cout << endl;
+
+	// Extract entropy bytes using SHA-512 extractor
+	if (!pipe.extract_sha512_entropy(rnd_byte_buffer, sizeof(rnd_byte_buffer))) {
+		cerr << pipe.get_last_error() << endl;
+		return -1;
+	}
+
+	cout << "extracted entropy bytes using SHA-512: ";
+	for (int i = 0; i < sizeof(rnd_byte_buffer); i++) {
+		cout << (int)rnd_byte_buffer[i] << " ";
+	}
+	cout << endl;
+
 
 	return 0;
 }
