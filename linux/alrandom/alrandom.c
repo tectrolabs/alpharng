@@ -94,7 +94,7 @@ static ssize_t thread_device_read(char *buffer, size_t length)
       } while (total < length);
       if (debugMode) {
          if (total > length) {
-            pr_err("thread_device_read(): Expected %d bytes to read and actually got %d \n", (int)length, (int)total);
+            pr_err("%s: thread_device_read(): Expected %d bytes to read and actually got %d \n", DRIVER_NAME, (int)length, (int)total);
          }
       }
    } else {
@@ -156,7 +156,7 @@ static ssize_t device_read(struct file *file, char __user *buffer, size_t length
    waitStatus = wait_for_completion_timeout(&threadData->from_thread_event, msecs_to_jiffies(5000));
    if (waitStatus == 0) {
       if (debugMode) {
-         pr_err("device_read(): thread timeout reached when processing request\n");
+         pr_err("%s: device_read(): thread timeout reached when processing request\n", DRIVER_NAME);
       }
       retval = -ETIMEDOUT;
    } else {
@@ -249,7 +249,7 @@ static ssize_t proc_read(struct file *file, char __user *buffer, size_t length, 
                }
                kfree(msg);
             } else {
-               pr_err("proc_read: Could not allocate memory for generating device information\n");
+               pr_err("%s: proc_read: Could not allocate memory for generating device information\n", DRIVER_NAME);
             }
          } else {
             // No device has been initialized
@@ -304,7 +304,7 @@ int thread_function(void *data)
       default:
          // Ignore any unexpected commands
          if (debugMode) {
-            pr_err("thread_function() unexpected command %c\n", thData->command);
+            pr_err("%s: thread_function() unexpected command %c\n", DRIVER_NAME, thData->command);
          }
          break;
       }
@@ -461,7 +461,7 @@ static int snd_rcv_usb_data(char *snd, int sizeSnd, char *rcv, int sizeRcv, int 
                retval = -EFAULT;
                clear_receive_buffer(opTimeoutSecs);
                if (debugMode) {
-                  pr_err("AlphaRNG RNG: received device status code %d\n", rcv[sizeRcv]);
+                  pr_err("%s: AlphaRNG RNG: received device status code %d\n", DRIVER_NAME, rcv[sizeRcv]);
                }
             } else {
                break;
@@ -470,7 +470,7 @@ static int snd_rcv_usb_data(char *snd, int sizeSnd, char *rcv, int sizeRcv, int 
       } else {
          clear_receive_buffer(opTimeoutSecs);
          if (debugMode) {
-            pr_err("snd_rcv_usb_data(): It was an error during data communication. Cleaning up the receiving queue and continue.\n");
+            pr_err("%s: snd_rcv_usb_data(): It was an error during data communication. Cleaning up the receiving queue and continue.\n", DRIVER_NAME);
          }
       }
    }
@@ -523,7 +523,7 @@ static int chip_read_data(char *buff, int length, int opTimeoutSecs)
          retval = acm_full_read(ctrlData->bulk_in_buffer, length, &transferred);
       }
       if (debugMode) {
-         pr_info("chip_read_data() retval %d transferred %d, length %d\n", retval, transferred, length);
+         pr_info("%s: chip_read_data() retval %d transferred %d, length %d\n", DRIVER_NAME, retval, transferred, length);
       }
       if (retval) {
          return retval;
@@ -545,7 +545,7 @@ static int chip_read_data(char *buff, int length, int opTimeoutSecs)
 
    if (cnt != length) {
       if (debugMode) {
-         pr_info("chip_read_data(): timeout received, cnt %d\n", cnt);
+         pr_info("%s: chip_read_data(): timeout received, cnt %d\n", DRIVER_NAME, cnt);
       }
       return -ETIMEDOUT;
    }
@@ -729,7 +729,7 @@ static void test_samples(void)
 
                if (debugMode) {
                   if (rct.failureCount >= 1) {
-                     pr_info("rct.failureCount: %d value: %d\n", rct.failureCount, value);
+                     pr_info("%s: rct.failureCount: %d value: %d\n", DRIVER_NAME, rct.failureCount, value);
                   }
                }
             }
@@ -767,7 +767,7 @@ static void test_samples(void)
 
                if (debugMode) {
                   if (apt.cycleFailures >= 1) {
-                     pr_info("apt.cycleFailures: %d value: %d\n", apt.cycleFailures, value);
+                     pr_info("%s: apt.cycleFailures: %d value: %d\n", DRIVER_NAME, apt.cycleFailures, value);
                   }
                }
 
@@ -852,7 +852,7 @@ static int __init init_alrandom(void)
 
    err = create_proc();
    if (err != SUCCESS) {
-      pr_err("init_alrandom: could not create /proc/%s directory\n", DEVICE_NAME);
+      pr_err("%s: init_alrandom: could not create /proc/%s directory\n", DRIVER_NAME, DEVICE_NAME);
       return err;
    }
 
@@ -1174,7 +1174,7 @@ static bool acm_device_probe(void)
 
       strcpy(acmCtxt->dev_name, dev_serial_by_id_path);
       if (debugMode) {
-         pr_info("found AlphaRNG device: %s\n", acmCtxt->dev_name_by_id[i]);
+         pr_info("%s: found AlphaRNG device: %s\n", DRIVER_NAME, acmCtxt->dev_name_by_id[i]);
       }
       strcat(acmCtxt->dev_name, "/");
       strcat(acmCtxt->dev_name, acmCtxt->dev_name_by_id[i]);
@@ -1203,9 +1203,9 @@ static bool acm_device_probe(void)
       }
 
       if (debugMode) {
-         pr_info("acm_context->devices_found: %d\n", acmCtxt->devices_found);
-         pr_info("acm_context->device_open: %d\n", acmCtxt->device_open);
-         pr_info("acm_context->device_locked: %d\n", acmCtxt->device_locked);
+         pr_info("%s: acm_context->devices_found: %d\n", DRIVER_NAME, acmCtxt->devices_found);
+         pr_info("%s: acm_context->device_open: %d\n", DRIVER_NAME, acmCtxt->device_open);
+         pr_info("%s: acm_context->device_locked: %d\n", DRIVER_NAME, acmCtxt->device_locked);
       }
       isEntropySrcRdy = true;
 
@@ -1313,7 +1313,7 @@ static void acm_clean_up(void)
       }
       acmCtxt->device_locked = false;
       if (debugMode) {
-         pr_info("acm_clean_up(): locks_lock_inode_wait() returned: %d\n", op_status);
+         pr_info("%s: acm_clean_up(): locks_lock_inode_wait() returned: %d\n", DRIVER_NAME, op_status);
       }
    }
 
