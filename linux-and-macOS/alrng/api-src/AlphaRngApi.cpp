@@ -245,13 +245,11 @@ bool AlphaRngApi::retrieve_rng_status(unsigned char *status) {
 }
 
 /**
- * Retrieve raw (unprocessed) bytes from the AlphaRNG device and store those into a file.
- * It is used to evaluate the quality of the raw random byte stream produced by both noise sources
- * before any post-processing or conditioning.
- * The byte stream can also be used as an input for alternative post-processing or conditioning algorithms.
+ * Retrieve digitized raw (unprocessed) random bytes from the first noise source of the AlphaRNG device.
+ * It is used to evaluate the quality of the first random noise source.
  *
- * @param[out] out file_path_name file path name for storing entropy bytes
- * @param[in] num_bytes how many entropy bytes to retrieve, 0 - for continuous operation
+ * @param[out] out points to a byte arrays for storing the resulting bytes
+ * @param[in] out_length how many bytes to retrieve
  *
  * @return true for successful operation
  */
