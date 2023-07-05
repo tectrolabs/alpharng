@@ -1,4 +1,5 @@
 CC=gcc
+GPP=g++
 IDIR =./api-inc
 SDIR =./api-src
 
@@ -18,8 +19,9 @@ endif
 
 CPPFLAGS = -O2 -I$(IDIR) -Wall -Wextra $(OPENSSL_SUPPORT_INC) -std=c++11
 CFLAGS = -O2 -I$(IDIR) -Wall -Wextra
-LDFLAGS = -lcrypto $(OPENSSL_SUPPORT_LIB) -lstdc++
-ALLCPPLAGS= $(CPPFLAGS) $(LDFLAGS) 
+LDFLAGS = -lcrypto $(OPENSSL_SUPPORT_LIB)
+LDALLFLAGS = $(LDFLAGS) -lstdc++
+ALLCPPLAGS = $(CPPFLAGS) $(LDALLFLAGS)
 SRCS=$(wildcard $(SDIR)/*.cpp)
 OBJECTS = ./HmacSha1.o ./HealthTests.o ./UsbSerialDevice.o ./HmacSha256.o ./RsaCryptor.o ./RsaKeyRepo.o \
 	./ShaEntropyExtractor.o ./AlphaRngApiCWrapper.o ./Sha256.o ./AlphaRngApi.o ./HmacMD5.o ./AesCryptor.o \
@@ -46,9 +48,9 @@ $(CPPSAMPLE): sample.cpp
 	$(CC) sample.cpp $(SRCS) -o $(CPPSAMPLE) $(ALLCPPLAGS)
 
 $(CSAMPLE): sample_c.c
-	${CC} -c $(SRCS) $(CPPFLAGS) 
+	${GPP} -c $(SRCS) $(CPPFLAGS)
 	${CC} -c sample_c.c $(CFLAGS)
-	${CC} sample_c.o $(OBJECTS) -o $(CSAMPLE) $(LDFLAGS)
+	${GPP} sample_c.o $(OBJECTS) -o $(CSAMPLE) $(LDFLAGS)
 
 $(ALPERFTEST): alperftest.cpp
 	$(CC) alperftest.cpp $(SRCS) -o $(ALPERFTEST) $(ALLCPPLAGS)
