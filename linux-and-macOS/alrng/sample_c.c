@@ -33,7 +33,11 @@ int main() {
 	int i;
 
 	/* Create a connection context using RSA-2048, HMAC-SHA-160 and AES-256-GCM security attributes */
-	struct alrng_context *ctxt = alrng_create_default_ctxt(rsa_2048_key, hmac_sha_160, aes_256_gcm, "");
+	struct alrng_context *ctxt = alrng_create_ctxt(rsa_2048_key, hmac_sha_160, aes_256_gcm, "");
+	if (NULL == ctxt) {
+		printf("Could not create context\n");
+		return -1;
+	}
 
 	/* Connect to the first AlphaRNG device found */
 	call_ret_value = alrng_connect(ctxt, 0);
