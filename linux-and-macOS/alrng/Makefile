@@ -28,7 +28,6 @@ OBJECTS = ./HmacSha1.o ./HealthTests.o ./UsbSerialDevice.o ./HmacSha256.o ./RsaC
 	./Sha512.o ./AppArguments.o
 
 
-ALRNGDIAG = alrngdiag
 ALRNG = alrng
 ALPERFTEST = alperftest
 CPPSAMPLE = sample
