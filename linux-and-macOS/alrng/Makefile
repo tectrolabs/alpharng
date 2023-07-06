@@ -1,8 +1,7 @@
 CC=gcc
+GPP=g++
 IDIR =./api-inc
 SDIR =./api-src
-CPPFLAGS= -O2 -I$(IDIR) -lcrypto -Wall -Wextra -lstdc++ -std=c++11
-
 
 PREFIX = $(DESTDIR)/usr/local
 BINDIR = $(PREFIX)/bin
@@ -14,34 +13,49 @@ ifeq ($(OS),Darwin)
   else
    OPENSSL_DIR = /opt/homebrew/opt/openssl
   endif
-OPENSSL_SUPPORT = -I$(OPENSSL_DIR)/include -L$(OPENSSL_DIR)/lib
-CPPFLAGS += $(OPENSSL_SUPPORT) 
+OPENSSL_SUPPORT_INC = -I$(OPENSSL_DIR)/include
+OPENSSL_SUPPORT_LIB = -L$(OPENSSL_DIR)/lib
 endif
 
+CPPFLAGS = -O2 -I$(IDIR) -Wall -Wextra $(OPENSSL_SUPPORT_INC) -std=c++11
+CFLAGS = -O2 -I$(IDIR) -Wall -Wextra
+LDFLAGS = -lcrypto $(OPENSSL_SUPPORT_LIB)
+LDALLFLAGS = $(LDFLAGS) -lstdc++
+ALLCPPLAGS = $(CPPFLAGS) $(LDALLFLAGS)
 SRCS=$(wildcard $(SDIR)/*.cpp)
+OBJECTS = ./HmacSha1.o ./HealthTests.o ./UsbSerialDevice.o ./HmacSha256.o ./RsaCryptor.o ./RsaKeyRepo.o \
+	./ShaEntropyExtractor.o ./AlphaRngApiCWrapper.o ./Sha256.o ./AlphaRngApi.o ./HmacMD5.o ./AesCryptor.o \
+	./Sha512.o ./AppArguments.o
 
-ALRNGDIAG = alrngdiag
+
 ALRNG = alrng
 ALPERFTEST = alperftest
-SAMPLE = sample
+CPPSAMPLE = sample
+CSAMPLE = sample_c
+ALRNGDIAG = alrngdiag
 ALRNG_PSERVER = run-alrng-pserver.sh
 
-all: $(ALRNGDIAG) $(ALRNG) $(SAMPLE) $(ALPERFTEST)
+all: $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE)
 
 $(ALRNGDIAG): alrngdiag.cpp
-	$(CC) alrngdiag.cpp $(SRCS) -o $(ALRNGDIAG) $(CPPFLAGS)
+	$(CC) alrngdiag.cpp $(SRCS) -o $(ALRNGDIAG) $(ALLCPPLAGS)
 
 $(ALRNG): alrng.cpp
-	$(CC) alrng.cpp $(SRCS) -o $(ALRNG) $(CPPFLAGS)
+	$(CC) alrng.cpp $(SRCS) -o $(ALRNG) $(ALLCPPLAGS)
 
-$(SAMPLE): sample.cpp
-	$(CC) sample.cpp $(SRCS) -o $(SAMPLE) $(CPPFLAGS)
+$(CPPSAMPLE): sample.cpp
+	$(CC) sample.cpp $(SRCS) -o $(CPPSAMPLE) $(ALLCPPLAGS)
+
+$(CSAMPLE): sample_c.c
+	${GPP} -c $(SRCS) $(CPPFLAGS)
+	${CC} -c sample_c.c $(CFLAGS)
+	${GPP} sample_c.o $(OBJECTS) -o $(CSAMPLE) $(LDFLAGS)
 
 $(ALPERFTEST): alperftest.cpp
-	$(CC) alperftest.cpp $(SRCS) -o $(ALPERFTEST) $(CPPFLAGS)
+	$(CC) alperftest.cpp $(SRCS) -o $(ALPERFTEST) $(ALLCPPLAGS)
 
 clean:
-	rm -f *.o ; rm $(ALRNGDIAG) $(ALRNG) $(SAMPLE) $(ALPERFTEST)
+	rm -f *.o ; rm $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE)
 
 install:
 
