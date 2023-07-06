@@ -8,6 +8,10 @@
 
  This class implements a C wrapper around the C++ API for interacting with the AlphaRNG device over a secure data communication channel.
 
+ Most of C wrapper functions will return:
+	0 when invoked successfully;
+	-1 for invalid parameters;
+	-2 for other errors (invoke alrng_get_last_error() to retrieve the error message)
  */
 
 /**
@@ -43,7 +47,7 @@ typedef struct alrng_context alrng_context;
  * Cipher type:     AES-256-GCM
  * public key file: NONE
  *
- * @return pointer to the new context
+ * @return pointer to the new context or NULL if failed
  */
 alrng_context* alrng_create_default_ctxt();
 
@@ -55,7 +59,7 @@ alrng_context* alrng_create_default_ctxt();
  * @param[in] cipher_type AES cipher is used for securing the data communication within an AlphaRNG session
  * @param[in] pub_key_file file pathname with an alternative RSA 2048 public key, supplied by the manufacturer
  *
- * @return pointer to the new context
+ * @return pointer to the new context or NULL if failed
  */
 alrng_context* alrng_create_ctxt(enum alrng_rsa_key_type rsa_key_type, enum alrng_mac_type mac_type, enum alrng_cipher_type cipher_type, const char *pub_key_file);
 
@@ -91,8 +95,7 @@ int alrng_is_connected(alrng_context* ctxt);
 int alrng_disconnect(alrng_context* ctxt);
 
 /**
- * Destroy context that references AlphaRngApi class instance.
- * It can be invoked after calling alrng_disconnect(()
+ * Close any active connection and destroy context that references AlphaRngApi class instance.
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
  *
@@ -105,7 +108,7 @@ int alrng_destroy_ctxt(alrng_context* ctxt);
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
  *
- * @return number of AlphaRNG devices currently plugged in or negative number for failed operation
+ * @return number of AlphaRNG devices currently plugged in or a negative number for failed operation
  */
 int alrng_get_device_count(alrng_context* ctxt);
 

@@ -3,12 +3,12 @@
  *    @date 06/28/2023
  *    @version 1.0
  *
- *    @brief A C example that utilizes the C wrapper around the C++ API for communicating with the AlphaRNG device.
+ *    @brief A C example that utilizes a C wrapper around the C++ API for communicating with the AlphaRNG device.
  */
 #include "AlphaRngApiCWrapper.h"
 #include <stdio.h>
 
-/* AlphaRNG collected data */
+/* AlphaRNG retrieved data */
 struct rng_data {
 	int device_count;
 	unsigned char rng_status;
@@ -26,6 +26,9 @@ struct rng_data {
 	char device_path[128];
 } rng_data;
 
+//
+//  *** MAIN ***
+//
 int main() {
 
 	int call_ret_value;
@@ -202,24 +205,18 @@ int main() {
 
 error:
 	ret_val = call_ret_value;
-	ret_val = alrng_get_last_error(ctxt, rng_data.device_error_message, sizeof(rng_data.device_error_message));
-	if (!ret_val) {
-		printf("%s\n", rng_data.device_error_message);
+	if (ret_val == -1) {
+		printf("Function invoked with an invalid argument\n");
+	} else {
+		ret_val = alrng_get_last_error(ctxt, rng_data.device_error_message, sizeof(rng_data.device_error_message));
+		if (!ret_val) {
+			printf("%s\n", rng_data.device_error_message);
+		}
 	}
 
 
 close_and_exit:
-	/* Disconnect from the device */
-	if (!alrng_is_connected(ctxt)) {
-		ret_val = alrng_disconnect(ctxt);
-		if (ret_val) {
-			printf("Could not disconnect device 0\n");
-			alrng_destroy_ctxt(ctxt);
-			return ret_val;
-		}
-	}
-
-	/* Destroy allocated context */
+	/* Close any active connection and destroy allocated context */
 	ret_val = alrng_destroy_ctxt(ctxt);
 	if (ret_val) {
 		printf("Could not destroy the context\n");

@@ -8,6 +8,10 @@
 
  This class implements a C API wrapper around the C++ API for interacting with the AlphaRNG device over a secure data communication channel.
 
+ Most of C wrapper functions will return:
+	0 when invoked successfully;
+	-1 for invalid parameters;
+	-2 for other errors (invoke alrng_get_last_error() to retrieve the error message)
  */
 
 /**
@@ -18,8 +22,8 @@
  *
  *    @brief Implements a C wrapper around the C++ API for securely interacting with the AlphaRNG device.
  */
-#include "AlphaRngApi.h"
-#include "AlphaRngApiCWrapper.h"
+#include <AlphaRngApi.h>
+#include <AlphaRngApiCWrapper.h>
 
 using namespace alpharng;
 
@@ -33,7 +37,7 @@ extern "C" {
  * Cipher type:     AES-256-GCM
  * public key file: NONE
  *
- * @return pointer to the new context
+ * @return pointer to the new context or NULL if failed
  */
 alrng_context* alrng_create_default_ctxt() {
 	return (alrng_context*) new (nothrow) AlphaRngApi();
@@ -47,7 +51,7 @@ alrng_context* alrng_create_default_ctxt() {
  * @param[in] cipher_type AES cipher is used for securing the data communication within an AlphaRNG session
  * @param[in] pub_key_file file pathname with an alternative RSA 2048 public key, supplied by the manufacturer
  *
- * @return pointer to the new context
+ * @return pointer to the new context or NULL if failed
  */
 alrng_context* alrng_create_ctxt(enum alrng_rsa_key_type rsa_key_type, enum alrng_mac_type mac_type, enum alrng_cipher_type cipher_type, const char *pub_key_file) {
 	MacType e_mac_type;
@@ -155,8 +159,7 @@ int alrng_disconnect(alrng_context *ctxt) {
 }
 
 /**
- * Destroy context that references AlphaRngApi class instance.
- * It can be invoked after calling alrng_disconnect(()
+ * Close any active connection and destroy context that references AlphaRngApi class instance.
  *
  * @return 0 for successful operation
  */
@@ -166,6 +169,7 @@ int alrng_destroy_ctxt(alrng_context *ctxt) {
 		return -1;
 	}
 	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	// Close any existing connection to a device
 	api->disconnect();
 	delete api;
 	return 0;
@@ -174,7 +178,7 @@ int alrng_destroy_ctxt(alrng_context *ctxt) {
 /**
  * Scan for connected AlphaRNG devices and return the count
  *
- * @return number of AlphaRNG devices currently plugged in or negative number for failed operation
+ * @return number of AlphaRNG devices currently plugged in or a negative number for failed operation
  */
 int alrng_get_device_count(alrng_context* ctxt) {
 	if (nullptr == ctxt) {
@@ -520,7 +524,7 @@ int alrng_get_test_data(alrng_context* ctxt, unsigned char *out, int out_length)
  * @return 0 for successful operation
  */
 int alrng_entropy_to_file(alrng_context* ctxt, const char *file_path_name, int64_t num_bytes) {
-	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 1 ) {
+	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 0 ) {
 		return -1;
 	}
 	AlphaRngApi *api = (AlphaRngApi*) ctxt;
@@ -541,7 +545,7 @@ int alrng_entropy_to_file(alrng_context* ctxt, const char *file_path_name, int64
  * @return 0 for successful operation
  */
 int alrng_extract_sha256_entropy_to_file(alrng_context* ctxt, const char *file_path_name, int64_t num_bytes) {
-	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 1 ) {
+	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 0 ) {
 		return -1;
 	}
 	AlphaRngApi *api = (AlphaRngApi*) ctxt;
@@ -562,7 +566,7 @@ int alrng_extract_sha256_entropy_to_file(alrng_context* ctxt, const char *file_p
  * @return 0 for successful operation
  */
 int alrng_extract_sha512_entropy_to_file(alrng_context* ctxt, const char *file_path_name, int64_t num_bytes) {
-	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 1 ) {
+	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 0 ) {
 		return -1;
 	}
 	AlphaRngApi *api = (AlphaRngApi*) ctxt;
@@ -583,7 +587,7 @@ int alrng_extract_sha512_entropy_to_file(alrng_context* ctxt, const char *file_p
  * @return 0 for successful operation
  */
 int alrng_noise_source_one_to_file(alrng_context* ctxt, const char *file_path_name, const int64_t num_bytes) {
-	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 1 ) {
+	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 0 ) {
 		return -1;
 	}
 	AlphaRngApi *api = (AlphaRngApi*) ctxt;
@@ -604,7 +608,7 @@ int alrng_noise_source_one_to_file(alrng_context* ctxt, const char *file_path_na
  * @return 0 for successful operation
  */
 int alrng_noise_source_two_to_file(alrng_context* ctxt, const char *file_path_name, const int64_t num_bytes) {
-	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 1 ) {
+	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 0 ) {
 		return -1;
 	}
 	AlphaRngApi *api = (AlphaRngApi*) ctxt;
@@ -626,7 +630,7 @@ int alrng_noise_source_two_to_file(alrng_context* ctxt, const char *file_path_na
  * @return 0 for successful operation
  */
 int alrng_noise_to_file(alrng_context* ctxt, const char *file_path_name, int64_t num_bytes) {
-	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 1 ) {
+	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 0 ) {
 		return -1;
 	}
 	AlphaRngApi *api = (AlphaRngApi*) ctxt;
