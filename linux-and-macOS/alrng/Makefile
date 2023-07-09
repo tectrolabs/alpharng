@@ -22,9 +22,9 @@ CFLAGS = -O2 -I$(IDIR) -Wall -Wextra
 LDFLAGS = -lcrypto $(OPENSSL_SUPPORT_LIB)
 LDCPPFLAGS = $(LDFLAGS) -lstdc++
 SRCS=$(wildcard $(SDIR)/*.cpp)
-OBJECTS = ./HmacSha1.o ./HealthTests.o ./UsbSerialDevice.o ./HmacSha256.o ./RsaCryptor.o ./RsaKeyRepo.o \
-	./ShaEntropyExtractor.o ./AlphaRngApiCWrapper.o ./Sha256.o ./AlphaRngApi.o ./HmacMD5.o ./AesCryptor.o \
-	./Sha512.o ./AppArguments.o
+OBJECTS = HmacSha1.o HealthTests.o UsbSerialDevice.o HmacSha256.o RsaCryptor.o RsaKeyRepo.o \
+	ShaEntropyExtractor.o AlphaRngApiCWrapper.o Sha256.o AlphaRngApi.o HmacMD5.o AesCryptor.o \
+	Sha512.o AppArguments.o
 
 
 ALRNG = alrng
