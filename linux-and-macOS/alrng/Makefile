@@ -110,7 +110,7 @@ AppArguments.o:
 
 
 clean:
-	rm *.o ; rm $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE)
+	rm -fr *.o ; rm -fr $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE)
 
 install:
 	install -d $(BINDIR)
