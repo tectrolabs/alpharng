@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,7 +12,7 @@
 
 /**
  *    @file UsbSerialDevice.h
- *    @date 08/27/2022
+ *    @date 7/8/2023
  *    @Author: Andrian Belinski
  *    @version 1.1
  *
@@ -45,7 +45,7 @@ public:
 	string get_error_log() override;
 	void clear_error_log() override;
 	int send_data(unsigned char *snd, int size_snd, int *bytes_sent) override;
-	int receive_data(unsigned char *rcv, int size_receive, int *bytes_rceived) override;
+	int receive_data(unsigned char *rcv, int size_receive, int *bytes_received) override;
 	int get_device_count() override;
 	void scan_available_devices() override;
 	bool retrieve_device_path(char *dev_path_name, int max_dev_path_name_bytes, int device_number) override;
