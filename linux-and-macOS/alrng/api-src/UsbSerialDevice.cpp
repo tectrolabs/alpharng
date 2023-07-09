@@ -1,5 +1,4 @@
-/**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+/**1 Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,7 +11,7 @@
 
 /**
  *    @file UsbSerialDevice.cpp
- *    @date 01/10/2020
+ *    @date 7/8/2023
  *    @Author: Andrian Belinski
  *    @version 1.1
  *
@@ -176,12 +175,12 @@ void UsbSerialDevice::purge_comm_data() {
  *
  * @param[out] rcv points to location for the bytes to receive
  * @param[in] size_receive expected amount of bytes to receive
- * @param[out] bytes_rceived point to a location to store the actual bytes received
+ * @param[out] bytes_received point to a location to store the actual bytes received
  *
  * @return 0 for successful operation, -7 for operation timeout or other error value
  *
  */
-int UsbSerialDevice::receive_data(unsigned char *rcv, int size_receive, int *bytes_rceived) {
+int UsbSerialDevice::receive_data(unsigned char *rcv, int size_receive, int *bytes_received) {
 	int return_status = 0;
 	if (!is_connected()) {
 		return -1;
@@ -203,7 +202,7 @@ int UsbSerialDevice::receive_data(unsigned char *rcv, int size_receive, int *byt
 		}
 		actual_bytes_received += received_count;
 	  }
-	*bytes_rceived = actual_bytes_received;
+	*bytes_received = actual_bytes_received;
 	return return_status;
 }
 

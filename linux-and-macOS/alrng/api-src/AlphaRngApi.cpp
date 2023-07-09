@@ -12,7 +12,7 @@
 
 /**
  *    @file AlphaRngApi.cpp
- *    @date 07/5/2023
+ *    @date 07/8/2023
  *    @Author: Andrian Belinski
  *    @version 1.6
  *
@@ -620,8 +620,8 @@ bool AlphaRngApi::get_payload_bytes_with_retry(char cmd, unsigned char *out, int
 
 		int actual_bytes_sent;
 		if (!m_device->send_data((unsigned char *)&cmd, 1, &actual_bytes_sent)) {
-			int actual_bytes_rceived;
-			if (!m_device->receive_data(out, out_length, &actual_bytes_rceived)) {
+			int actual_bytes_received;
+			if (!m_device->receive_data(out, out_length, &actual_bytes_received)) {
 				return true;
 			} else {
 				m_error_log_oss << "Could not receive response from device. " << endl;
@@ -1016,8 +1016,8 @@ bool AlphaRngApi::clear_receiver() {
 		return false;
 	}
 	unsigned char clear_buffer[128];
-	int bytes_rceived;
-	while (!m_device->receive_data(clear_buffer, sizeof(clear_buffer), &bytes_rceived));
+	int bytes_received;
+	while (!m_device->receive_data(clear_buffer, sizeof(clear_buffer), &bytes_received));
 	return true;
 }
 

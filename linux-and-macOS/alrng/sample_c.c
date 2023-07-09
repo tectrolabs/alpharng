@@ -1,11 +1,11 @@
 /**
  *    @file sample.c
- *    @date 06/28/2023
- *    @version 1.0
+ *    @date 7/8/2023
+ *    @version 1.1
  *
  *    @brief A C example that utilizes a C wrapper around the C++ API for communicating with the AlphaRNG device.
  */
-#include "AlphaRngApiCWrapper.h"
+#include <AlphaRngApiCWrapper.h>
 #include <stdio.h>
 
 /* AlphaRNG retrieved data */

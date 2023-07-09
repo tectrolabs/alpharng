@@ -6,12 +6,10 @@ SDIR =./api-src
 PREFIX = $(DESTDIR)/usr/local
 BINDIR = $(PREFIX)/bin
 
-
 CPPFLAGS = -O2 -I$(IDIR) -Wall -Wextra -std=c++11
 CFLAGS = -O2 -I$(IDIR) -Wall -Wextra
-LDFLAGS = -lcrypto
-LDALLFLAGS = $(LDFLAGS) -lstdc++
-ALLCPPLAGS = $(CPPFLAGS) $(LDALLFLAGS)
+LDFLAGS = -lcrypto $(OPENSSL_SUPPORT_LIB)
+LDCPPFLAGS = $(LDFLAGS) -lstdc++
 SRCS!=ls ${SDIR}/*.cpp
 OBJECTS = ./HmacSha1.o ./HealthTests.o ./UsbSerialDevice.o ./HmacSha256.o ./RsaCryptor.o ./RsaKeyRepo.o \
 	./ShaEntropyExtractor.o ./AlphaRngApiCWrapper.o ./Sha256.o ./AlphaRngApi.o ./HmacMD5.o ./AesCryptor.o \
@@ -25,27 +23,83 @@ CSAMPLE = sample_c
 ALRNGDIAG = alrngdiag
 ALRNG_PSERVER = run-alrng-pserver.sh
 
-all: $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE)
+all: $(ALRNGDIAG) $(ALRNG) $(ALPERFTEST) $(CPPSAMPLE) $(CSAMPLE)
 
-$(ALRNGDIAG): alrngdiag.cpp
-	$(CC) alrngdiag.cpp $(SRCS) -o $(ALRNGDIAG) $(ALLCPPLAGS)
+$(ALRNGDIAG): $(ALRNGDIAG).cpp $(OBJECTS)
+	@echo
+	@echo "Creating alrngdiag ..."
+	$(CC) -c $(ALRNGDIAG).cpp $(CPPFLAGS)
+	$(CC) $(ALRNGDIAG).o $(OBJECTS) -o $(ALRNGDIAG) $(LDCPPFLAGS)
 
-$(ALRNG): alrng.cpp
-	$(CC) alrng.cpp $(SRCS) -o $(ALRNG) $(ALLCPPLAGS)
+$(ALRNG): $(ALRNG).cpp $(OBJECTS)
+	@echo
+	@echo "Creating alrng ..."
+	$(CC) -c $(ALRNG).cpp $(CPPFLAGS)
+	$(CC) $(ALRNG).o $(OBJECTS) -o $(ALRNG) $(LDCPPFLAGS)
 
-$(CPPSAMPLE): sample.cpp
-	$(CC) sample.cpp $(SRCS) -o $(CPPSAMPLE) $(ALLCPPLAGS)
+$(ALPERFTEST): $(ALPERFTEST).cpp $(OBJECTS)
+	@echo
+	@echo "Creating alperftest ..."
+	$(CC) -c $(ALPERFTEST).cpp $(CPPFLAGS)
+	$(CC) $(ALPERFTEST).o $(OBJECTS) -o $(ALPERFTEST) $(LDCPPFLAGS)
 
-$(CSAMPLE): sample_c.c
-	${GPP} -c $(SRCS) $(CPPFLAGS)
-	${CC} -c sample_c.c $(CFLAGS)
-	${GPP} sample_c.o $(OBJECTS) -o $(CSAMPLE) $(LDFLAGS)
+$(CPPSAMPLE): $(CPPSAMPLE).cpp $(OBJECTS)
+	@echo
+	@echo "Creating sample ..."
+	$(CC) -c $(CPPSAMPLE).cpp $(CPPFLAGS)
+	$(CC) $(CPPSAMPLE).o $(OBJECTS) -o $(CPPSAMPLE) $(LDCPPFLAGS)
 
-$(ALPERFTEST): alperftest.cpp
-	$(CC) alperftest.cpp $(SRCS) -o $(ALPERFTEST) $(ALLCPPLAGS)
+$(CSAMPLE): $(CSAMPLE).c $(OBJECTS)
+	@echo
+	@echo "Creating sample_c ..."
+	$(CC) -c $(CSAMPLE).c $(CFLAGS)
+	$(GPP) $(CSAMPLE).o $(OBJECTS) -o $(CSAMPLE) $(LDFLAGS)
+
+HmacSha1.o:
+	$(GPP) -c $(SDIR)/HmacSha1.cpp $(CPPFLAGS)
+
+HealthTests.o:
+	$(GPP) -c $(SDIR)/HealthTests.cpp $(CPPFLAGS)
+
+UsbSerialDevice.o:
+	$(GPP) -c $(SDIR)/UsbSerialDevice.cpp $(CPPFLAGS)
+
+HmacSha256.o:
+	$(GPP) -c $(SDIR)/HmacSha256.cpp $(CPPFLAGS)
+
+RsaCryptor.o:
+	$(GPP) -c $(SDIR)/RsaCryptor.cpp $(CPPFLAGS)
+
+RsaKeyRepo.o:
+	$(GPP) -c $(SDIR)/RsaKeyRepo.cpp $(CPPFLAGS)
+
+ShaEntropyExtractor.o:
+	$(GPP) -c $(SDIR)/ShaEntropyExtractor.cpp $(CPPFLAGS)
+
+AlphaRngApiCWrapper.o:
+	$(GPP) -c $(SDIR)/AlphaRngApiCWrapper.cpp $(CPPFLAGS)
+
+Sha256.o:
+	$(GPP) -c $(SDIR)/Sha256.cpp $(CPPFLAGS)
+
+AlphaRngApi.o:
+	$(GPP) -c $(SDIR)/AlphaRngApi.cpp $(CPPFLAGS)
+
+HmacMD5.o:
+	$(GPP) -c $(SDIR)/HmacMD5.cpp $(CPPFLAGS)
+
+AesCryptor.o:
+	$(GPP) -c $(SDIR)/AesCryptor.cpp $(CPPFLAGS)
+
+Sha512.o:
+	$(GPP) -c $(SDIR)/Sha512.cpp $(CPPFLAGS)
+
+AppArguments.o:
+	$(GPP) -c $(SDIR)/AppArguments.cpp $(CPPFLAGS)
+
 
 clean:
-	rm -f *.o ; rm $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE)
+	rm *.o ; rm $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE)
 
 install:
 	install $(ALRNGDIAG) $(BINDIR)/$(ALRNGDIAG)
