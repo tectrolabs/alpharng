@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,21 +12,20 @@
 
 /**
  *    @file RsaKeyRepo.cpp
- *    @date 01/10/2020
+ *    @date 7/15/2023
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.3
  *
  *    @brief Used for storing hard-coded RSA 2048 and 1024 public keys used for establishing a secure connection with the AlphaRNG device.
  */
 
-#include "pch.h"
 #include <RsaKeyRepo.h>
 
 namespace alpharng {
 
 RsaKeyRepo::RsaKeyRepo() {
 
-	c_rsapub_2048_pem = new unsigned char[c_rsapub_2048_pem_len] {
+	c_rsapub_2048_pem = new (nothrow) unsigned char[c_rsapub_2048_pem_len] {
 		  0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x42, 0x45, 0x47, 0x49, 0x4e, 0x20, 0x52,
 		  0x53, 0x41, 0x20, 0x50, 0x55, 0x42, 0x4c, 0x49, 0x43, 0x20, 0x4b, 0x45,
 		  0x59, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x0a, 0x4d, 0x49, 0x49, 0x42, 0x43,
@@ -65,7 +64,7 @@ RsaKeyRepo::RsaKeyRepo() {
 		  0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x0a
 	};
 
-	c_rsapub_1024_pem = new unsigned char [c_rsapub_1024_pem_len] {
+	c_rsapub_1024_pem = new (nothrow) unsigned char [c_rsapub_1024_pem_len] {
 		  0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x42, 0x45, 0x47, 0x49, 0x4e, 0x20, 0x52,
 		  0x53, 0x41, 0x20, 0x50, 0x55, 0x42, 0x4c, 0x49, 0x43, 0x20, 0x4b, 0x45,
 		  0x59, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x0a, 0x4d, 0x49, 0x47, 0x4a, 0x41,
@@ -91,8 +90,12 @@ RsaKeyRepo::RsaKeyRepo() {
 }
 
 RsaKeyRepo::~RsaKeyRepo() {
-	delete [] c_rsapub_2048_pem;
-	delete [] c_rsapub_1024_pem;
+	if (c_rsapub_2048_pem != nullptr) {
+		delete [] c_rsapub_2048_pem;
+	}
+	if (c_rsapub_1024_pem != nullptr) {
+		delete [] c_rsapub_1024_pem;
+	}
 }
 
 } /* namespace alpharng */

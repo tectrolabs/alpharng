@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,14 +12,13 @@
 
 /**
  *    @file AlphaRngApi.cpp
- *    @date 08/27/2022
+ *    @date 7/15/2023
  *    @Author: Andrian Belinski
- *    @version 1.5
+ *    @version 1.7
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
 
-#include "pch.h"
 #include <AlphaRngApi.h>
 
 namespace alpharng {
@@ -245,13 +244,11 @@ bool AlphaRngApi::retrieve_rng_status(unsigned char *status) {
 }
 
 /**
- * Retrieve raw (unprocessed) bytes from the AlphaRNG device and store those into a file.
- * It is used to evaluate the quality of the raw random byte stream produced by both noise sources
- * before any post-processing or conditioning.
- * The byte stream can also be used as an input for alternative post-processing or conditioning algorithms.
+ * Retrieve digitized raw (unprocessed) random bytes from the first noise source of the AlphaRNG device.
+ * It is used to evaluate the quality of the first random noise source.
  *
- * @param[out] out file_path_name file path name for storing entropy bytes
- * @param[in] num_bytes how many entropy bytes to retrieve, 0 - for continuous operation
+ * @param[out] out points to a byte arrays for storing the resulting bytes
+ * @param[in] out_length how many bytes to retrieve
  *
  * @return true for successful operation
  */
@@ -622,8 +619,8 @@ bool AlphaRngApi::get_payload_bytes_with_retry(char cmd, unsigned char *out, int
 
 		int actual_bytes_sent;
 		if (!m_device->send_data((unsigned char *)&cmd, 1, &actual_bytes_sent)) {
-			int actual_bytes_rceived;
-			if (!m_device->receive_data(out, out_length, &actual_bytes_rceived)) {
+			int actual_bytes_received;
+			if (!m_device->receive_data(out, out_length, &actual_bytes_received)) {
 				return true;
 			} else {
 				m_error_log_oss << "Could not receive response from device. " << endl;
@@ -1018,8 +1015,8 @@ bool AlphaRngApi::clear_receiver() {
 		return false;
 	}
 	unsigned char clear_buffer[128];
-	int bytes_rceived;
-	while (!m_device->receive_data(clear_buffer, sizeof(clear_buffer), &bytes_rceived));
+	int bytes_received;
+	while (!m_device->receive_data(clear_buffer, sizeof(clear_buffer), &bytes_received));
 	return true;
 }
 

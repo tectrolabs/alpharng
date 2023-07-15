@@ -6,6 +6,7 @@ SDIR =./api-src
 PREFIX = $(DESTDIR)/usr/local
 BINDIR = $(PREFIX)/bin
 
+CLANGSTD = -ansi
 CPPFLAGS = -O2 -I$(IDIR) -Wall -Wextra -std=c++11
 CFLAGS = -O2 -I$(IDIR) -Wall -Wextra
 LDFLAGS = -lcrypto $(OPENSSL_SUPPORT_LIB)
@@ -52,7 +53,7 @@ $(CPPSAMPLE): $(CPPSAMPLE).cpp $(OBJECTS)
 $(CSAMPLE): $(CSAMPLE).c $(OBJECTS)
 	@echo
 	@echo "Creating sample_c ..."
-	$(CC) -c $(CSAMPLE).c $(CFLAGS)
+	$(CC) -c $(CSAMPLE).c $(CFLAGS) $(CLANGSTD)
 	$(GPP) $(CSAMPLE).o $(OBJECTS) -o $(CSAMPLE) $(LDFLAGS)
 
 HmacSha1.o:

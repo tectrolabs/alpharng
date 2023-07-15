@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
  /**
   *    @file entropy-client-test.cpp
-  *    @date 08/28/2021
+  *    @date 7/15/2023
   *    @Author: Andrian Belinski
-  *    @version 1.2
+  *    @version 1.3
   *
   *    @brief A test program for checking the connectivity to the entropy server and for measuring data transfer performance.
   */

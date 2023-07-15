@@ -12,14 +12,13 @@
 
 /**
  *    @file AlphaRngApi.cpp
- *    @date 07/8/2023
+ *    @date 7/15/2023
  *    @Author: Andrian Belinski
- *    @version 1.6
+ *    @version 1.7
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
 
-#include "pch.h"
 #include <AlphaRngApi.h>
 
 namespace alpharng {
