@@ -12,14 +12,13 @@
 
 /**
  *    @file HealthTests.cpp
- *    @date 7/8/2023
+ *    @date 7/15/2023
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implementation for 'Repetition Count' (RCT) and 'Adaptive Proportion' (APT) tests as described in NIST SP.800-90B
  */
 
-#include "pch.h"
 #include <HealthTests.h>
 
 namespace alpharng {

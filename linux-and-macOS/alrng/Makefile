@@ -17,8 +17,9 @@ OPENSSL_SUPPORT_INC = -I$(OPENSSL_DIR)/include
 OPENSSL_SUPPORT_LIB = -L$(OPENSSL_DIR)/lib
 endif
 
-CPPFLAGS = -O2 -I$(IDIR) -Wall -Wextra $(OPENSSL_SUPPORT_INC) -std=c++11
+CLANGSTD = -ansi
 CFLAGS = -O2 -I$(IDIR) -Wall -Wextra
+CPPFLAGS = $(CFLAGS) $(OPENSSL_SUPPORT_INC) -std=c++11
 LDFLAGS = -lcrypto $(OPENSSL_SUPPORT_LIB)
 LDCPPFLAGS = $(LDFLAGS) -lstdc++
 SRCS=$(wildcard $(SDIR)/*.cpp)
@@ -63,7 +64,7 @@ $(CPPSAMPLE): $(CPPSAMPLE).cpp $(OBJECTS)
 $(CSAMPLE): $(CSAMPLE).c $(OBJECTS)
 	@echo
 	@echo "Creating sample_c ..."
-	$(CC) -c $(CSAMPLE).c $(CFLAGS)
+	$(CC) -c $(CSAMPLE).c $(CFLAGS) $(CLANGSTD)
 	$(GPP) $(CSAMPLE).o $(OBJECTS) -o $(CSAMPLE) $(LDFLAGS)
 
 HmacSha1.o:

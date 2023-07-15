@@ -1,7 +1,7 @@
 /**
  *    @file sample.c
- *    @date 7/8/2023
- *    @version 1.1
+ *    @date 7/15/2023
+ *    @version 1.2
  *
  *    @brief A C example that utilizes a C wrapper around the C++ API for communicating with the AlphaRNG device.
  */
@@ -26,9 +26,9 @@ struct rng_data {
 	char device_path[128];
 } rng_data;
 
-//
-//  *** MAIN ***
-//
+/*
+  *** MAIN ***
+*/
 int main() {
 
 	int call_ret_value;
