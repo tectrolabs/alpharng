@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,14 +12,13 @@
 
 /**
  *    @file HealthTests.cpp
- *    @date 01/10/2020
+ *    @date 7/15/2023
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implementation for 'Repetition Count' (RCT) and 'Adaptive Proportion' (APT) tests as described in NIST SP.800-90B
  */
 
-#include "pch.h"
 #include <HealthTests.h>
 
 namespace alpharng {
@@ -174,7 +173,7 @@ void HealthTests::rct_restart() {
 }
 
 /**
- * Restart all the test.
+ * Restart all the tests.
  * Should be called when testing a new round (block) of data.
  */
 void HealthTests::restart() {

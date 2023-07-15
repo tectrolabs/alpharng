@@ -14,7 +14,7 @@
  *    @file AppArguments.h
  *    @date 7/15/2023
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief Parse application command line arguments
  */

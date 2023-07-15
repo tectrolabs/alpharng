@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,7 +12,7 @@
 
 /**
  *    @file DeviceInterface.h
- *    @date 08/27/2022
+ *    @date 7/8/2023
  *    @Author: Andrian Belinski
  *    @version 1.2
  *
@@ -37,7 +37,7 @@ public:
 	virtual string get_error_log() = 0;
 	virtual void clear_error_log() = 0;
 	virtual int send_data(unsigned char *snd, int size_snd, int *bytes_sent) = 0;
-	virtual int receive_data(unsigned char *rcv, int size_receive, int *bytes_rceived) = 0;
+	virtual int receive_data(unsigned char *rcv, int size_receive, int *bytes_received) = 0;
 	virtual int get_device_count() = 0;
 	virtual void scan_available_devices() = 0;
 	virtual bool retrieve_device_path(char *dev_path_name, int max_dev_path_name_bytes, int device_number) = 0;

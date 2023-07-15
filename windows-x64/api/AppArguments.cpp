@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,13 +12,12 @@
 
 /**
  *    @file AppArguments.h
- *    @date 03/06/2021
+ *    @date 7/15/2023
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.3
  *
  *    @brief Parse application command line arguments
  */
-#include "pch.h"
 #include <AppArguments.h>
 
 namespace alpharng {

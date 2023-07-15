@@ -127,7 +127,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>.;%OPENSSL_INSTALL_DIR%\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
@@ -147,7 +147,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>.;%OPENSSL_INSTALL_DIR%\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
@@ -164,6 +164,7 @@
   <ItemGroup>
     <ClInclude Include="AesCryptor.h" />
     <ClInclude Include="AlphaRngApi.h" />
+    <ClInclude Include="AlphaRngApiCWrapper.h" />
     <ClInclude Include="AlphaRngConfig.h" />
     <ClInclude Include="AppArguments.h" />
     <ClInclude Include="DeviceInterface.h" />
@@ -174,7 +175,6 @@
     <ClInclude Include="HmacMD5.h" />
     <ClInclude Include="HmacSha1.h" />
     <ClInclude Include="HmacSha256.h" />
-    <ClInclude Include="pch.h" />
     <ClInclude Include="RsaCryptor.h" />
     <ClInclude Include="RsaKeyRepo.h" />
     <ClInclude Include="Sha256.h" />
@@ -187,18 +187,13 @@
   <ItemGroup>
     <ClCompile Include="AesCryptor.cpp" />
     <ClCompile Include="AlphaRngApi.cpp" />
+    <ClCompile Include="AlphaRngApiCWrapper.cpp" />
     <ClCompile Include="AppArguments.cpp" />
     <ClCompile Include="EntropyServerConnector.cpp" />
     <ClCompile Include="HealthTests.cpp" />
     <ClCompile Include="HmacMD5.cpp" />
     <ClCompile Include="HmacSha1.cpp" />
     <ClCompile Include="HmacSha256.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="RsaCryptor.cpp" />
     <ClCompile Include="RsaKeyRepo.cpp" />
     <ClCompile Include="Sha256.cpp" />
