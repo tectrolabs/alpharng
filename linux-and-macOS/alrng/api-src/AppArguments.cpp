@@ -12,13 +12,15 @@
 
 /**
  *    @file AppArguments.h
- *    @date 7/15/2023
+ *    @date 9/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief Parse application command line arguments
  */
 #include <AppArguments.h>
+
+using namespace std;
 
 namespace alpharng {
 
@@ -73,9 +75,6 @@ void AppArguments::load_arguments(const int argc, const char **argv) {
 void AppArguments::clear_error_log() {
 	m_error_log_oss.str("");
 	m_error_log_oss.clear();
-}
-
-AppArguments::~AppArguments() {
 }
 
 } /* namespace alpharng */

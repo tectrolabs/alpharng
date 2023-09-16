@@ -11,9 +11,9 @@
 
 /**
  *    @file UsbSerialDevice.cpp
- *    @date 7/8/2023
+ *    @date 9/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implements the API for communicating with the CDC USB interface
  */
@@ -24,9 +24,6 @@ namespace alpharng {
 
 
 UsbSerialDevice::UsbSerialDevice() {
-	this-> m_device_connected = false;
-	this->m_fd = -1;
-	m_active_device_count = 0;
 	clear_error_log();
 }
 
@@ -63,13 +60,13 @@ bool UsbSerialDevice::connect(const char *device_path_name) {
 	this->m_fd = open(device_path_name, O_RDWR | O_NOCTTY);
 	if (this->m_fd == -1) {
 		m_error_log_oss << "Could not open serial device: " << device_path_name << ". ";
-		return false;;
+		return false;
 	}
 
 	// Lock the device
 	this->m_lock = flock(this->m_fd, LOCK_EX | LOCK_NB);
 	if (this->m_lock != 0) {
-		m_error_log_oss << "Could not lock device: " << device_path_name << "." << endl;
+		m_error_log_oss << "Could not lock device: " << device_path_name << "." << std::endl;
 		close(m_fd);
 		return false;
 	}
@@ -105,7 +102,7 @@ bool UsbSerialDevice::connect(const char *device_path_name) {
 bool UsbSerialDevice::set_connection_timeout(int milliseconds) {
 	// Set time out to 100 milliseconds for read serial device operations
 	int conn_timeout = milliseconds < 100 ? 1 : milliseconds / 100;
-	m_opts.c_cc[VTIME] = conn_timeout;
+	m_opts.c_cc[VTIME] = (cc_t)conn_timeout;
 	m_opts.c_cc[VMIN] = 0;
 
 	int retVal = tcsetattr(m_fd, TCSANOW, &m_opts);
@@ -156,15 +153,15 @@ int UsbSerialDevice::send_data(unsigned char *snd, int size_snd, int *bytes_sent
 	}
 	fsync(this->m_fd);
 
-	*bytes_sent = ret_val;
+	*bytes_sent = (int)ret_val;
 	return 0;
 }
 
-string UsbSerialDevice::get_error_log() {
+std::string UsbSerialDevice::get_error_log() {
 	return m_error_log_oss.str();
 }
 
-void UsbSerialDevice::purge_comm_data() {
+void UsbSerialDevice::purge_comm_data() const {
 	if (this->m_fd != -1) {
 		tcflush(this->m_fd, TCIOFLUSH);
 	}
@@ -187,22 +184,23 @@ int UsbSerialDevice::receive_data(unsigned char *rcv, int size_receive, int *byt
 	}
 
 	size_t actual_bytes_received = 0;
-	while (actual_bytes_received < (size_t)size_receive) {
+	bool inLoop = true;
+	while (actual_bytes_received < (size_t)size_receive && inLoop) {
 		ssize_t received_count = read(this->m_fd, rcv + actual_bytes_received, size_receive - actual_bytes_received);
 		if (received_count < 0) {
 			set_error_message("Could not receive data from serial device");
 			return_status = -1;
-			break;
-		}
-		if (received_count == 0) {
+			inLoop = false;
+		} else if (received_count == 0) {
 			// Operation timed out
 			m_error_log_oss << "expected to receive " << size_receive << " bytes, actual received " << actual_bytes_received << ".";
 			return_status = -7;
-			break;
+			inLoop = false;
+		} else {
+			actual_bytes_received += received_count;
 		}
-		actual_bytes_received += received_count;
 	  }
-	*bytes_received = actual_bytes_received;
+	*bytes_received = (int)actual_bytes_received;
 	return return_status;
 }
 
@@ -245,7 +243,7 @@ void UsbSerialDevice::scan_available_devices() {
 		}
 		char *tty = line;
 #endif
-		int size_tty = strlen(tty);
+		int size_tty = (int)strlen(tty);
 		for (int i = 0; i < size_tty; i++) {
 			if(tty[i] < 33 || tty[i] > 125) {
 				tty[i] = 0;
@@ -330,11 +328,11 @@ int UsbSerialDevice::get_device_count() {
  */
 bool UsbSerialDevice::retrieve_device_path(char *dev_path_name, int max_dev_path_name_bytes, int device_number) {
 	if (device_number >= m_active_device_count) {
-		m_error_log_oss << "Device number: " << device_number << " exceeds the maximum limit: " << m_active_device_count  << "." << endl;
+		m_error_log_oss << "Device number: " << device_number << " exceeds the maximum limit: " << m_active_device_count  << "." << std::endl;
 		return false;
 	}
 	if(max_dev_path_name_bytes < c_max_size_device_name - 1) {
-		m_error_log_oss << "Destination size too small: " << max_dev_path_name_bytes  << "." << endl;	
+		m_error_log_oss << "Destination size too small: " << max_dev_path_name_bytes  << "." << std::endl;
 		return false;
 	}
 	memset(dev_path_name, 0, max_dev_path_name_bytes);

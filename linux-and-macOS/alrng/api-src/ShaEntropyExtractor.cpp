@@ -12,9 +12,9 @@
 
 /**
  *    @file ShaEntropyExtractor.cpp
- *    @date 78/2023
+ *    @date 9/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Provides an API for extracting entropy from the AlphaRNG device for seeding a DRBG.
  */
@@ -32,24 +32,24 @@ ShaEntropyExtractor::ShaEntropyExtractor(AlphaRngApi *rng_api, ShaInterface *sha
 
 bool ShaEntropyExtractor::initialize() {
 	if (m_is_initialized) {
-		m_error_log_oss << "ShaEntropyExtractor.initialize() already initialized" << endl;
+		m_error_log_oss << "ShaEntropyExtractor.initialize() already initialized" << std::endl;
 		return false;
 	}
 
 	if (m_in_out_ratio < 1) {
-		m_error_log_oss << "ShaEntropyExtractor.initialize(): invalid input/output ratio " << m_in_out_ratio << ", must be 1 or grater value" << endl;
+		m_error_log_oss << "ShaEntropyExtractor.initialize(): invalid input/output ratio " << m_in_out_ratio << ", must be 1 or grater value" << std::endl;
 		return false;
 	}
 
-	m_noise_buff = new (nothrow) unsigned char [m_noise_buff_bytes];
+	m_noise_buff = new (std::nothrow) unsigned char [m_noise_buff_bytes];
 	if (m_noise_buff == nullptr) {
-		m_error_log_oss << "ShaEntropyExtractor.initialize(): could not allocate " << m_noise_buff_bytes << " bytes for the noise buffer" << endl;
+		m_error_log_oss << "ShaEntropyExtractor.initialize(): could not allocate " << m_noise_buff_bytes << " bytes for the noise buffer" << std::endl;
 		return false;
 	}
 
-	m_hash_value = new (nothrow) unsigned char [m_cur_sha_size];
+	m_hash_value = new (std::nothrow) unsigned char [m_cur_sha_size];
 	if (m_hash_value == nullptr) {
-		m_error_log_oss << "ShaEntropyExtractor.initialize(): could not allocate " << m_cur_sha_size << " bytes for the hash output value" << endl;
+		m_error_log_oss << "ShaEntropyExtractor.initialize(): could not allocate " << m_cur_sha_size << " bytes for the hash output value" << std::endl;
 		return false;
 	}
 
@@ -83,12 +83,12 @@ bool ShaEntropyExtractor::extract_entropy(unsigned char *out, int len) {
 	}
 	clear_error_log();
 	if (out == nullptr) {
-		m_error_log_oss << "ShaEntropyExtractor.extract_entropy(): 'out' argument cannot be null" << endl;
+		m_error_log_oss << "ShaEntropyExtractor.extract_entropy(): 'out' argument cannot be null" << std::endl;
 		return false;
 	}
 
 	if (len < 1) {
-		m_error_log_oss << "ShaEntropyExtractor.extract_entropy(): invalid 'len' argument value: " << len << endl;
+		m_error_log_oss << "ShaEntropyExtractor.extract_entropy(): invalid 'len' argument value: " << len << std::endl;
 		return false;
 	}
 
@@ -106,7 +106,7 @@ bool ShaEntropyExtractor::extract_entropy(unsigned char *out, int len) {
 	long total_in_sha_byte_qty = in_sha_byte_qty * sha_qty;
 
 	// Total number of "get noise" requests
-	int total_noise_req_qty = total_in_sha_byte_qty / m_noise_buff_bytes;
+	int total_noise_req_qty = (int) (total_in_sha_byte_qty / m_noise_buff_bytes);
 
 	// Number of noise bytes to request for the last incomplete buffer
 	int last_noise_req_bytes = total_in_sha_byte_qty % m_noise_buff_bytes;
@@ -156,11 +156,11 @@ bool ShaEntropyExtractor::extract_entropy(unsigned char *out, int len) {
  * @return true for successful operation
  */
 bool ShaEntropyExtractor::extract_hash_values(int sha_qty, int in_sha_byte_qty, int *entropy_bytes_needed, unsigned char **o) {
-	unsigned char *in = m_noise_buff;
+	const unsigned char *in = m_noise_buff;
 	for (int sh = 0; sh < sha_qty; ++sh) {
 		// Hash the noise bytes
 		if (!m_sha_api->hash(in, in_sha_byte_qty, m_hash_value)) {
-			m_error_log_oss << "ShaEntropyExtractor.process(): could not hash requested bytes" << endl;
+			m_error_log_oss << "ShaEntropyExtractor.process(): could not hash requested bytes" << std::endl;
 			return false;
 		}
 		in += in_sha_byte_qty;

@@ -12,9 +12,9 @@
 
 /**
  *    @file UsbSerialDevice.h
- *    @date 7/8/2023
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implements the API for communicating with the AlphaRNG device
  */
@@ -33,7 +33,6 @@
 
 #include <DeviceInterface.h>
 
-using namespace std;
 namespace alpharng {
 
 class UsbSerialDevice : public DeviceInterface {
@@ -42,7 +41,7 @@ public:
 	bool is_connected() override;
 	bool connect(const char *device_path_name) override;
 	bool disconnect() override;
-	string get_error_log() override;
+	std::string get_error_log() override;
 	void clear_error_log() override;
 	int send_data(unsigned char *snd, int size_snd, int *bytes_sent) override;
 	int receive_data(unsigned char *rcv, int size_receive, int *bytes_received) override;
@@ -52,21 +51,21 @@ public:
 	bool set_connection_timeout(int milliseconds) override;
 
 	UsbSerialDevice();
-	virtual ~UsbSerialDevice();
+	~UsbSerialDevice() override;
 
 private:
 	void set_error_message(const char *error_message);
-	void purge_comm_data();
+	void purge_comm_data() const;
 
 private:
 	static const int c_max_devices = 25;
 	static const int c_max_size_device_name = 128;
-	int m_fd;
+	int m_fd {-1};
 	int m_lock;
 	char c_device_names[c_max_devices][c_max_size_device_name];
-	int m_active_device_count;
-	bool m_device_connected;
-	ostringstream m_error_log_oss;
+	int m_active_device_count {0};
+	bool m_device_connected {false};
+	std::ostringstream m_error_log_oss;
 	struct termios m_opts;
 	const int c_timeout_mlsecs = 100;
 };

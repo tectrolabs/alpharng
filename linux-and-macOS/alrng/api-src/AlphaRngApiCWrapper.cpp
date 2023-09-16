@@ -16,9 +16,9 @@
 
 /**
  *    @file AlphaRngApiCWrapper.cpp
- *    @date 7/15/2023
+ *    @date 9/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implements a C wrapper around the C++ API for securely interacting with the AlphaRNG device.
  */
@@ -40,7 +40,7 @@ extern "C" {
  * @return pointer to the new context or NULL if failed
  */
 alrng_context* alrng_create_default_ctxt() {
-	return (alrng_context*) new (nothrow) AlphaRngApi();
+	return (alrng_context*) new (std::nothrow) AlphaRngApi();
 }
 
 /**
@@ -56,7 +56,7 @@ alrng_context* alrng_create_default_ctxt() {
 alrng_context* alrng_create_ctxt(enum alrng_rsa_key_type rsa_key_type, enum alrng_mac_type mac_type, enum alrng_cipher_type cipher_type, const char *pub_key_file) {
 	MacType e_mac_type;
 	KeySize e_aes_key_size;
-	string key_file;
+	std::string key_file;
 	RsaKeySize e_rsa_key_size;
 
 	switch(rsa_key_type) {
@@ -104,7 +104,7 @@ alrng_context* alrng_create_ctxt(enum alrng_rsa_key_type rsa_key_type, enum alrn
 		key_file = pub_key_file;
 	}
 
-	return (alrng_context*) new (nothrow) AlphaRngApi(AlphaRngConfig {e_mac_type, e_rsa_key_size, e_aes_key_size, key_file});
+	return (alrng_context*) new (std::nothrow) AlphaRngApi(AlphaRngConfig {e_mac_type, e_rsa_key_size, e_aes_key_size, key_file});
 }
 
 /**
@@ -120,7 +120,7 @@ int alrng_connect(alrng_context *ctxt, int device_number) {
 	if (nullptr == ctxt) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->connect(device_number);
 	return status ? 0 : -2;
 }
@@ -136,7 +136,7 @@ int alrng_is_connected(alrng_context* ctxt) {
 	if (nullptr == ctxt) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->is_connected();
 	return status ? 0 : -2;
 }
@@ -153,7 +153,7 @@ int alrng_disconnect(alrng_context *ctxt) {
 	if (nullptr == ctxt) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->disconnect();
 	return status ? 0 : -2;
 }
@@ -168,7 +168,7 @@ int alrng_destroy_ctxt(alrng_context *ctxt) {
 	if (nullptr == ctxt) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	// Close any existing connection to a device
 	api->disconnect();
 	delete api;
@@ -184,7 +184,7 @@ int alrng_get_device_count(alrng_context* ctxt) {
 	if (nullptr == ctxt) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	return api->get_device_count();
 }
 
@@ -204,7 +204,7 @@ int alrng_retrieve_device_path(alrng_context* ctxt, char *dev_path_name, int max
 	if (nullptr == ctxt) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->retrieve_device_path(dev_path_name, max_dev_path_name_bytes, device_number);
 	return status ? 0 : -2;
 }
@@ -223,8 +223,8 @@ int alrng_get_last_error(alrng_context* ctxt, char *msg_buffer, int msg_buffer_s
 	if (nullptr == ctxt || nullptr == msg_buffer || msg_buffer_size <= 2) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
-	string msg = api->get_last_error();
+	auto api = (AlphaRngApi*) ctxt;
+	std::string msg = api->get_last_error();
 	int size = (int)msg.size();
 	if (size >= msg_buffer_size) {
 		size = msg_buffer_size -1;
@@ -253,7 +253,7 @@ int alrng_retrieve_rng_status(alrng_context* ctxt, unsigned char *status) {
 		return -1;
 	}
 
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool ret = api->retrieve_rng_status(status);
 	return ret ? 0 : -2;
 }
@@ -271,8 +271,8 @@ int alrng_retrieve_device_id(alrng_context* ctxt, char *id_buffer, int id_buffer
 	if (nullptr == ctxt || nullptr == id_buffer || id_buffer_size < 16) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
-	string id;
+	auto api = (AlphaRngApi*) ctxt;
+	std::string id;
 	bool status = api->retrieve_device_id(id);
 	if (false == status) {
 		return -2;
@@ -299,8 +299,8 @@ int alrng_retrieve_device_model(alrng_context* ctxt, char *model_buffer, int mod
 	if (nullptr == ctxt || nullptr == model_buffer || model_buffer_size < 16) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
-	string model;
+	auto api = (AlphaRngApi*) ctxt;
+	std::string model;
 	bool status = api->retrieve_device_model(model);
 	if (false == status) {
 		return -2;
@@ -326,7 +326,7 @@ int alrng_retrieve_device_major_version(alrng_context* ctxt, unsigned char *majo
 	if (nullptr == ctxt || nullptr == major_version) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->retrieve_device_major_version(major_version);
 	return status ? 0 : -2;
 }
@@ -343,7 +343,7 @@ int alrng_retrieve_device_minor_version(alrng_context* ctxt, unsigned char *mino
 	if (nullptr == ctxt || nullptr == minor_version) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->retrieve_device_minor_version(minor_version);
 	return status ? 0 : -2;
 }
@@ -359,7 +359,7 @@ int alrng_run_health_test(alrng_context* ctxt) {
 	if (nullptr == ctxt) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->run_health_test();
 	return status ? 0 : -2;
 }
@@ -379,7 +379,7 @@ int alrng_get_noise_source_1(alrng_context* ctxt, unsigned char *out, int out_le
 		return -1;
 	}
 
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->get_noise_source_1(out, out_length);
 	return status ? 0 : -2;
 }
@@ -399,7 +399,7 @@ int alrng_get_noise_source_2(alrng_context* ctxt, unsigned char *out, int out_le
 		return -1;
 	}
 
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->get_noise_source_2(out, out_length);
 	return status ? 0 : -2;
 }
@@ -420,7 +420,7 @@ int alrng_get_entropy(alrng_context* ctxt, unsigned char *out, int out_length) {
 		return -1;
 	}
 
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->get_entropy(out, out_length);
 	return status ? 0 : -2;
 }
@@ -441,7 +441,7 @@ int alrng_extract_sha256_entropy(alrng_context* ctxt, unsigned char *out, int ou
 		return -1;
 	}
 
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->extract_sha256_entropy(out, out_length);
 	return status ? 0 : -2;
 }
@@ -462,7 +462,7 @@ int alrng_extract_sha512_entropy(alrng_context* ctxt, unsigned char *out, int ou
 		return -1;
 	}
 
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->extract_sha512_entropy(out, out_length);
 	return status ? 0 : -2;
 }
@@ -485,7 +485,7 @@ int alrng_get_noise(alrng_context* ctxt, unsigned char *out, int out_length) {
 		return -1;
 	}
 
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->get_noise(out, out_length);
 	return status ? 0 : -2;
 }
@@ -507,7 +507,7 @@ int alrng_get_test_data(alrng_context* ctxt, unsigned char *out, int out_length)
 		return -1;
 	}
 
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	bool status = api->get_test_data(out, out_length);
 	return status ? 0 : -2;
 }
@@ -527,8 +527,8 @@ int alrng_entropy_to_file(alrng_context* ctxt, const char *file_path_name, int64
 	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 0 ) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
-	string file_path_name_str(file_path_name);
+	auto api = (AlphaRngApi*) ctxt;
+	std::string file_path_name_str(file_path_name);
 	bool status = api->entropy_to_file(file_path_name_str, num_bytes);
 	return status ? 0 : -2;
 }
@@ -548,8 +548,8 @@ int alrng_extract_sha256_entropy_to_file(alrng_context* ctxt, const char *file_p
 	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 0 ) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
-	string file_path_name_str(file_path_name);
+	auto api = (AlphaRngApi*) ctxt;
+	std::string file_path_name_str(file_path_name);
 	bool status = api->extract_sha256_entropy_to_file(file_path_name_str, num_bytes);
 	return status ? 0 : -2;
 }
@@ -569,8 +569,8 @@ int alrng_extract_sha512_entropy_to_file(alrng_context* ctxt, const char *file_p
 	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 0 ) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
-	string file_path_name_str(file_path_name);
+	auto api = (AlphaRngApi*) ctxt;
+	std::string file_path_name_str(file_path_name);
 	bool status = api->extract_sha512_entropy_to_file(file_path_name_str, num_bytes);
 	return status ? 0 : -2;
 }
@@ -590,8 +590,8 @@ int alrng_noise_source_one_to_file(alrng_context* ctxt, const char *file_path_na
 	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 0 ) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
-	string file_path_name_str(file_path_name);
+	auto api = (AlphaRngApi*) ctxt;
+	std::string file_path_name_str(file_path_name);
 	bool status = api->noise_source_one_to_file(file_path_name_str, num_bytes);
 	return status ? 0 : -2;
 }
@@ -611,8 +611,8 @@ int alrng_noise_source_two_to_file(alrng_context* ctxt, const char *file_path_na
 	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 0 ) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
-	string file_path_name_str(file_path_name);
+	auto api = (AlphaRngApi*) ctxt;
+	std::string file_path_name_str(file_path_name);
 	bool status = api->noise_source_two_to_file(file_path_name_str, num_bytes);
 	return status ? 0 : -2;
 }
@@ -633,8 +633,8 @@ int alrng_noise_to_file(alrng_context* ctxt, const char *file_path_name, int64_t
 	if (nullptr == ctxt || nullptr == file_path_name || num_bytes < 0 ) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
-	string file_path_name_str(file_path_name);
+	auto api = (AlphaRngApi*) ctxt;
+	std::string file_path_name_str(file_path_name);
 	bool status = api->noise_to_file(file_path_name_str, num_bytes);
 	return status ? 0 : -2;
 }
@@ -654,7 +654,7 @@ int alrng_retrieve_frequency_tables(alrng_context* ctxt, uint16_t *freq_table_1,
 	if (nullptr == ctxt || nullptr == freq_table_1 || nullptr == freq_table_2 ) {
 		return -1;
 	}
-	AlphaRngApi *api = (AlphaRngApi*) ctxt;
+	auto api = (AlphaRngApi*) ctxt;
 	FrequencyTables freq_tables;
 	bool status = api->retrieve_frequency_tables(&freq_tables);
 	if (false == status) {

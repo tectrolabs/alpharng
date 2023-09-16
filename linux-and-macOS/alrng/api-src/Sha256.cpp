@@ -14,9 +14,9 @@
 
 /**
  *    @file Sha256.cpp
- *    @date 7/15/2023
+ *    @date 9/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implements an API used for generating a SHA-256 message digest used with the AlphaRNG device.
  */
@@ -36,7 +36,7 @@ namespace alpharng {
  */
 bool Sha256::hash(const unsigned char *in, int in_byte_count, unsigned char *out) {
 
-	unsigned char *result = SHA256(in, in_byte_count, out);
+	const unsigned char *result = SHA256(in, in_byte_count, out);
 	if (result == nullptr) {
 		return false;
 	}
@@ -50,12 +50,6 @@ bool Sha256::hash(const unsigned char *in, int in_byte_count, unsigned char *out
  */
 int Sha256::get_hash_size() {
 	return c_hash_size_bytes;
-}
-
-Sha256::Sha256() {
-}
-
-Sha256::~Sha256() {
 }
 
 } /* namespace alpharng */

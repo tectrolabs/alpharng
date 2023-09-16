@@ -14,9 +14,9 @@
 
 /**
  *    @file Sha512.cpp
- *    @date 7/15/2023
+ *    @date 9/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implements an API used for generating a SHA-512 message digest used with the AlphaRNG device.
  */
@@ -49,12 +49,6 @@ bool Sha512::hash(const unsigned char *in, int in_byte_count, unsigned char *out
  */
 int Sha512::get_hash_size() {
 	return c_hash_size_bytes;
-}
-
-Sha512::Sha512() {
-}
-
-Sha512::~Sha512() {
 }
 
 } /* namespace alpharng */

@@ -12,9 +12,9 @@
 
 /**
  *    @file RsaKeyRepo.h
- *    @date 7/8/2023
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.4
+ *    @version 1.5
  *
  *    @brief Used for storing hard-coded RSA 2048 and 1024 public keys used for establishing a secure connection with the AlphaRNG device.
  */
@@ -23,8 +23,6 @@
 #define ALPHARNG_API_INC_RSAKEYREPO_H_
 
 #include <new>
-
-using namespace std;
 
 namespace alpharng {
 

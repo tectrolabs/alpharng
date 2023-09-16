@@ -14,9 +14,9 @@
 
 /**
  *    @file HmacSha1.h
- *    @date 08/27/2022
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief Implements an API used for generating a HmacSHA160 message authentication digest for communicating with the AlphaRNG device.
  */
@@ -29,8 +29,6 @@
 #include <cstring>
 #include <new>
 #include <HmacInterface.h>
-
-using namespace std;
 
 namespace alpharng {
 
@@ -46,7 +44,7 @@ public:
 	HmacSha1(const HmacSha1 &hmac) = delete;
 	HmacSha1 & operator=(const HmacSha1 &hmac) = delete;
 
-	virtual ~HmacSha1();
+	~HmacSha1() override;
 private:
 	bool m_initialized = false;
 	unsigned char *m_key = nullptr;
