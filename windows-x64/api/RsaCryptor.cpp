@@ -14,14 +14,16 @@
 
 /**
  *    @file RsaCryptor.cpp
- *    @date 7/25/2023
+ *    @date 9/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.5
+ *    @version 1.6
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device.
  */
 
 #include <RsaCryptor.h>
+
+using namespace std;
 
 namespace alpharng {
 
@@ -44,7 +46,7 @@ RsaCryptor::RsaCryptor(const unsigned char *key, int key_size_bytes, bool is_pub
  * @param[in] is_public true if the key is public, false if the key is private
  */
 void RsaCryptor::initialize_with_key(const unsigned char* key, int key_size_bytes, bool is_public) {
-	m_kbio_rsa = BIO_new_mem_buf((char*)key, key_size_bytes);
+	m_kbio_rsa = BIO_new_mem_buf(key, key_size_bytes);
 	if (m_kbio_rsa == nullptr) {
 		return;
 	}
@@ -125,7 +127,7 @@ RsaCryptor::RsaCryptor(const string &key_file_name, bool is_public) {
  *
  * @return true if encryption was successful
  */
-bool RsaCryptor::evp_key_encrypt(unsigned char *in, int in_size_bytes,	unsigned char *out, int *out_size_bytes) {
+bool RsaCryptor::evp_key_encrypt(const unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes) {
 
 	EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(m_rsa, nullptr);
 	if (ctx == nullptr) {
@@ -148,7 +150,7 @@ bool RsaCryptor::evp_key_encrypt(unsigned char *in, int in_size_bytes,	unsigned 
 		EVP_PKEY_CTX_free(ctx);
 		return false;
 	}
-	*out_size_bytes = outlen;
+	*out_size_bytes = (int)outlen;
 	EVP_PKEY_CTX_free(ctx);
 	return true;
 }
@@ -164,8 +166,8 @@ bool RsaCryptor::evp_key_encrypt(unsigned char *in, int in_size_bytes,	unsigned 
  *
  * @return true if encryption was successful
  */
-bool RsaCryptor::encrypt_with_public_key(unsigned char *in, int in_size_bytes,	unsigned char *out, int *out_size_bytes) {
-	if (!m_is_key_initialized || in_size_bytes == 0 || out == nullptr || in == 0) {
+bool RsaCryptor::encrypt_with_public_key(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes) {
+	if (!m_is_key_initialized || in_size_bytes == 0 || out == nullptr || in == nullptr) {
 		return false;
 	}
 
@@ -191,8 +193,8 @@ bool RsaCryptor::encrypt_with_public_key(unsigned char *in, int in_size_bytes,	u
  *
  * @return true if encryption was successful
  */
-bool RsaCryptor::encrypt_with_private_key(unsigned char *in, int in_size_bytes,	unsigned char *out, int *out_size_bytes) {
-	if (!m_is_key_initialized || in_size_bytes == 0 || out == nullptr || in == 0) {
+bool RsaCryptor::encrypt_with_private_key(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes) {
+	if (!m_is_key_initialized || in_size_bytes == 0 || out == nullptr || in == nullptr) {
 		return false;
 	}
 #if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
@@ -218,7 +220,7 @@ bool RsaCryptor::encrypt_with_private_key(unsigned char *in, int in_size_bytes,	
  *
  * @return true if decryption was successful
  */
-bool RsaCryptor::evp_key_decrypt(unsigned char *in, int in_size_bytes,	unsigned char *out, int *out_size_bytes) {
+bool RsaCryptor::evp_key_decrypt(const unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes) {
 	EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(m_rsa, nullptr);
 	if (ctx == nullptr) {
 		return false;
@@ -240,7 +242,7 @@ bool RsaCryptor::evp_key_decrypt(unsigned char *in, int in_size_bytes,	unsigned 
 		EVP_PKEY_CTX_free(ctx);
 		return false;
 	}
-	*out_size_bytes = outlen;
+	*out_size_bytes = (int)outlen;
 	EVP_PKEY_CTX_free(ctx);
 	return true;
 }
@@ -257,7 +259,7 @@ bool RsaCryptor::evp_key_decrypt(unsigned char *in, int in_size_bytes,	unsigned 
  * @return true if decryption was successful
  */
 bool RsaCryptor::decrypt_with_public_key(unsigned char *in, int in_size_bytes,	unsigned char *out, int *out_size_bytes) {
-	if (!m_is_key_initialized || in_size_bytes == 0 || out == nullptr || in == 0) {
+	if (!m_is_key_initialized || in_size_bytes == 0 || out == nullptr || in == nullptr) {
 		return false;
 	}
 #if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
@@ -284,7 +286,7 @@ bool RsaCryptor::decrypt_with_public_key(unsigned char *in, int in_size_bytes,	u
  * @return true if decryption was successful
  */
 bool RsaCryptor::decrypt_with_private_key(unsigned char *in, int in_size_bytes,	unsigned char *out, int *out_size_bytes) {
-	if (!m_is_key_initialized || in_size_bytes == 0 || out == nullptr || in == 0) {
+	if (!m_is_key_initialized || in_size_bytes == 0 || out == nullptr || in == nullptr) {
 		return false;
 	}
 #if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
@@ -326,7 +328,7 @@ RsaCryptor::RsaCryptor() {
  *
  * @return true if export was successful
  */
-bool RsaCryptor::export_private_key_to_file(const string &key_file_name) {
+bool RsaCryptor::export_private_key_to_file(const string &key_file_name) const {
 	if (!m_is_key_initialized) {
 		return false;
 	}
@@ -354,7 +356,7 @@ bool RsaCryptor::export_private_key_to_file(const string &key_file_name) {
  *
  * @return true if export was successful
  */
-bool RsaCryptor::export_public_key_to_file(const string &key_file_name) {
+bool RsaCryptor::export_public_key_to_file(const string &key_file_name) const {
 	if (!m_is_key_initialized) {
 		return false;
 	}

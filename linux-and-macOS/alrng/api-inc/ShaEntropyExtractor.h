@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,9 +14,9 @@
 
 /**
  *    @file ShaEntropyExtractor.h
- *    @date 08/27/2022
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Implements an API used for extracting entropy from the AlphaRNG device using SHA for seeding a DRBG.
  */
@@ -27,8 +27,6 @@
 #include <AlphaRngApi.h>
 #include <ShaInterface.h>
 
-using namespace std;
-
 namespace alpharng {
 
 class AlphaRngApi;
@@ -37,7 +35,7 @@ class ShaEntropyExtractor {
 public:
 	bool extract_entropy(unsigned char *out, int len);
 	ShaEntropyExtractor(AlphaRngApi *rng_api, ShaInterface *sha_api, int in_out_ratio = 2);
-	string get_last_error() const {return m_error_log_oss.str();};
+	std::string get_last_error() const {return m_error_log_oss.str();};
 	int get_hash_size() {return m_sha_api->get_hash_size();};
 	virtual ~ShaEntropyExtractor();
 
@@ -49,7 +47,7 @@ private:
 private:
 	AlphaRngApi *m_rng_api = nullptr;
 	ShaInterface *m_sha_api = nullptr;
-	ostringstream m_error_log_oss;
+	std::ostringstream m_error_log_oss;
 
 	// How many input bytes are used for extracting one byte of entropy.
 	// When set to 2 then for each byte in the output there will be 2 bytes used for input.

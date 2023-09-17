@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.h
- *    @date 08/27/2022
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.4
+ *    @version 1.5
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -50,9 +50,6 @@
 #include <UsbSerialDevice.h>
 #endif
 
-
-using namespace std;
-
 namespace alpharng {
 
 class ShaEntropyExtractor;
@@ -67,10 +64,10 @@ public:
 	bool disconnect();
 	int get_device_count();
 	bool retrieve_device_path(char *dev_path_name, int max_dev_path_name_bytes, int device_number);
-	string get_last_error() const {return m_error_log_oss.str();}
+	std::string get_last_error() const {return m_error_log_oss.str();}
 	bool retrieve_rng_status(unsigned char *status);
-	bool retrieve_device_id(string &id);
-	bool retrieve_device_model(string &model);
+	bool retrieve_device_id(std::string &id);
+	bool retrieve_device_model(std::string &model);
 	bool retrieve_device_major_version(unsigned char *major_version);
 	bool retrieve_device_minor_version(unsigned char *minor_version);
 	bool run_health_test();
@@ -82,12 +79,12 @@ public:
 	bool extract_sha512_entropy(unsigned char *out, int out_length);
 	bool get_noise(unsigned char *out, int out_length);
 	bool get_test_data(unsigned char *out, int out_length);
-	bool entropy_to_file(const string &file_path_name, int64_t num_bytes);
-	bool extract_sha256_entropy_to_file(const string &file_path_name, int64_t num_bytes);
-	bool extract_sha512_entropy_to_file(const string &file_path_name, int64_t num_bytes);
-	bool noise_source_one_to_file(const string &file_path_name, const int64_t num_bytes);
-	bool noise_source_two_to_file(const string &file_path_name, const int64_t num_bytes);
-	bool noise_to_file(const string &file_path_name, int64_t num_bytes);
+	bool entropy_to_file(const std::string &file_path_name, int64_t num_bytes);
+	bool extract_sha256_entropy_to_file(const std::string &file_path_name, int64_t num_bytes);
+	bool extract_sha512_entropy_to_file(const std::string &file_path_name, int64_t num_bytes);
+	bool noise_source_one_to_file(const std::string &file_path_name, const int64_t num_bytes);
+	bool noise_source_two_to_file(const std::string &file_path_name, const int64_t num_bytes);
+	bool noise_to_file(const std::string &file_path_name, int64_t num_bytes);
 	HealthTests get_health_tests() const {return m_health_test;}
 	int get_operation_retry_count() const {return m_op_retry_count;}
 	AlphaRngConfig& get_configuration() { return m_cfg; }
@@ -124,7 +121,7 @@ private:
 	bool get_unpacked_bytes_with_retry(char cmd, unsigned char *out, int out_length, int block_size_bytes, bool test_data);
 	bool get_unpacked_bytes(char cmd, unsigned char *out, int out_length, int block_size_bytes, bool test_data);
 	bool get_payload_bytes_with_retry(char cmd, unsigned char *out, int out_length);
-	bool to_file(CommandType cmd_type, const string &file_path_name, int64_t num_bytes);
+	bool to_file(CommandType cmd_type, const std::string &file_path_name, int64_t num_bytes);
 	bool get_data(CommandType cmd_type, unsigned char *out, int out_length);
 	bool execute_command_internal (Response *resp, Command *cmd, int resp_payload_size_bytes);
 	bool connect_internal(int device_number);
@@ -139,7 +136,7 @@ private:
 private:
 	HmacInterface *m_hmac = nullptr;
 	DeviceInterface *m_device = nullptr;
-	ostringstream m_error_log_oss;
+	std::ostringstream m_error_log_oss;
 	RsaCryptor *m_rsa_cryptor = nullptr;
 	AesCryptor *m_aes_cryptor = nullptr;
 	RsaKeyRepo m_rsa_key_repo;

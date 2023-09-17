@@ -15,9 +15,9 @@
 
 /**
  *    @file AesCryptor.cpp
- *    @date 7/15/2023
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief Encrypts or decrypts session data using AES-GCM with 128 or 256 bit keys.
  */
@@ -88,7 +88,7 @@ void AesCryptor::initialize(KeySize e_key_size) {
 		return;
 	}
 	m_e_key_size = e_key_size;
-	m_key = new (nothrow)unsigned char[(int)m_e_key_size];
+	m_key = new (std::nothrow)unsigned char[(int)m_e_key_size];
 	if (m_key == nullptr) {
 		m_initialized = false;
 		return;
@@ -236,7 +236,7 @@ bool AesCryptor::decrypt(const unsigned char *in, int in_byte_count, unsigned ch
  *
  * @return[out] true if key retrieved successfully
  */
-bool AesCryptor::get_key(unsigned char* out) {
+bool AesCryptor::get_key(unsigned char* out) const {
 	if (!m_initialized) {
 		return false;
 	}
@@ -251,7 +251,7 @@ bool AesCryptor::get_key(unsigned char* out) {
  *
  * @return[out] true if IV retrieved successfully
  */
-bool AesCryptor::get_iv(unsigned char* out) {
+bool AesCryptor::get_iv(unsigned char* out) const {
 	if (!m_initialized) {
 		return false;
 	}
@@ -266,7 +266,7 @@ bool AesCryptor::get_iv(unsigned char* out) {
  *
  * @return[out] true if AAD retrieved successfully
  */
-bool AesCryptor::get_aad(unsigned char* out) {
+bool AesCryptor::get_aad(unsigned char* out) const {
 	if (!m_initialized) {
 		return false;
 	}

@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,9 +14,9 @@
 
 /**
  *    @file Sha512.h
- *    @date 08/27/2022
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Implements an API used for generating a SHA-512 message digest used with the AlphaRNG device.
  */
@@ -34,11 +34,10 @@ class Sha512 : public ShaInterface {
 public:
 	bool hash(const unsigned char *in, int in_byte_count, unsigned char *out) override;
 	int get_hash_size() override;
-	Sha512();
 	Sha512(const Sha512 &hmac) = delete;
 	Sha512 & operator=(const Sha512 &hmac) = delete;
-
-	virtual ~Sha512();
+	Sha512() = default;
+	virtual ~Sha512() = default;
 private:
 	const int c_hash_size_bytes = 64;
 };

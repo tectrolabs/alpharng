@@ -1,7 +1,7 @@
 /**
  *    @file sample.c
- *    @date 7/15/2023
- *    @version 1.2
+ *    @date 09/16/2023
+ *    @version 1.3
  *
  *    @brief A C example that utilizes a C wrapper around the C++ API for communicating with the AlphaRNG device.
  */
@@ -199,8 +199,6 @@ int main() {
 		printf("%d ", rng_data.entropy_buffer[i]);
 	}
 	printf("\n");
-
-	ret_val = 0;
 	goto close_and_exit;
 
 error:

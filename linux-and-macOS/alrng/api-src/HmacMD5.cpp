@@ -14,9 +14,9 @@
 
 /**
  *    @file HmacMD5.cpp
- *    @date 7/15/2023
+ *    @date 9/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief Implements an API used for generating a HmacMD5 message authentication digest for communicating with the AlphaRNG device.
  */
@@ -33,7 +33,7 @@ namespace alpharng {
  */
 bool HmacMD5::generate_new_key() {
 	if (m_key != nullptr) {
-		if (!RAND_bytes(m_key, (int)c_key_size_bytes)) {
+		if (!RAND_bytes(m_key, c_key_size_bytes)) {
 			return false;
 		}
 		return true;
@@ -52,7 +52,7 @@ bool HmacMD5::generate_new_key() {
  */
 bool HmacMD5::hmac(const unsigned char *in, int in_byte_count, unsigned char *out) {
 
-	unsigned char *result = HMAC(EVP_md5(), m_key, c_key_size_bytes, in, in_byte_count, NULL, NULL);
+	const unsigned char *result = HMAC(EVP_md5(), m_key, c_key_size_bytes, in, in_byte_count, nullptr, nullptr);
 	if (result == nullptr) {
 		return false;
 	}
@@ -101,7 +101,7 @@ bool HmacMD5::set_key(unsigned char* in, int in_byte_count) {
 }
 
 HmacMD5::HmacMD5() {
-	m_key = new (nothrow) unsigned char[c_key_size_bytes];
+	m_key = new (std::nothrow) unsigned char[c_key_size_bytes];
 	if (m_key == nullptr) {
 		m_initialized = false;
 		return;

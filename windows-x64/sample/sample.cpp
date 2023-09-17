@@ -1,6 +1,7 @@
 #include <AlphaRngApi.h>
 #include <array>
 
+using namespace std;
 using namespace alpharng;
 
 /**

@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,9 +14,9 @@
 
 /**
  *    @file RsaCryptor.h
- *    @date 08/27/2022
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.4
+ *    @version 1.5
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device suing RSA PK encryption.
  */
@@ -29,8 +29,6 @@
 #include <string>
 #include <fstream>
 
-using namespace std;
-
 namespace alpharng {
 
 class RsaCryptor {
@@ -39,11 +37,11 @@ public:
 	explicit RsaCryptor(int key_size);
 	RsaCryptor(const RsaCryptor &cryptor) = delete;
 	RsaCryptor & operator=(const RsaCryptor &cryptor) = delete;
-	RsaCryptor(const string &key_file_name, bool is_public);
+	RsaCryptor(const std::string &key_file_name, bool is_public);
 	RsaCryptor(const unsigned char *key, int key_size_bytes, bool is_public);
 	bool is_initialized() const;
-	bool export_private_key_to_file(const string &key_file_name);
-	bool export_public_key_to_file(const string &key_file_name);
+	bool export_private_key_to_file(const std::string &key_file_name) const;
+	bool export_public_key_to_file(const std::string &key_file_name) const;
 	bool encrypt_with_public_key(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
 	bool decrypt_with_public_key(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
 	bool encrypt_with_private_key(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
@@ -54,8 +52,8 @@ private:
 	void crete_new_key(int key_size);
 	void initialize_with_key(const unsigned char* key, int key_size_bytes, bool is_public);
 #if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
-	bool evp_key_encrypt(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
-	bool evp_key_decrypt(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
+	bool evp_key_encrypt(const unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
+	bool evp_key_decrypt(const unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
 #endif
 
 private:

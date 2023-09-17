@@ -12,9 +12,9 @@
 
 /**
  *    @file DeviceInterface.h
- *    @date 7/8/2023
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief Provides an API for communicating with the AlphaRNG device
  */
@@ -24,8 +24,6 @@
 
 #include <string>
 
-using namespace std;
-
 namespace alpharng {
 
 class DeviceInterface {
@@ -34,7 +32,7 @@ public:
 	virtual bool is_connected() = 0;
 	virtual bool connect(const char *device_path_name) = 0;
 	virtual bool disconnect() = 0;
-	virtual string get_error_log() = 0;
+	virtual std::string get_error_log() = 0;
 	virtual void clear_error_log() = 0;
 	virtual int send_data(unsigned char *snd, int size_snd, int *bytes_sent) = 0;
 	virtual int receive_data(unsigned char *rcv, int size_receive, int *bytes_received) = 0;
@@ -43,8 +41,8 @@ public:
 	virtual bool retrieve_device_path(char *dev_path_name, int max_dev_path_name_bytes, int device_number) = 0;
 	virtual bool set_connection_timeout(int milliseconds) = 0;
 
-	DeviceInterface() {};
-	virtual ~DeviceInterface() {};
+	DeviceInterface() = default;
+	virtual ~DeviceInterface() = default;
 };
 
 } /* namespace alpharng */

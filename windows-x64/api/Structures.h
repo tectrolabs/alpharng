@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file Structures.h
- *    @date 08/27/2022
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief Data structures used in the API implementation.
  */
@@ -24,8 +24,6 @@
 
 #include <cstdint>
 #include <string>
-
-using namespace std;
 
 namespace alpharng {
 
@@ -105,8 +103,8 @@ enum class CmdOpt : uint8_t {
 
 struct Cmd {
 	CmdOpt cmd_type;
-	string out_file_name;
-	string pipe_name;
+	std::string out_file_name;
+	std::string pipe_name;
 	int64_t num_bytes;
 	int op_count;
 	int device_number;
@@ -114,14 +112,17 @@ struct Cmd {
 	bool log_statistics;
 };
 struct DeviceStatistics {
-	time_t begin_time, end_time, total_time; // Used for measuring performance
+	// Used for measuring performance
+	time_t begin_time;
+	time_t end_time;
+	time_t total_time;
 	int download_speed_kbsec; // Measured download speed in KB/sec
 };
 
 struct RngConfig {
 	MacType e_mac_type;
 	KeySize e_aes_key_size;
-	string key_file;
+	std::string key_file;
 	RsaKeySize e_rsa_key_size;
 };
 

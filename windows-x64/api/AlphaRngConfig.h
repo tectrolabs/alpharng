@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.h
- *    @date 08/27/2022
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief AlphaRNG configuration structure used for establishing a session with the AlphaRNG device
  */
@@ -31,7 +31,7 @@ struct AlphaRngConfig {
 	MacType e_mac_type;
 	RsaKeySize e_rsa_key_size;
 	KeySize e_aes_key_size;
-	string pub_key_file_name;
+	std::string pub_key_file_name;
 };
 
 

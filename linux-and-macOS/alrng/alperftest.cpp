@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,9 +13,9 @@
 
 /**
  *    @file alperftest.cpp
- *    @date 06/7/2021
+ *    @date 9/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief A utility used for measuring performance of the AlphaRNG device in different transmission modes.
  */
@@ -28,10 +28,13 @@
 using namespace std;
 using namespace alpharng;
 
-
+/**
+* Local functions used
+*/
 static bool display_device_info(AlphaRngApi &rng);
 static bool run_device_perf_tests(int device_num);
-static bool run_device_perf_test(int device_num, RngConfig &cfg);
+static bool run_device_perf_tests(int device_num, MacType macType, KeySize keySize, RsaKeySize rsaKeySize);
+static bool run_device_perf_test(int device_num, const RngConfig &cfg);
 static void reset_statistics(DeviceStatistics *ds);
 static void generate_statistics(DeviceStatistics &ds, int64_t num_bytes);
 
@@ -130,95 +133,73 @@ static bool display_device_info(AlphaRngApi &rng) {
  * Run performance tests for the device in different modes.
  *
  * @param[in] device_num device number
+ * @param[in] macType MAC type
+ * @param[in] keySize encryption key size
+ * @param[in] rsaKeySize RSA key size
+ *
+ * @return true for successful operation
+ */
+static bool run_device_perf_tests(int device_num, MacType macType, KeySize keySize, RsaKeySize rsaKeySize) {
+	RngConfig cfg {macType, keySize, "", rsaKeySize};
+	return run_device_perf_test(device_num, cfg);
+}
+
+/**
+ * Run performance tests for the device in different modes.
+ *
+ * @param[in] device_num device number
  *
  * @return true for successful operation
  */
 static bool run_device_perf_tests(int device_num) {
 
-	{
-		RngConfig cfg {MacType::None, KeySize::None, "", RsaKeySize::rsa2048};
-		if (!run_device_perf_test(device_num, cfg)) {
-			return false;
-		}
+	if (!run_device_perf_tests(device_num, MacType::None, KeySize::None, RsaKeySize::rsa2048)) {
+		return false;
 	}
 
-	{
-		RngConfig cfg {MacType::hmacMD5, KeySize::None, "", RsaKeySize::rsa2048};
-		if (!run_device_perf_test(device_num, cfg)) {
-			return false;
-		}
+	if (!run_device_perf_tests(device_num, MacType::hmacMD5, KeySize::None, RsaKeySize::rsa2048)) {
+		return false;
 	}
 
-	{
-		RngConfig cfg {MacType::hmacSha160, KeySize::None, "", RsaKeySize::rsa2048};
-		if (!run_device_perf_test(device_num, cfg)) {
-			return false;
-		}
+	if (!run_device_perf_tests(device_num, MacType::hmacSha160, KeySize::None, RsaKeySize::rsa2048)) {
+		return false;
 	}
 
-	{
-		RngConfig cfg {MacType::hmacSha256, KeySize::None, "", RsaKeySize::rsa2048};
-		if (!run_device_perf_test(device_num, cfg)) {
-			return false;
-		}
+	if (!run_device_perf_tests(device_num, MacType::hmacSha256, KeySize::None, RsaKeySize::rsa2048)) {
+		return false;
 	}
 
-	{
-		RngConfig cfg {MacType::None, KeySize::k128, "", RsaKeySize::rsa2048};
-		if (!run_device_perf_test(device_num, cfg)) {
-			return false;
-		}
+	if (!run_device_perf_tests(device_num, MacType::None, KeySize::k128, RsaKeySize::rsa2048)) {
+		return false;
 	}
 
-	{
-		RngConfig cfg {MacType::hmacMD5, KeySize::k128, "", RsaKeySize::rsa2048};
-		if (!run_device_perf_test(device_num, cfg)) {
-			return false;
-		}
+	if (!run_device_perf_tests(device_num, MacType::hmacMD5, KeySize::k128, RsaKeySize::rsa2048)) {
+		return false;
 	}
 
-	{
-		RngConfig cfg {MacType::hmacSha160, KeySize::k128, "", RsaKeySize::rsa2048};
-		if (!run_device_perf_test(device_num, cfg)) {
-			return false;
-		}
+	if (!run_device_perf_tests(device_num, MacType::hmacSha160, KeySize::k128, RsaKeySize::rsa2048)) {
+		return false;
 	}
 
-	{
-		RngConfig cfg {MacType::hmacSha256, KeySize::k128, "", RsaKeySize::rsa2048};
-		if (!run_device_perf_test(device_num, cfg)) {
-			return false;
-		}
+	if (!run_device_perf_tests(device_num, MacType::hmacSha256, KeySize::k128, RsaKeySize::rsa2048)) {
+		return false;
 	}
 
-	{
-		RngConfig cfg {MacType::None, KeySize::k256, "", RsaKeySize::rsa2048};
-		if (!run_device_perf_test(device_num, cfg)) {
-			return false;
-		}
+	if (!run_device_perf_tests(device_num, MacType::None, KeySize::k256, RsaKeySize::rsa2048)) {
+		return false;
 	}
 
-	{
-		RngConfig cfg {MacType::hmacMD5, KeySize::k256, "", RsaKeySize::rsa2048};
-		if (!run_device_perf_test(device_num, cfg)) {
-			return false;
-		}
+	if (!run_device_perf_tests(device_num, MacType::hmacMD5, KeySize::k256, RsaKeySize::rsa2048)) {
+		return false;
 	}
 
-	{
-		RngConfig cfg {MacType::hmacSha160, KeySize::k256, "", RsaKeySize::rsa2048};
-		if (!run_device_perf_test(device_num, cfg)) {
-			return false;
-		}
+	if (!run_device_perf_tests(device_num, MacType::hmacSha160, KeySize::k256, RsaKeySize::rsa2048)) {
+		return false;
 	}
 
-	{
-		RngConfig cfg {MacType::hmacSha256, KeySize::k256, "", RsaKeySize::rsa2048};
-		if (!run_device_perf_test(device_num, cfg)) {
-			return false;
-		}
+	if (!run_device_perf_tests(device_num, MacType::hmacSha256, KeySize::k256, RsaKeySize::rsa2048)) {
+		return false;
 	}
-
 
 	return true;
 }
@@ -231,7 +212,7 @@ static bool run_device_perf_tests(int device_num) {
  *
  * @return true for successful operation
  */
-static bool run_device_perf_test(int device_num, RngConfig &cfg) {
+static bool run_device_perf_test(int device_num, const RngConfig &cfg) {
 	DeviceStatistics ds;
 	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
 	bool slow_dwld = false;
@@ -329,7 +310,7 @@ static void generate_statistics(DeviceStatistics &ds, int64_t num_bytes) {
 	if (ds.total_time == 0) {
 		ds.total_time = 1;
 	}
-	ds.download_speed_kbsec = (int) (num_bytes / (int64_t) 1024 / (int64_t)ds.total_time);
+	ds.download_speed_kbsec = (int) (num_bytes / (int64_t) 1024 / ds.total_time);
 }
 
 
