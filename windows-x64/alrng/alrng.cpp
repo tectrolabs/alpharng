@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,9 +13,9 @@
 
 /**
  *    @file alrng.cpp
- *    @date 08/27/2022
+ *    @date 9/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.8
+ *    @version 1.9
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
@@ -52,14 +52,14 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.8;
+static double const version = 1.9;
 
 /**
 * Local functions used
 */
 static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char **argv);
-static bool validate_comand(Cmd &cmd);
-static bool list_connected_devices(RngConfig cfg);
+static bool validate_comand(const Cmd &cmd);
+static bool list_connected_devices(const RngConfig cfg);
 static void reset_statistics(DeviceStatistics *ds);
 static void generate_statistics(DeviceStatistics &ds, const Cmd &cmd);
 static void display_help();
@@ -95,11 +95,9 @@ int main(const int argc, const char **argv) {
 
 	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
 
-	if (cmd.cmd_type != CmdOpt::listDevices && cmd.cmd_type != CmdOpt::getHelp) {
-		if (!rng.connect(cmd.device_number)) {
-			cerr << rng.get_last_error() << endl;
-			return -1;
-		}
+	if (cmd.cmd_type != CmdOpt::listDevices && cmd.cmd_type != CmdOpt::getHelp && !rng.connect(cmd.device_number)) {
+		cerr << rng.get_last_error() << endl;
+		return -1;
 	}
 
 	reset_statistics(&ds);
@@ -313,7 +311,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
  *
  * @return true if command is valid
  */
-static bool validate_comand(Cmd &cmd) {
+static bool validate_comand(const Cmd &cmd) {
 	if (cmd.op_count > 1) {
 		cerr << "Too many 'get' options specified, choose only one" << endl;
 		return false;
@@ -340,10 +338,11 @@ static bool validate_comand(Cmd &cmd) {
 
 /**
  * Display information about all AlphaRNG connected and available devices.
+ * @param[in] cfg RNG configuration data
  *
  * @return true for successful operation
  */
-static bool list_connected_devices(RngConfig cfg) {
+static bool list_connected_devices(const RngConfig cfg) {
 	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
 	string id;
 	string model;
@@ -370,7 +369,6 @@ static bool list_connected_devices(RngConfig cfg) {
 		cout << "'" << model << "', S/N: " << id << ", version: " <<
 				(int)major_version << "." << (int)minor_version << endl;
 	}
-
 
 	return true;
 }
@@ -399,7 +397,7 @@ static void generate_statistics(DeviceStatistics &ds, const Cmd &cmd) {
 	if (ds.total_time == 0) {
 		ds.total_time = 1;
 	}
-	ds.download_speed_kbsec = (int) (cmd.num_bytes / (int64_t) 1024 / (int64_t)ds.total_time);
+	ds.download_speed_kbsec = (int) (cmd.num_bytes / (int64_t) 1024 / ds.total_time);
 }
 
 /**

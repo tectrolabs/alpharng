@@ -12,9 +12,9 @@
 
 /**
  *    @file HealthTests.cpp
- *    @date 7/15/2023
+ *    @date 9/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief Implementation for 'Repetition Count' (RCT) and 'Adaptive Proportion' (APT) tests as described in NIST SP.800-90B
  */
@@ -24,9 +24,6 @@
 namespace alpharng {
 
 HealthTests::HealthTests() {
-	m_max_rct_failures_per_block = 0;
-	m_max_apt_failures_per_block = 0;
-	m_in_debug_mode = false;
 	apt_initialize();
 	rct_initialize();
 }
@@ -82,10 +79,8 @@ void HealthTests::test(const uint8_t *in, int in_length) {
 				m_rct.cur_repetitions++;
 				if (m_rct.cur_repetitions >= m_rct.max_repetitions) {
 					m_rct.cur_repetitions = 1;
-					if (++m_rct.failure_count > c_num_failures_threshold) {
-						if (m_rct.status_byte == 0) {
-							m_rct.status_byte = m_rct.signature;
-						}
+					if (++m_rct.failure_count > c_num_failures_threshold && m_rct.status_byte == 0) {
+						m_rct.status_byte = m_rct.signature;
 					}
 
 					if (m_rct.failure_count > m_max_rct_failures_per_block) {
@@ -93,10 +88,8 @@ void HealthTests::test(const uint8_t *in, int in_length) {
 						m_max_rct_failures_per_block = m_rct.failure_count;
 					}
 
-					if (m_in_debug_mode) {
-						if (m_rct.failure_count >= 1) {
-							cerr << "rct.failureCount: " << (int)m_rct.failure_count << " value: " << (int)value << endl;
-						}
+					if (m_in_debug_mode && m_rct.failure_count >= 1) {
+						std::cerr << "rct.failureCount: " << (int)m_rct.failure_count << " value: " << (int)value << std::endl;
 					}
 				}
 
@@ -119,20 +112,16 @@ void HealthTests::test(const uint8_t *in, int in_length) {
 				m_apt.is_initialized = false;
 				if (m_apt.cur_repetitions > m_apt.cutoff_value) {
 					// Check to see if we have reached the failure threshold
-					if (++m_apt.cycle_failures > c_num_failures_threshold) {
-						if (m_apt.status_byte == 0) {
-							m_apt.status_byte = m_apt.signature;
-						}
+					if (++m_apt.cycle_failures > c_num_failures_threshold && m_apt.status_byte == 0) {
+						m_apt.status_byte = m_apt.signature;
 					}
 					if (m_apt.cycle_failures > m_max_apt_failures_per_block) {
 						// Record the maximum failures per block for statistics
 						m_max_apt_failures_per_block = m_apt.cycle_failures;
 					}
 
-					if (m_in_debug_mode) {
-						if (m_apt.cycle_failures >= 1) {
-							cerr << "apt.cycleFailures: " << (int)m_apt.cycle_failures << " value: " << (int)value << endl;
-						}
+					if (m_in_debug_mode && m_apt.cycle_failures >= 1) {
+						std::cerr << "apt.cycleFailures: " << (int)m_apt.cycle_failures << " value: " << (int)value << std::endl;
 					}
 				}
 			} else {
@@ -179,9 +168,6 @@ void HealthTests::rct_restart() {
 void HealthTests::restart() {
 	rct_restart();
 	apt_restart();
-}
-
-HealthTests::~HealthTests() {
 }
 
 } /* namespace alpharng */

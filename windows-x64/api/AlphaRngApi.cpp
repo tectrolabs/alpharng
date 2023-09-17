@@ -12,14 +12,16 @@
 
 /**
  *    @file AlphaRngApi.cpp
- *    @date 7/15/2023
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.7
+ *    @version 1.8
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
 
 #include <AlphaRngApi.h>
+
+using namespace std;
 
 namespace alpharng {
 
@@ -569,7 +571,7 @@ bool AlphaRngApi::to_file(CommandType cmd_type, const string &file_path_name, in
 
 	if (num_bytes == 0) {
 		// Infinite loop
-		while (1) {
+		while (true) {
 			if(!get_data(cmd_type, m_file_buffer, c_file_output_buff_size_bytes)) {
 				return false;
 			}
@@ -811,7 +813,7 @@ bool AlphaRngApi::retrieve_frequency_tables(FrequencyTables *freq_tables) {
 		return false;
 	}
 
-	memcpy(freq_tables->freq_table_1, resp.payload, sizeof(FrequencyTables));
+	memcpy(freq_tables, resp.payload, sizeof(FrequencyTables));
 
 	return true;
 
@@ -917,12 +919,10 @@ bool AlphaRngApi::connect_internal(int device_number) {
 
 	}
 
-	if (m_cfg.e_mac_type != MacType::None) {
-		// Create a new MAC key as part of the session key
-		if (!m_hmac->generate_new_key()) {
-			m_error_log_oss << "Could not generate MAC key for new session" << ". " << endl;
-			return false;
-		}
+	// Create a new MAC key as part of the session key
+	if (m_cfg.e_mac_type != MacType::None && !m_hmac->generate_new_key()) {
+		m_error_log_oss << "Could not generate MAC key for new session" << ". " << endl;
+		return false;
 	}
 
 	// Create a new cipher key as part of the session key
@@ -1044,7 +1044,7 @@ bool AlphaRngApi::execute_command (Response *resp, Command *cmd, int resp_payloa
 }
 
 bool AlphaRngApi::create_token(uint64_t *new_token) {
-	time_t seconds = time(NULL);
+	time_t seconds = time(nullptr);
 	uint64_t token = seconds;
 	uint16_t rnd;
 	if (!RAND_bytes((unsigned char*)&rnd, sizeof(rnd))) {

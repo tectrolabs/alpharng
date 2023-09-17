@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,9 +13,9 @@
 
 /**
  *    @file alrngdiag.cpp
- *    @date 03/06/2020
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief A utility used for running the AlphaRNG device diagnostics
  *
@@ -29,14 +29,22 @@
 using namespace alpharng;
 using namespace std;
 
+/**
+* Local functions used
+*/
 static bool display_device_info(AlphaRngApi &rng);
 static bool run_device_diagnostics(AlphaRngApi &rng);
 static bool display_frequency_table_summary(const uint16_t frequency_table[]);
-static bool inspect_raw_data(unsigned char raw_data_1[], unsigned char raw_data_2[]);
+static bool inspect_raw_data(const unsigned char raw_data_1[], const unsigned char raw_data_2[]);
 static bool retrieve_entropy_bytes(AlphaRngApi &rng);
 static bool retrieve_noise_bytes(AlphaRngApi &rng);
 static bool retrieve_test_data(AlphaRngApi &rng);
 
+/**
+ * Application entry point.
+ *
+ * @return 0 when executed successfully
+ */
 int main() {
 
 	AlphaRngApi rng;
@@ -243,9 +251,13 @@ static bool display_device_info(AlphaRngApi &rng) {
  *
  * @return true for successful operation
  */
-static bool inspect_raw_data(unsigned char raw_data_1[], unsigned char raw_data_2[]) {
-	int count1, count2;
-	int minFreq1, minFreq2, maxFreq1, maxFreq2;
+static bool inspect_raw_data(const unsigned char raw_data_1[], const unsigned char raw_data_2[]) {
+	int count1;
+	int count2;
+	int minFreq1;
+	int minFreq2;
+	int maxFreq1;
+	int maxFreq2;
 	uint16_t frequencyTableSource1[256];
 	uint16_t frequencyTableSource2[256];
 	int freqRange1;
@@ -259,8 +271,8 @@ static bool inspect_raw_data(unsigned char raw_data_1[], unsigned char raw_data_
 
 	// Fill the frequency tables
 	for (int i = 0; i < 16000; ++i) {
-		frequencyTableSource1[(uint8_t)raw_data_1[i]]++;
-		frequencyTableSource2[(uint8_t)raw_data_2[i]]++;
+		frequencyTableSource1[raw_data_1[i]]++;
+		frequencyTableSource2[raw_data_2[i]]++;
 	}
 
 	// Calculate min and max values for each table

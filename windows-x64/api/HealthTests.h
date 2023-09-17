@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2022 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,9 +14,9 @@
 
 /**
  *    @file HealthTests.h
- *    @date 08/27/2022
+ *    @date 09/16/2023
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief Implementation for 'Repetition Count' and 'Adaptive Proportion' tests as described in NIST SP.800-90B
  */
@@ -29,7 +29,6 @@
 #include <iostream>
 #include <Structures.h>
 
-using namespace std;
 namespace alpharng {
 
 class HealthTests {
@@ -42,7 +41,7 @@ public:
 	uint16_t get_max_apt_failures() const {return m_max_apt_failures_per_block;}
 
 	HealthTests();
-	virtual ~HealthTests();
+	virtual ~HealthTests() = default;
 private:
 	void rct_restart();
 	void apt_restart();
@@ -52,9 +51,9 @@ private:
 	AptData m_apt;
 	RctData m_rct;
 	const uint8_t c_num_failures_threshold = 5;
-	uint16_t m_max_rct_failures_per_block;
-	uint16_t m_max_apt_failures_per_block;
-	bool m_in_debug_mode;
+	uint16_t m_max_rct_failures_per_block {0};
+	uint16_t m_max_apt_failures_per_block {0};
+	bool m_in_debug_mode {false};
 };
 
 } /* namespace alpharng */
