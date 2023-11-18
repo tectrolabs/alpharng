@@ -323,7 +323,8 @@ void display_help() {
 	cout << "           Set threshold for number of failures per APT and RCT test blocks. Must be between 6 and 255" << endl;
 	cout << endl;
 	cout << "     -le" << endl;
-	cout << "           Log all errors on standard error stream." << endl;
+	cout << "           Log all errors on standard error stream. Use this option with caution as it may result" << endl;
+	cout << "           in flooding the standard error stream with many error messages." << endl;
 	cout << endl;
 	cout << "EXAMPLES:" << endl;
 	cout << "     To start the server using AlphaRNG device with default security settings:" << endl;
