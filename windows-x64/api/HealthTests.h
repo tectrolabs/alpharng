@@ -14,9 +14,9 @@
 
 /**
  *    @file HealthTests.h
- *    @date 09/16/2023
+ *    @date 11/17/2023
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief Implementation for 'Repetition Count' and 'Adaptive Proportion' tests as described in NIST SP.800-90B
  */
@@ -36,6 +36,9 @@ public:
 	void test(const uint8_t *in, int in_length);
 	void restart();
 	bool is_error() const;
+	void enable_tests();
+	void disable_tests();
+	void set_num_failures_threshold(uint8_t num_failures_threshold);
 	uint8_t get_health_status() const;
 	uint16_t get_max_rct_failures() const {return m_max_rct_failures_per_block;}
 	uint16_t get_max_apt_failures() const {return m_max_apt_failures_per_block;}
@@ -47,13 +50,16 @@ private:
 	void apt_restart();
 	void apt_initialize();
 	void rct_initialize();
+public:
+	static const uint8_t s_min_num_failures_threshold {5};
 private:
 	AptData m_apt;
 	RctData m_rct;
-	const uint8_t c_num_failures_threshold = 5;
+	uint8_t m_num_failures_threshold {s_min_num_failures_threshold};
 	uint16_t m_max_rct_failures_per_block {0};
 	uint16_t m_max_apt_failures_per_block {0};
 	bool m_in_debug_mode {false};
+	bool m_tests_enabled {true};
 };
 
 } /* namespace alpharng */

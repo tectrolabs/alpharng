@@ -48,8 +48,7 @@ AppArguments appArgs ({
 	{"-c", ArgDef::requireArgument},
 	{"-p", ArgDef::requireArgument},
 	{"-dt", ArgDef::noArgument},
-	{"-th", ArgDef::requireArgument},
-
+	{"-th", ArgDef::requireArgument}
 });
 
 /**
@@ -490,9 +489,6 @@ void display_help() {
 	cout << "     -t" << endl;
 	cout << "           run AlphaRNG device internal diagnostics." << endl;
 	cout << endl;
-	cout << "     -dt" << endl;
-	cout << "           Disable APT and RCT statistical tests." << endl;
-	cout << endl;
 	cout << "     -h" << endl;
 	cout << "           display help." << endl;
 	cout << endl;
@@ -523,6 +519,9 @@ void display_help() {
 	cout << endl;
 	cout << "     -k FILE" << endl;
 	cout << "           FILE pathname with an alternative RSA 2048 public key, supplied by the manufacturer." << endl;
+	cout << endl;
+	cout << "     -dt" << endl;
+	cout << "           Disable APT and RCT statistical tests." << endl;
 	cout << endl;
 	cout << "     -th NUMBER" << endl;
 	cout << "           Set threshold for number of failures per APT and RCT test blocks. Must be between 6 and 255" << endl;
