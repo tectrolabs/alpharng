@@ -13,7 +13,7 @@
 
 /**
  *    @file alrng.cpp
- *    @date 11/17/2023
+ *    @date 11/18/2023
  *    @Author: Andrian Belinski
  *    @version 2.0
  *
@@ -200,6 +200,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 	cmd.log_statistics = false;
 	cmd.disable_stat_tests = false;
 	cmd.num_failures_threshold = HealthTests::s_min_num_failures_threshold;
+	cmd.err_log_enabled = false;
 
 	cfg.e_mac_type = MacType::None;
 	cfg.e_aes_key_size = KeySize::k256;

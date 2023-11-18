@@ -42,7 +42,8 @@ AppArguments appArgs({
 	{"-i", ArgDef::requireArgument},
 	{"-E", ArgDef::requireArgument},
 	{"-dt", ArgDef::noArgument},
-	{"-th", ArgDef::requireArgument}
+	{"-th", ArgDef::requireArgument},
+	{"-le", ArgDef::noArgument}
 	});
 
 static bool extract_command(Cmd& cmd, RngConfig& cfg, const int argc, const char** argv);
@@ -119,6 +120,7 @@ static bool extract_command(Cmd& cmd, RngConfig& cfg, const int argc, const char
 	cmd.pipe_instances = EntropyServer::c_default_pipe_instances;
 	cmd.disable_stat_tests = false;
 	cmd.num_failures_threshold = HealthTests::s_min_num_failures_threshold;
+	cmd.err_log_enabled = false;
 
 	cfg.e_mac_type = MacType::None;
 	cfg.e_aes_key_size = KeySize::k256;
@@ -147,6 +149,9 @@ static bool extract_command(Cmd& cmd, RngConfig& cfg, const int argc, const char
 		case 'e':
 			cmd.cmd_type = CmdOpt::getEntropy;
 			cmd.op_count++;
+			break;
+		case 'l':
+			cmd.err_log_enabled = true;
 			break;
 		case 'k':
 			cfg.key_file = value;
@@ -316,6 +321,9 @@ void display_help() {
 	cout << endl;
 	cout << "     -th NUMBER" << endl;
 	cout << "           Set threshold for number of failures per APT and RCT test blocks. Must be between 6 and 255" << endl;
+	cout << endl;
+	cout << "     -le" << endl;
+	cout << "           Log all errors on standard error stream." << endl;
 	cout << endl;
 	cout << "EXAMPLES:" << endl;
 	cout << "     To start the server using AlphaRNG device with default security settings:" << endl;

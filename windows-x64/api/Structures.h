@@ -12,7 +12,7 @@
 
 /**
  *    @file Structures.h
- *    @date 11/17/2023
+ *    @date 11/18/2023
  *    @Author: Andrian Belinski
  *    @version 1.5
  *
@@ -112,6 +112,7 @@ struct Cmd {
 	bool log_statistics;
 	bool disable_stat_tests;
 	int num_failures_threshold;
+	bool err_log_enabled;
 };
 struct DeviceStatistics {
 	// Used for measuring performance
