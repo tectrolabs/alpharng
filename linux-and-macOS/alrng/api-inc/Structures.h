@@ -12,9 +12,9 @@
 
 /**
  *    @file Structures.h
- *    @date 09/16/2023
+ *    @date 11/18/2023
  *    @Author: Andrian Belinski
- *    @version 1.4
+ *    @version 1.5
  *
  *    @brief Data structures used in the API implementation.
  */
@@ -110,6 +110,9 @@ struct Cmd {
 	int device_number;
 	int pipe_instances;
 	bool log_statistics;
+	bool disable_stat_tests;
+	int num_failures_threshold;
+	bool err_log_enabled;
 };
 struct DeviceStatistics {
 	// Used for measuring performance

@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.h
- *    @date 09/16/2023
+ *    @date 11/17/2023
  *    @Author: Andrian Belinski
- *    @version 1.5
+ *    @version 1.6
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -85,6 +85,9 @@ public:
 	bool noise_source_one_to_file(const std::string &file_path_name, const int64_t num_bytes);
 	bool noise_source_two_to_file(const std::string &file_path_name, const int64_t num_bytes);
 	bool noise_to_file(const std::string &file_path_name, int64_t num_bytes);
+	void disable_stat_tests();
+	void enable_stat_tests();
+	void set_num_failures_threshold(uint8_t num_failures_threshold);
 	HealthTests get_health_tests() const {return m_health_test;}
 	int get_operation_retry_count() const {return m_op_retry_count;}
 	AlphaRngConfig& get_configuration() { return m_cfg; }

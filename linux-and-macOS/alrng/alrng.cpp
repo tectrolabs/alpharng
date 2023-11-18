@@ -13,9 +13,9 @@
 
 /**
  *    @file alrng.cpp
- *    @date 9/16/2023
+ *    @date 11/18/2023
  *    @Author: Andrian Belinski
- *    @version 1.9
+ *    @version 2.0
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
@@ -47,12 +47,14 @@ AppArguments appArgs ({
 	{"-k", ArgDef::requireArgument},
 	{"-c", ArgDef::requireArgument},
 	{"-p", ArgDef::requireArgument},
+	{"-dt", ArgDef::noArgument},
+	{"-th", ArgDef::requireArgument}
 });
 
 /**
 * Current version of this utility application
 */
-static double const version = 1.9;
+static double const version = 2.0;
 
 /**
 * Local functions used
@@ -103,6 +105,12 @@ int main(const int argc, const char **argv) {
 	reset_statistics(&ds);
 
 	bool status = false;
+	if (cmd.disable_stat_tests == true) {
+		rng.disable_stat_tests();
+	}
+
+	rng.set_num_failures_threshold(cmd.num_failures_threshold);
+
 	switch (cmd.cmd_type) {
 	case CmdOpt::getEntropy:
 		status = rng.entropy_to_file(cmd.out_file_name, cmd.num_bytes);
@@ -124,6 +132,9 @@ int main(const int argc, const char **argv) {
 		break;
 	case CmdOpt::runDiagnostics:
 		status = rng.run_health_test();
+		if (status) {
+			cout << "OK" << endl;
+		}
 		break;
 	case CmdOpt::listDevices:
 		cmd.log_statistics = false;
@@ -138,15 +149,28 @@ int main(const int argc, const char **argv) {
 		cerr << "Invalid option: " << (int)cmd.cmd_type << endl;
 		return -1;
 	}
+
 	if (!status) {
 		cerr << "Err: " << rng.get_last_error() << endl;
 		return -1;
 	}
+
 	generate_statistics(ds, cmd);
 	if (cmd.log_statistics) {
-		cout << "Recorded " << cmd.num_bytes << " bytes to " << cmd.out_file_name << " file, download speed: " << ds.download_speed_kbsec << " KB/sec";
-		cout << ", retries: " << rng.get_operation_retry_count();
-		cout << ", max RCT/APT block events: " << rng.get_health_tests().get_max_rct_failures() << "/" << rng.get_health_tests().get_max_apt_failures() << endl;
+		switch (cmd.cmd_type) {
+		case CmdOpt::getEntropy:
+		case CmdOpt::extractSha256Entropy:
+		case CmdOpt::extractSha512Entropy:
+		case CmdOpt::getNoiseSourceOne:
+		case CmdOpt::getNoiseSourceTwo:
+		case CmdOpt::getNoise:
+			cout << "Recorded " << cmd.num_bytes << " bytes to " << cmd.out_file_name << " file, download speed: " << ds.download_speed_kbsec << " KB/sec";
+			cout << ", retries: " << rng.get_operation_retry_count();
+			cout << ", max RCT/APT block events: " << rng.get_health_tests().get_max_rct_failures() << "/" << rng.get_health_tests().get_max_apt_failures() << endl;
+			break;
+		default:
+			break;
+		}
 	}
 	return 0;
 }
@@ -174,6 +198,9 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 	cmd.out_file_name = "";
 	cmd.cmd_type = CmdOpt::none;
 	cmd.log_statistics = false;
+	cmd.disable_stat_tests = false;
+	cmd.num_failures_threshold = HealthTests::s_min_num_failures_threshold;
+	cmd.err_log_enabled = false;
 
 	cfg.e_mac_type = MacType::None;
 	cfg.e_aes_key_size = KeySize::k256;
@@ -221,8 +248,16 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 			cmd.op_count++;
 			break;
 		case 't':
-			cmd.cmd_type = CmdOpt::runDiagnostics;
-			cmd.op_count++;
+			if (option.length() == 3 && option.at(2) == 'h') {
+				cmd.num_failures_threshold = atoi(value.c_str());
+				if (cmd.num_failures_threshold < 6 || cmd.num_failures_threshold > 255) {
+					cerr << "unexpected threshold for number of failures, must be between 6 and 255" << endl;
+					return false;
+				}
+			} else {
+				cmd.cmd_type = CmdOpt::runDiagnostics;
+				cmd.op_count++;
+			}
 			break;
 		case 'r':
 			cmd.cmd_type = CmdOpt::getNoise;
@@ -291,7 +326,11 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 			return false;
 			break;
 		case 'd':
-			cmd.device_number = atoi(value.c_str());
+			if (option.length() == 3 && option.at(2) == 't') {
+				cmd.disable_stat_tests = true;
+			} else {
+				cmd.device_number = atoi(value.c_str());
+			}
 			break;
 		case 's':
 			cmd.log_statistics = true;
@@ -481,6 +520,12 @@ void display_help() {
 	cout << endl;
 	cout << "     -k FILE" << endl;
 	cout << "           FILE pathname with an alternative RSA 2048 public key, supplied by the manufacturer." << endl;
+	cout << endl;
+	cout << "     -dt" << endl;
+	cout << "           Disable APT and RCT statistical tests." << endl;
+	cout << endl;
+	cout << "     -th NUMBER" << endl;
+	cout << "           Set threshold for number of failures per APT and RCT test blocks. Must be between 6 and 255" << endl;
 	cout << endl;
 	cout << "     -s" << endl;
 	cout << "           Log statistics such as file name, amount of bytes downloaded, download speed, e.t.c " << endl;

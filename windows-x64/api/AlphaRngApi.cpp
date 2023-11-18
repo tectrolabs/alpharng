@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.cpp
- *    @date 09/16/2023
+ *    @date 11/17/2023
  *    @Author: Andrian Belinski
- *    @version 1.8
+ *    @version 1.9
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -1433,6 +1433,29 @@ void AlphaRngApi::clear_error_log() {
 	if (m_device) {
 		m_device->clear_error_log();
 	}
+}
+
+/**
+ * Disable statistical tests
+ */
+void AlphaRngApi::disable_stat_tests() {
+	m_health_test.disable_tests();
+}
+
+/**
+ * Enable statistical tests
+ */
+void AlphaRngApi::enable_stat_tests() {
+	m_health_test.enable_tests();
+}
+
+/**
+ * Set the threshold for the number of failures per APT and RCT test blocks
+ *
+ * @param[in] num_failures_threshold must be greater than 5
+ */
+void AlphaRngApi::set_num_failures_threshold(uint8_t num_failures_threshold) {
+	m_health_test.set_num_failures_threshold(num_failures_threshold);
 }
 
 AlphaRngApi::~AlphaRngApi() {
