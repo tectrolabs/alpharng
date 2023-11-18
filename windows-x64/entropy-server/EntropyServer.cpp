@@ -618,7 +618,14 @@ bool EntropyServer::retrieve_server_major_version(DWORD idx) {
 */
 void EntropyServer::log_device_error() {
 	if (m_cmd->err_log_enabled) {
-		cerr << "Device latest error message: " << m_rng->get_last_error() << endl;
+
+		auto now = std::chrono::system_clock::now();
+		auto time_t_now = std::chrono::system_clock::to_time_t(now);
+		char str[30]{ };
+		ctime_s(str, sizeof(str), &time_t_now);
+		std::string s(str);
+		std::replace(s.begin(), s.end(), '\n', '\0');
+		cerr << s << ": " << "Device latest error message : " << m_rng->get_last_error() << endl;
 	}
 }
 
