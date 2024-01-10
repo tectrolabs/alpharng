@@ -1,7 +1,7 @@
 /**
- *    @file sample.c
- *    @date 09/16/2023
- *    @version 1.3
+ *    @file sample_c.c
+ *    @date 1/9/2024
+ *    @version 1.4
  *
  *    @brief A C example that utilizes a C wrapper around the C++ API for communicating with the AlphaRNG device.
  */

@@ -1,4 +1,4 @@
-/**1 Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+/**1 Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -11,9 +11,9 @@
 
 /**
  *    @file UsbSerialDevice.cpp
- *    @date 9/16/2023
+ *    @date 1/9/2024
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief Implements the API for communicating with the CDC USB interface
  */
@@ -221,7 +221,7 @@ void UsbSerialDevice::scan_available_devices() {
 #ifdef __linux__
 	char command[] = "/bin/ls -1l /dev/serial/by-id 2>&1 | grep -i \"TectroLabs_Alpha_RNG\"";
 #else
-	char command[] = "/bin/ls -1a /dev/cu.usbmodemALPHARNG* /dev/cu.usbmodemFD* 2>&1";
+	char command[] = "/bin/ls -1a /dev/cu.usbmodemALPHARNG* /dev/cu.usbmodemF* 2>&1";
 #endif
 	FILE *pf = popen(command,"r");
 	if (pf == nullptr) {
@@ -237,7 +237,7 @@ void UsbSerialDevice::scan_available_devices() {
 		}
 #else
 		int cmp1  = strncmp(line, "/dev/cu.usbmodemALPHARNG", 24);
-		int cmp2  = strncmp(line, "/dev/cu.usbmodemFD", 18);
+		int cmp2  = strncmp(line, "/dev/cu.usbmodemF", 17);
 		if (cmp1 != 0 && cmp2 != 0 ) {
 			continue;
 		}
