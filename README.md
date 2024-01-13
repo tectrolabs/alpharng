@@ -7,6 +7,7 @@ AlphaRNG device is a true random number generator that plugs directly into any L
 The AlphaRNG device works with virtual machines using software such as VMware Player, VMware ESXi, VirtualBox, and Parallels. 
 
 * [AlphaRNG quick start guide](https://tectrolabs.com/docs/alpharng/quick-start/)
+* [AlphaRNG Documentation](https://tectrolabs.com/docs/alpharng/)
 * [More about AlphaRNG](https://tectrolabs.com/alpharng/)
 
 ## Contents
