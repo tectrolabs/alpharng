@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2021 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
  /**
   *    @file WinUsbSerialDevice.h
-  *    @date 03/06/2020
+  *    @date 03/24/2024
   *    @Author: Andrian Belinski
-  *    @version 1.1
+  *    @version 1.2
   *
   *    @brief Implements the API for communicating with the AlphaRNG device
   */
@@ -26,6 +26,7 @@
 #include <initguid.h>
 #include <windows.h>
 #include <Setupapi.h>
+#include <cfgmgr32.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <tchar.h>
@@ -60,7 +61,7 @@ private:
 	void set_error_message(const char* error_message);
 	void purge_comm_data();
 	void clear_comm_error();
-	void get_connected_ports(int ports[], int max_ports, int* actual_count, WCHAR* hardware_id);
+	void get_connected_ports(int ports[], int max_ports, int* actual_count, WCHAR* hardware_id, WCHAR* serial_id);
 
 private:
 	static const int c_max_devices = 25;
