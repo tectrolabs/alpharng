@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file UsbSerialDevice.h
- *    @date 09/16/2023
+ *    @date 06/23/2024
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.3
  *
  *    @brief Implements the API for communicating with the AlphaRNG device
  */
@@ -30,6 +30,10 @@
 #include <sys/types.h>
 #include <sys/file.h>
 #include <cstdint>
+
+#ifdef __FreeBSD__
+#include <sys/param.h>
+#endif
 
 #include <DeviceInterface.h>
 

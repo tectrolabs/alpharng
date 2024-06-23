@@ -1,4 +1,4 @@
-/**1 Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+/** Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -11,9 +11,9 @@
 
 /**
  *    @file UsbSerialDevice.cpp
- *    @date 1/9/2024
+ *    @date 6/23/2024
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief Implements the API for communicating with the CDC USB interface
  */
@@ -270,6 +270,7 @@ void UsbSerialDevice::scan_available_devices() {
 void UsbSerialDevice::scan_available_devices() {
 	m_active_device_count = 0;
 	bool device_candidate = false;
+
 	char command[] = "usbconfig show_ifdrv | grep -E \"TectroLabs Alpha RNG|VCOM\" | grep -vi \"(tectrolabs)\"";
 	FILE *pf = popen(command,"r");
 	if (pf == nullptr) {
@@ -283,8 +284,13 @@ void UsbSerialDevice::scan_available_devices() {
 			continue;
 		}
 		if (device_candidate) {
+
+		#if __FreeBSD_version < 1400000
 			if (strstr(line, "VCOM") != nullptr && strstr(line, "umodem") != nullptr) {
-				// Found VCOM description. Extract 'cuaU' number.
+		#else
+			if (strstr(line, "umodem") != nullptr) {
+		#endif
+				// Found description. Extract 'cuaU' number.
 				char *p = strstr(line, "umodem");
 				if (p == nullptr) {
 					continue;
