@@ -13,9 +13,9 @@
 
 /**
  *    @file alrng.cpp
- *    @date 1/9/2024
+ *    @date 07/20/2024
  *    @Author: Andrian Belinski
- *    @version 2.1
+ *    @version 2.2
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
@@ -48,13 +48,14 @@ AppArguments appArgs ({
 	{"-c", ArgDef::requireArgument},
 	{"-p", ArgDef::requireArgument},
 	{"-dt", ArgDef::noArgument},
-	{"-th", ArgDef::requireArgument}
+	{"-th", ArgDef::requireArgument},
+	{"-ttl", ArgDef::requireArgument}
 });
 
 /**
 * Current version of this utility application
 */
-static double const version = 2.1;
+static double const version = 2.2;
 
 /**
 * Local functions used
@@ -96,6 +97,11 @@ int main(const int argc, const char **argv) {
 	}
 
 	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
+
+	if (!rng.set_session_ttl(cmd.ttl_minutes)) {
+		cerr << rng.get_last_error() << endl;
+		return -1;
+	}
 
 	if (cmd.cmd_type != CmdOpt::listDevices && cmd.cmd_type != CmdOpt::getHelp && !rng.connect(cmd.device_number)) {
 		cerr << rng.get_last_error() << endl;
@@ -165,7 +171,7 @@ int main(const int argc, const char **argv) {
 		case CmdOpt::getNoiseSourceTwo:
 		case CmdOpt::getNoise:
 			cout << "Recorded " << cmd.num_bytes << " bytes to " << cmd.out_file_name << " file, download speed: " << ds.download_speed_kbsec << " KB/sec";
-			cout << ", retries: " << rng.get_operation_retry_count();
+			cout << ", retries: " << rng.get_operation_retry_count() << ", sessions: " << rng.get_session_count();
 			cout << ", max RCT/APT block events: " << rng.get_health_tests().get_max_rct_failures() << "/" << rng.get_health_tests().get_max_apt_failures() << endl;
 			break;
 		default:
@@ -201,6 +207,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 	cmd.disable_stat_tests = false;
 	cmd.num_failures_threshold = HealthTests::s_min_num_failures_threshold;
 	cmd.err_log_enabled = false;
+	cmd.ttl_minutes = 0;
 
 	cfg.e_mac_type = MacType::None;
 	cfg.e_aes_key_size = KeySize::k256;
@@ -208,9 +215,9 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 
 
 	map<string, string> arg_map = appArgs.get_argument_map();
-    for (map<string, string>::iterator it = arg_map.begin(); it != arg_map.end(); ++it)	{
-    	string option = it->first;
-    	string value = it->second;
+	for (auto const& map : arg_map)	{
+    	string option = map.first;
+    	string value = map.second;
 
     	if (option.length() <= 1) {
     		cerr << "Invalid option: " << option << endl;
@@ -248,15 +255,29 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 			cmd.op_count++;
 			break;
 		case 't':
-			if (option.length() == 3 && option.at(2) == 'h') {
-				cmd.num_failures_threshold = atoi(value.c_str());
-				if (cmd.num_failures_threshold < 6 || cmd.num_failures_threshold > 255) {
+			if (option.length() == 2) {
+				cmd.cmd_type = CmdOpt::runDiagnostics;
+				cmd.op_count++;
+				break;
+			} else if (option.length() == 4 && option.at(2) == 't' && option.at(3) == 'l') {
+				int val = atoi(value.c_str());
+				if (val < 1) {
+					cerr << "unexpected ttl " << val << " value, must be a positive number in minutes" << endl;
+					return false;
+				}
+				cmd.ttl_minutes = val;
+				break;
+			} else if (option.length() == 3 && option.at(2) == 'h') {
+				int val = atoi(value.c_str());
+				if (val < 6 || val > 255) {
 					cerr << "unexpected threshold for number of failures, must be between 6 and 255" << endl;
 					return false;
 				}
+				cmd.num_failures_threshold = val;
+				break;
 			} else {
-				cmd.cmd_type = CmdOpt::runDiagnostics;
-				cmd.op_count++;
+				cerr << "unexpected option " << option << endl;
+				return false;
 			}
 			break;
 		case 'r':
@@ -352,12 +373,12 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
  */
 static bool validate_comand(const Cmd &cmd) {
 	if (cmd.op_count > 1) {
-		cerr << "Too many 'get' options specified, choose only one" << endl;
+		cerr << "Too many operation modes specified, choose only one" << endl;
 		return false;
 	}
 
 	if (cmd.op_count == 0) {
-		cerr << "No function letter specified. Use -h for help" << endl;
+		cerr << "No operation mode specified. Use -h for help" << endl;
 		return false;
 	}
 
@@ -442,7 +463,7 @@ static void generate_statistics(DeviceStatistics &ds, const Cmd &cmd) {
 /**
  * Display usage
  */
-void display_help() {
+static void display_help() {
 	cout << "*********************************************************************************" << endl;
 	cout << "             TectroLabs - alrng - AlphaRNG download utility Ver ";
 	cout << std::fixed << std::setw(2) << std::setprecision(1) << version << endl;
@@ -526,6 +547,11 @@ void display_help() {
 	cout << endl;
 	cout << "     -th NUMBER" << endl;
 	cout << "           Set threshold for number of failures per APT and RCT test blocks. Must be between 6 and 255" << endl;
+	cout << endl;
+	cout << "     -ttl MINUTES" << endl;
+	cout << "           Set session time to live in minutes. A new session will be created every specified " << endl;
+	cout << "           amount of minutes within a connection. MINUTES must be a positive number." << endl;
+	cout << "           Skip this option if session should never expire for a connection." << endl;
 	cout << endl;
 	cout << "     -s" << endl;
 	cout << "           Log statistics such as file name, amount of bytes downloaded, download speed, e.t.c " << endl;

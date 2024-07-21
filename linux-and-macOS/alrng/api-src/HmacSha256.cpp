@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,9 +14,9 @@
 
 /**
  *    @file HmacSha256.cpp
- *    @date 9/16/2023
+ *    @date 07/20/2024
  *    @Author: Andrian Belinski
- *    @version 1.4
+ *    @version 1.5
  *
  *    @brief Implements an API used for generating a HmacSHA256 message authentication digest for communicating with the AlphaRNG device.
  */
@@ -51,7 +51,7 @@ bool HmacSha256::generate_new_key() {
  * @return true if MAC generated successfully
  */
 bool HmacSha256::hmac(const unsigned char *in, int in_byte_count, unsigned char *out) {
-	unsigned char *result = HMAC(EVP_sha256(), m_key, c_key_size_bytes, in, in_byte_count, nullptr, nullptr);
+	const unsigned char *result = HMAC(EVP_sha256(), m_key, c_key_size_bytes, in, in_byte_count, nullptr, nullptr);
 	if (result == nullptr) {
 		return false;
 	}
