@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,9 +14,9 @@
 
 /**
  *    @file RsaCryptor.cpp
- *    @date 9/16/2023
+ *    @date 07/20/2024
  *    @Author: Andrian Belinski
- *    @version 1.6
+ *    @version 1.7
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device.
  */
@@ -96,9 +96,9 @@ RsaCryptor::RsaCryptor(const string &key_file_name, bool is_public) {
 		return;
 	}
 
-	is_file.seekg(0, is_file.end);
+	is_file.seekg(0, ifstream::end);
 	int length = (int)is_file.tellg();
-	is_file.seekg(0, is_file.beg);
+	is_file.seekg(0, ifstream::beg);
 
 	if (length <= 0 || length > c_m_file_pub_key_max_size_bytes) {
 		return;

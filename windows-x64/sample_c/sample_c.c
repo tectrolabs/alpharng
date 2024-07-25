@@ -1,7 +1,7 @@
 /**
- *    @file sample.c
- *    @date 09/16/2023
- *    @version 1.3
+ *    @file sample_c.c
+ *    @date 07/20/2024
+ *    @version 1.5
  *
  *    @brief A C example that utilizes a C wrapper around the C++ API for communicating with the AlphaRNG device.
  */
@@ -24,13 +24,14 @@ struct rng_data {
 	uint16_t freq_table_1[256];
 	uint16_t freq_table_2[256];
 	char device_path[128];
-} rng_data;
+};
 
 /*
   *** MAIN ***
 */
 int main() {
 
+	struct rng_data rand_data;
 	int call_ret_value;
 	int ret_val;
 	int i;
@@ -49,85 +50,85 @@ int main() {
 	}
 
 	/* Retrieve number of AlphaRNG devices connected */
-	rng_data.device_count = alrng_get_device_count(ctxt);
+	rand_data.device_count = alrng_get_device_count(ctxt);
 
 	/* Retrieving device path */
-	call_ret_value = alrng_retrieve_device_path(ctxt, rng_data.device_path, sizeof(rng_data.device_path), 0);
+	call_ret_value = alrng_retrieve_device_path(ctxt, rand_data.device_path, sizeof(rand_data.device_path), 0);
 	if (call_ret_value) {
 		goto error;
 	}
 
 	/* Retrieve device rng status */
-	call_ret_value = alrng_retrieve_rng_status(ctxt, &rng_data.rng_status);
+	call_ret_value = alrng_retrieve_rng_status(ctxt, &rand_data.rng_status);
 	if (call_ret_value) {
 		goto error;
 	}
 
 	/* Retrieve device serial number */
-	call_ret_value = alrng_retrieve_device_id(ctxt, rng_data.device_id, sizeof(rng_data.device_id));
+	call_ret_value = alrng_retrieve_device_id(ctxt, rand_data.device_id, sizeof(rand_data.device_id));
 	if (call_ret_value) {
 		goto error;
 	}
 
 	/* Retrieve device model */
-	call_ret_value = alrng_retrieve_device_model(ctxt, rng_data.device_model, sizeof(rng_data.device_model));
+	call_ret_value = alrng_retrieve_device_model(ctxt, rand_data.device_model, sizeof(rand_data.device_model));
 	if (call_ret_value) {
 		goto error;
 	}
 
 	/* Retrieve device major version */
-	call_ret_value = alrng_retrieve_device_major_version(ctxt, &rng_data.major_version);
+	call_ret_value = alrng_retrieve_device_major_version(ctxt, &rand_data.major_version);
 	if (call_ret_value) {
 		goto error;
 	}
 
 	/* Retrieve device minor version */
-	call_ret_value = alrng_retrieve_device_minor_version(ctxt, &rng_data.minor_version);
+	call_ret_value = alrng_retrieve_device_minor_version(ctxt, &rand_data.minor_version);
 	if (call_ret_value) {
 		goto error;
 	}
 
 	/* Run device diagnostics */
-	rng_data.health_status = alrng_run_health_test(ctxt);
+	rand_data.health_status = alrng_run_health_test(ctxt);
 
 	/* Retrieve noise from source 1 */
-	call_ret_value = alrng_get_noise_source_1(ctxt, rng_data.random_buffer, sizeof(rng_data.random_buffer));
+	call_ret_value = alrng_get_noise_source_1(ctxt, rand_data.random_buffer, sizeof(rand_data.random_buffer));
 	if (call_ret_value) {
 		goto error;
 	}
 
 	/* Retrieve noise from source 2 */
-	call_ret_value = alrng_get_noise_source_2(ctxt, rng_data.random_buffer, sizeof(rng_data.random_buffer));
+	call_ret_value = alrng_get_noise_source_2(ctxt, rand_data.random_buffer, sizeof(rand_data.random_buffer));
 	if (call_ret_value) {
 		goto error;
 	}
 
 	/* Retrieve entropy using SHA-256 entropy extractor */
-	call_ret_value = alrng_extract_sha256_entropy(ctxt, rng_data.random_buffer, sizeof(rng_data.random_buffer));
+	call_ret_value = alrng_extract_sha256_entropy(ctxt, rand_data.random_buffer, sizeof(rand_data.random_buffer));
 	if (call_ret_value) {
 		goto error;
 	}
 
 	/* Retrieve entropy using SHA-512 entropy extractor */
-	call_ret_value = alrng_extract_sha512_entropy(ctxt, rng_data.random_buffer, sizeof(rng_data.random_buffer));
+	call_ret_value = alrng_extract_sha512_entropy(ctxt, rand_data.random_buffer, sizeof(rand_data.random_buffer));
 	if (call_ret_value) {
 		goto error;
 	}
 
 	/* Retrieve noise from device */
-	call_ret_value = alrng_get_noise(ctxt, rng_data.random_buffer, sizeof(rng_data.random_buffer));
+	call_ret_value = alrng_get_noise(ctxt, rand_data.random_buffer, sizeof(rand_data.random_buffer));
 	if (call_ret_value) {
 		goto error;
 	}
 
 	/* Retrieve test data */
-	call_ret_value = alrng_get_test_data(ctxt, rng_data.test_data_buffer, sizeof(rng_data.test_data_buffer));
+	call_ret_value = alrng_get_test_data(ctxt, rand_data.test_data_buffer, sizeof(rand_data.test_data_buffer));
 	if (call_ret_value) {
 		goto error;
 	}
 
 	/* Retrieve entropy */
-	call_ret_value = alrng_get_entropy(ctxt, rng_data.entropy_buffer, sizeof(rng_data.entropy_buffer));
+	call_ret_value = alrng_get_entropy(ctxt, rand_data.entropy_buffer, sizeof(rand_data.entropy_buffer));
 	if (call_ret_value) {
 		goto error;
 	}
@@ -169,7 +170,7 @@ int main() {
 	}
 
 	/* Retrieve device frequency tables from noise sources */
-	call_ret_value = alrng_retrieve_frequency_tables(ctxt, rng_data.freq_table_1, rng_data.freq_table_1);
+	call_ret_value = alrng_retrieve_frequency_tables(ctxt, rand_data.freq_table_1, rand_data.freq_table_1);
 	if (call_ret_value) {
 		goto error;
 	}
@@ -179,24 +180,24 @@ int main() {
 	printf("========================================\n");
 	printf("             sample_c.c\n");
 	printf("========================================\n");
-	printf("device path: %s\n", rng_data.device_path);
-	printf("device count: %d\n", rng_data.device_count);
-	printf("device rng status: %d\n", (int)rng_data.rng_status);
-	printf("device serial number: %s\n", rng_data.device_id);
-	printf("device model: %s\n", rng_data.device_model);
-	printf("device major version: %d\n", (int)rng_data.major_version);
-	printf("device minor version: %d\n", (int)rng_data.minor_version);
-	printf("device health status (0 - good): %d\n", rng_data.health_status);
+	printf("device path: %s\n", rand_data.device_path);
+	printf("device count: %d\n", rand_data.device_count);
+	printf("device rng status: %d\n", (int)rand_data.rng_status);
+	printf("device serial number: %s\n", rand_data.device_id);
+	printf("device model: %s\n", rand_data.device_model);
+	printf("device major version: %d\n", (int)rand_data.major_version);
+	printf("device minor version: %d\n", (int)rand_data.minor_version);
+	printf("device health status (0 - good): %d\n", rand_data.health_status);
 	printf("device test data: ");
 
-	for (i = 0; i < (int)sizeof(rng_data.test_data_buffer); i++) {
-		printf("%d ", rng_data.test_data_buffer[i]);
+	for (i = 0; i < (int)sizeof(rand_data.test_data_buffer); i++) {
+		printf("%d ", rand_data.test_data_buffer[i]);
 	}
 	printf("\n");
 	printf("sample entropy bytes: ");
 
-	for (i = 0; i < (int)sizeof(rng_data.entropy_buffer); i++) {
-		printf("%d ", rng_data.entropy_buffer[i]);
+	for (i = 0; i < (int)sizeof(rand_data.entropy_buffer); i++) {
+		printf("%d ", rand_data.entropy_buffer[i]);
 	}
 	printf("\n");
 	goto close_and_exit;
@@ -206,9 +207,9 @@ error:
 	if (ret_val == -1) {
 		printf("Function invoked with an invalid argument\n");
 	} else {
-		ret_val = alrng_get_last_error(ctxt, rng_data.device_error_message, sizeof(rng_data.device_error_message));
+		ret_val = alrng_get_last_error(ctxt, rand_data.device_error_message, sizeof(rand_data.device_error_message));
 		if (!ret_val) {
-			printf("%s\n", rng_data.device_error_message);
+			printf("%s\n", rand_data.device_error_message);
 		}
 	}
 

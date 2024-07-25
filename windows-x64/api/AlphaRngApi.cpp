@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.cpp
- *    @date 11/17/2023
+ *    @date 07/20/2024
  *    @Author: Andrian Belinski
- *    @version 1.9
+ *    @version 1.10
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -198,7 +198,8 @@ bool AlphaRngApi::initialize_entropy_extractor(ShaInterface *sha_api) {
 }
 
 /**
- * Check to see if connection is successfully established with the device
+ * Check to see if connection is successfully established with the device.
+ * It will create a new session if current session expired.
  *
  * @return true if connection has been successfully established
  */
@@ -206,7 +207,13 @@ bool AlphaRngApi::is_connected() {
 	if (!is_initialized()) {
 		return false;
 	}
-	return m_device->is_connected();
+	bool status = m_device->is_connected();
+	if (status) {
+		if (m_time_to_live_mins > 0 && time(nullptr) > m_expire_time_secs) {
+			status = create_new_session();
+		}
+	}
+	return status;
 }
 
 /**
@@ -875,7 +882,7 @@ bool AlphaRngApi::retrieve_device_info(DeviceInfo *device_info) {
  *
  */
 bool AlphaRngApi::connect(int device_number) {
-	if (!is_initialized() || is_connected()) {
+	if (!is_initialized() || m_device->is_connected()) {
 		return false;
 	}
 
@@ -910,43 +917,7 @@ bool AlphaRngApi::connect_internal(int device_number) {
 		return false;
 	}
 
-	clear_receiver();
-
-	// Set connection time out for a slow operation
-	if (!m_device->set_connection_timeout(c_slow_timeout_mlsecs)) {
-		m_error_log_oss << "Could not set connection timeout value: " << c_slow_timeout_mlsecs << ". " << endl;
-		return false;
-
-	}
-
-	// Create a new MAC key as part of the session key
-	if (m_cfg.e_mac_type != MacType::None && !m_hmac->generate_new_key()) {
-		m_error_log_oss << "Could not generate MAC key for new session" << ". " << endl;
-		return false;
-	}
-
-	// Create a new cipher key as part of the session key
-	if (!initialize_aes(m_cfg.e_aes_key_size)) {
-		m_error_log_oss << "Could not generate cipher key for new session" << ". " << endl;
-		return false;
-	}
-
-	if (!upload_session_key()) {
-		m_error_log_oss << "Could not upload the session key" << ". " << endl;
-		return false;
-	}
-
-	// Set connection time out for fast operations
-	if (!m_device->set_connection_timeout(c_fast_timeout_mlsecs)) {
-		m_error_log_oss << "Could not set connection timeout to: " << c_fast_timeout_mlsecs << ". " << endl;
-		return false;
-	}
-
-	if (!retrieve_device_info(&m_device_info)) {
-		m_error_log_oss << "Could not retrieve device information" << ". " << endl;
-		return false;
-	}
-	return true;
+	return create_new_session();
 }
 
 /**
@@ -1017,6 +988,53 @@ bool AlphaRngApi::clear_receiver() {
 	unsigned char clear_buffer[128];
 	int bytes_received;
 	while (!m_device->receive_data(clear_buffer, sizeof(clear_buffer), &bytes_received));
+	return true;
+}
+
+bool AlphaRngApi::create_new_session() {
+
+	clear_receiver();
+
+	// Set connection time out for a slow operation
+	if (!m_device->set_connection_timeout(c_slow_timeout_mlsecs)) {
+		m_error_log_oss << "Could not set connection timeout value: " << c_slow_timeout_mlsecs << ". " << endl;
+		return false;
+
+	}
+
+	// Create a new MAC key as part of the session key
+	if (m_cfg.e_mac_type != MacType::None && !m_hmac->generate_new_key()) {
+		m_error_log_oss << "Could not generate MAC key for new session" << ". " << endl;
+		return false;
+	}
+
+	// Create a new cipher key as part of the session key
+	if (!initialize_aes(m_cfg.e_aes_key_size)) {
+		m_error_log_oss << "Could not generate cipher key for new session" << ". " << endl;
+		return false;
+	}
+
+	if (!upload_session_key()) {
+		m_error_log_oss << "Could not upload the session key" << ". " << endl;
+		return false;
+	}
+
+	// Set connection time out for fast operations
+	if (!m_device->set_connection_timeout(c_fast_timeout_mlsecs)) {
+		m_error_log_oss << "Could not set connection timeout to: " << c_fast_timeout_mlsecs << ". " << endl;
+		return false;
+	}
+
+	if (m_time_to_live_mins > 0) {
+		m_expire_time_secs = time(nullptr) + (m_time_to_live_mins * 60);
+	}
+
+	if (!retrieve_device_info(&m_device_info)) {
+		m_error_log_oss << "Could not retrieve device information" << ". " << endl;
+		return false;
+	}
+
+	m_session_count++;
 	return true;
 }
 
@@ -1456,6 +1474,22 @@ void AlphaRngApi::enable_stat_tests() {
  */
 void AlphaRngApi::set_num_failures_threshold(uint8_t num_failures_threshold) {
 	m_health_test.set_num_failures_threshold(num_failures_threshold);
+}
+
+/**
+ * Set session time to live. When session expires then a new session
+ * is created over current connection. By default, the session expiration is disabled.
+ *
+ * @param[in] time_to_live_mins sets the session time to live in minutes, 0 - disable expiration.
+ * @return true for successful operation
+ */
+bool AlphaRngApi::set_session_ttl(time_t time_to_live_mins) {
+	if (time_to_live_mins < 0) {
+		m_error_log_oss << "Session ttl " << time_to_live_mins << " cannot be negative." << endl;
+		return false;
+	}
+	m_time_to_live_mins = time_to_live_mins;
+	return true;
 }
 
 AlphaRngApi::~AlphaRngApi() {
