@@ -4,7 +4,7 @@ This repository contains the AlphaRNG Software Kit, which provides access to the
 over a secure channel.
 
 AlphaRNG device is a true random number generator that plugs directly into any Linux, macOS, freeBSD and 64 bit Windows computer via USB. 
-The AlphaRNG device works with virtual machines using software such as VMware Player, VMware ESXi, VirtualBox, and Parallels. 
+The AlphaRNG device can be integrated with hardware platforms such as RPI 4/5 and with ARM based hardware design solutions that run embedded Linux.
 
 * [AlphaRNG quick start guide](https://tectrolabs.com/docs/alpharng/quick-start/)
 * [AlphaRNG Documentation](https://tectrolabs.com/docs/alpharng/)
