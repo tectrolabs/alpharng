@@ -1,3 +1,11 @@
+/**
+ *    @file sample.cpp
+ *    @date 1/9/2024
+ *    @version 1.0
+ *
+ *    @brief A C++ example using C++ API for communicating with the AlphaRNG device.
+ */
+
 #include <AlphaRngApi.h>
 #include <array>
 
@@ -11,7 +19,7 @@ int main() {
 
     //A sample code that retrieves entropy bytes from an AlphaRNG device and store those into a file
 
-    // Create a new AlphaRngApi instance using default constructor (using HMAC-SHA256, RSA2048, and AES-256-GCM)
+    // Create a new AlphaRngApi instance using default constructor (HMAC-SHA256, RSA2048, and AES-256-GCM)
     AlphaRngApi rng { };
 
     // Connecting to the first AlphaRNG device found

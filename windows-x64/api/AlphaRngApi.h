@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.h
- *    @date 11/17/2023
+ *    @date 07/20/2024
  *    @Author: Andrian Belinski
- *    @version 1.6
+ *    @version 1.7
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -88,8 +88,11 @@ public:
 	void disable_stat_tests();
 	void enable_stat_tests();
 	void set_num_failures_threshold(uint8_t num_failures_threshold);
+	bool set_session_ttl(time_t time_to_live_minutes);
+
 	HealthTests get_health_tests() const {return m_health_test;}
 	int get_operation_retry_count() const {return m_op_retry_count;}
+	int get_session_count() const {return m_session_count;}
 	AlphaRngConfig& get_configuration() { return m_cfg; }
 
 	virtual	~AlphaRngApi();
@@ -105,6 +108,7 @@ private:
 	bool initialize_entropy_extractor(ShaInterface *sha_api);
 	void clear_error_log();
 	bool upload_session_key();
+	bool create_new_session();
 	bool upload_request(Packet *rqst);
 	int download_response(Response *resp, int resp_packet_payload_size);
 	bool is_response_valid(Response *resp);
@@ -159,10 +163,13 @@ private:
 	unsigned char *m_file_buffer = nullptr;
 	HealthTests m_health_test;
 	int m_op_retry_count;
+	int m_session_count = 0;
 	AlphaRngConfig m_cfg;
 	ShaInterface *m_sha_256 = nullptr;
 	ShaInterface *m_sha_512 = nullptr;
 	ShaEntropyExtractor *m_sha_ent_extr = nullptr;
+	time_t m_expire_time_secs = 0;
+	time_t m_time_to_live_mins = 0;
 
 };
 
