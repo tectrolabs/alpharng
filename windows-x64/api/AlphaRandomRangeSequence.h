@@ -8,17 +8,17 @@
  This class may only be used in conjunction with TectroLabs devices.
 
  This class implements an algorithm for generating randomized sequence of integers within a range, based on true random bytes
- produced by a SwiftRNG device. Such sequence does not contain duplicates.
+ produced by an AlphaRNG device. Such sequence does not contain duplicates.
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
 /*
  * RandomRangeSequence.h
- * @date 11/2/2024
+ * @date 11/05/2024
  * @version 1.0
  *
  * @brief A class for generating random sequences of unique integers based on true random bytes
- * produced by a SwiftRNG device.
+ * produced by an AlphaRNG device.
  *
  */
 #ifndef ALPHA_RANDOMRANGESEQUENCE_H_
