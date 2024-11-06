@@ -78,6 +78,12 @@
     <ClInclude Include="AlphaRngApiCWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AlphaRandomRangeSequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomRangeSequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AesCryptor.cpp">
@@ -123,6 +129,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AlphaRngApiCWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomRangeSequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AlphaRandomRangeSequence.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

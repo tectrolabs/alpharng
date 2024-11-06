@@ -25,7 +25,7 @@ LDCPPFLAGS = $(LDFLAGS) -lstdc++
 SRCS=$(wildcard $(SDIR)/*.cpp)
 OBJECTS = HmacSha1.o HealthTests.o UsbSerialDevice.o HmacSha256.o RsaCryptor.o RsaKeyRepo.o \
 	ShaEntropyExtractor.o AlphaRngApiCWrapper.o Sha256.o AlphaRngApi.o HmacMD5.o AesCryptor.o \
-	Sha512.o AppArguments.o
+	Sha512.o AppArguments.o RandomRangeSequence.o AlphaRandomRangeSequence.o
 
 
 ALRNG = alrng
@@ -34,8 +34,9 @@ CPPSAMPLE = sample
 CSAMPLE = sample_c
 ALRNGDIAG = alrngdiag
 ALRNG_PSERVER = run-alrng-pserver.sh
+ALSEQGEN = alseqgen
 
-all: $(ALRNGDIAG) $(ALRNG) $(ALPERFTEST) $(CPPSAMPLE) $(CSAMPLE)
+all: $(ALRNGDIAG) $(ALRNG) $(ALPERFTEST) $(CPPSAMPLE) $(CSAMPLE) $(ALSEQGEN)  
 
 $(ALRNGDIAG): $(ALRNGDIAG).cpp $(OBJECTS)
 	@echo
@@ -60,6 +61,12 @@ $(CPPSAMPLE): $(CPPSAMPLE).cpp $(OBJECTS)
 	@echo "Creating sample ..."
 	$(CC) -c $(CPPSAMPLE).cpp $(CPPFLAGS)
 	$(CC) $(CPPSAMPLE).o $(OBJECTS) -o $(CPPSAMPLE) $(LDCPPFLAGS)
+
+$(ALSEQGEN) : $(ALSEQGEN).cpp $(OBJECTS)
+	@echo
+	@echo "Creating alseqgen ..."
+	$(CC) -c $(ALSEQGEN).cpp $(CPPFLAGS)
+	$(CC) $(ALSEQGEN).o $(OBJECTS) -o $(ALSEQGEN) $(LDCPPFLAGS)
 
 $(CSAMPLE): $(CSAMPLE).c $(OBJECTS)
 	@echo
@@ -109,15 +116,21 @@ Sha512.o:
 AppArguments.o:
 	$(GPP) -c $(SDIR)/AppArguments.cpp $(CPPFLAGS)
 
+RandomRangeSequence.o:
+	$(GPP) -c $(SDIR)/RandomRangeSequence.cpp $(CPPFLAGS)
+
+AlphaRandomRangeSequence.o:
+	$(GPP) -c $(SDIR)/AlphaRandomRangeSequence.cpp $(CPPFLAGS)
 
 clean:
-	rm -fr *.o ; rm -fr $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE)
+	rm -fr *.o ; rm -fr $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE) $(ALSEQGEN)
 
 install:
 	install -d $(BINDIR)
 	install $(ALRNGDIAG) $(BINDIR)/$(ALRNGDIAG)
 	install $(ALRNG) $(BINDIR)/$(ALRNG)
 	install $(ALPERFTEST) $(BINDIR)/$(ALPERFTEST)
+	install $(ALSEQGEN) $(BINDIR)/$(ALSEQGEN)
 	cp $(ALRNG_PSERVER) $(BINDIR)/$(ALRNG_PSERVER)
 	chmod a+x $(BINDIR)/$(ALRNG_PSERVER)
 
@@ -125,4 +138,5 @@ uninstall:
 	rm $(BINDIR)/$(ALRNGDIAG)
 	rm $(BINDIR)/$(ALRNG)
 	rm $(BINDIR)/$(ALPERFTEST)
+	rm $(BINDIR)/$(ALSEQGEN)
 	rm $(BINDIR)/$(ALRNG_PSERVER)

@@ -163,6 +163,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AesCryptor.h" />
+    <ClInclude Include="AlphaRandomRangeSequence.h" />
     <ClInclude Include="AlphaRngApi.h" />
     <ClInclude Include="AlphaRngApiCWrapper.h" />
     <ClInclude Include="AlphaRngConfig.h" />
@@ -175,6 +176,7 @@
     <ClInclude Include="HmacMD5.h" />
     <ClInclude Include="HmacSha1.h" />
     <ClInclude Include="HmacSha256.h" />
+    <ClInclude Include="RandomRangeSequence.h" />
     <ClInclude Include="RsaCryptor.h" />
     <ClInclude Include="RsaKeyRepo.h" />
     <ClInclude Include="Sha256.h" />
@@ -186,6 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AesCryptor.cpp" />
+    <ClCompile Include="AlphaRandomRangeSequence.cpp" />
     <ClCompile Include="AlphaRngApi.cpp" />
     <ClCompile Include="AlphaRngApiCWrapper.cpp" />
     <ClCompile Include="AppArguments.cpp" />
@@ -194,6 +197,7 @@
     <ClCompile Include="HmacMD5.cpp" />
     <ClCompile Include="HmacSha1.cpp" />
     <ClCompile Include="HmacSha256.cpp" />
+    <ClCompile Include="RandomRangeSequence.cpp" />
     <ClCompile Include="RsaCryptor.cpp" />
     <ClCompile Include="RsaKeyRepo.cpp" />
     <ClCompile Include="Sha256.cpp" />
