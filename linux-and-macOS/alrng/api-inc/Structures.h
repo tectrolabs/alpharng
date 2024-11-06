@@ -12,9 +12,9 @@
 
 /**
  *    @file Structures.h
- *    @date 07/20/2024
+ *    @date 11/03/2024
  *    @Author: Andrian Belinski
- *    @version 1.6
+ *    @version 1.7
  *
  *    @brief Data structures used in the API implementation.
  */
@@ -98,7 +98,8 @@ enum class CmdOpt : uint8_t {
 	getHelp = 6,
 	runDiagnostics = 7,
 	extractSha256Entropy = 8,
-	extractSha512Entropy = 9
+	extractSha512Entropy = 9,
+	generateSequence = 10
 };
 
 struct Cmd {
@@ -114,6 +115,9 @@ struct Cmd {
 	int num_failures_threshold;
 	bool err_log_enabled;
 	int ttl_minutes;
+	int64_t smallest_value;
+	int64_t largest_value;
+	int64_t sequence_size;
 };
 struct DeviceStatistics {
 	// Used for measuring performance
