@@ -13,7 +13,7 @@
 
 /**
  *    @file alseqgen.cpp
- *    @date 11/2/2024
+ *    @date 11/05/2024
  *    @Author: Andrian Belinski
  *    @version 1.0
  *
@@ -381,7 +381,7 @@ static void display_help() {
 	cout << "OPTIONS" << endl;
 	cout << endl;
 	cout << "     -o FILE" << endl;
-	cout << "           a FILE name for storing generated numbers in binary format." << endl;
+	cout << "           a FILE name for storing generated numbers using signed 32-bit binary format." << endl;
 	cout << endl;
 	cout << "     -d NUMBER" << endl;
 	cout << "           USB device NUMBER, if more than one. Skip this option if only" << endl;
