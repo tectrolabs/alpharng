@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2025 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file RandomRangeSequence.cpp
- *    @date 11/2/2024
+ *    @date 03/09/2025
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Implements a class with an algorithm for generating up to 4294967295 unique sequence of integers within [-2147483647,2147483647] range.
  */
@@ -30,7 +30,7 @@ namespace tl_algorithm {
  * @param int32_t max_limit - the largest number in the range
  */
 RandomRangeSequence::RandomRangeSequence(const int32_t min_limit, const int32_t max_limit)
-		: c_min_limit(min_limit), c_max_limit(max_limit) {
+		: c_min_limit(min_limit) {
 	if (min_limit < c_min_range_value) {
 		m_error_log_oss << "The smallest number in the range cannot be smaller than " << c_min_range_value << std::endl;
 		return;

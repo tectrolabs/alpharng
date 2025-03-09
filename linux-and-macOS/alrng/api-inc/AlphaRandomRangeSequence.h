@@ -1,6 +1,6 @@
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
- Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2025 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,8 +14,8 @@
 
 /*
  * RandomRangeSequence.h
- * @date 11/05/2024
- * @version 1.0
+ * @date 03/09/2025
+ * @version 1.1
  *
  * @brief A class for generating random sequences of unique integers based on true random bytes
  * produced by an AlphaRNG device.
@@ -38,9 +38,9 @@ public:
 	AlphaRandomRangeSequence(AlphaRngApi *api, const int32_t min_limit, const int32_t max_limit);
 	AlphaRandomRangeSequence(const AlphaRandomRangeSequence &seq) = delete;
 	AlphaRandomRangeSequence & operator=(const AlphaRandomRangeSequence &seq) = delete;
-	bool get_entropy(int32_t *dest, const uint32_t size);
+	bool get_entropy(int32_t *dest, const uint32_t size) override;
 
-	virtual ~AlphaRandomRangeSequence();
+	virtual ~AlphaRandomRangeSequence() override;
 
 private:
 	AlphaRngApi *m_api;
