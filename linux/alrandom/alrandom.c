@@ -240,7 +240,7 @@ static ssize_t proc_read(struct file *file, char __user *buffer, size_t length, 
                   ,deviceTotalRequestsHandled);
             if (msg != NULL) {
                len = strlen(msg);
-               bytesNotCopied = (int)copy_to_user(buffer, msg, len);
+               int bytesNotCopied = (int)copy_to_user(buffer, msg, len);
                if (bytesNotCopied != 0) {
                   pr_err("%s: proc_read(): copy_to_user(): Could not copy %d bytes out of %d to user space\n", DRIVER_NAME, bytesNotCopied, len);
                }
