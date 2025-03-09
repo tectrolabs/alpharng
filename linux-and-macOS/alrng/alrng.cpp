@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2025 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,9 +13,9 @@
 
 /**
  *    @file alrng.cpp
- *    @date 07/20/2024
+ *    @date 03/09/2025
  *    @Author: Andrian Belinski
- *    @version 2.2
+ *    @version 2.3
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
@@ -55,14 +55,14 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 2.2;
+static double const version = 2.3;
 
 /**
 * Local functions used
 */
 static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char **argv);
 static bool validate_comand(const Cmd &cmd);
-static bool list_connected_devices(const RngConfig cfg);
+static bool list_connected_devices(const RngConfig &cfg);
 static void reset_statistics(DeviceStatistics *ds);
 static void generate_statistics(DeviceStatistics &ds, const Cmd &cmd);
 static void display_help();
@@ -402,7 +402,7 @@ static bool validate_comand(const Cmd &cmd) {
  *
  * @return true for successful operation
  */
-static bool list_connected_devices(const RngConfig cfg) {
+static bool list_connected_devices(const RngConfig &cfg) {
 	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
 	string id;
 	string model;
