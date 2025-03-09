@@ -251,7 +251,7 @@ static ssize_t proc_read(struct file *file, char __user *buffer, size_t length, 
          } else {
             // No device has been initialized
             len = 39;
-            bytesNotCopied = (int)copy_to_user(buffer, "The AlphaRNG device wasn't initialized\n", len);
+            int bytesNotCopied = (int)copy_to_user(buffer, "The AlphaRNG device wasn't initialized\n", len);
             if (bytesNotCopied != 0) {
                pr_err("%s: proc_read(): copy_to_user(): failed to copy %d bytes out of %d to user space\n", DRIVER_NAME, bytesNotCopied, len);
             }
