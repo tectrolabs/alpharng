@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2025 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,9 +14,9 @@
 
 /**
  *    @file Sha256.h
- *    @date 09/16/2023
+ *    @date 03/09/2025
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implements an API used for generating a SHA-256 message digest used with the AlphaRNG device.
  */
@@ -37,7 +37,7 @@ public:
 	Sha256(const Sha256 &hmac) = delete;
 	Sha256 & operator=(const Sha256 &hmac) = delete;
 	Sha256() = default;
-	virtual ~Sha256() = default;
+	virtual ~Sha256() override = default;
 private:
 	const int c_hash_size_bytes = 32;
 };
