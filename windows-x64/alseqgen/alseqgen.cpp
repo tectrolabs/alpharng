@@ -13,9 +13,9 @@
 
 /**
  *    @file alseqgen.cpp
- *    @date 11/05/2024
+ *    @date 03/09/2025
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief A program for generating random sequences of unique integer numbers based on true random bytes produced by an AlphaRNG device.
  */
@@ -49,7 +49,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.0;
+static double const version = 1.1;
 
 /**
 * Local functions used
@@ -153,7 +153,7 @@ static bool generate_sequence(AlphaRngApi *rng, int32_t smallest_value, int32_t 
 			if(!os_file.good()) {
 				cerr << "Could not open file: " << file_path_name << ". " << endl;
 			} else {
-				os_file.write((const char*)buffer, sequence_size * sizeof(int32_t));
+				os_file.write(reinterpret_cast<const char*>(buffer), sequence_size * sizeof(int32_t));
 				if(!os_file.good()) {
 					cerr << "Could not write bytes to file: " << file_path_name << ". " << endl;
 				}

@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2025 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.h
- *    @date 07/20/2024
+ *    @date 03/09/2025
  *    @Author: Andrian Belinski
- *    @version 1.7
+ *    @version 1.8
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -90,7 +90,7 @@ public:
 	void set_num_failures_threshold(uint8_t num_failures_threshold);
 	bool set_session_ttl(time_t time_to_live_minutes);
 
-	HealthTests get_health_tests() const {return m_health_test;}
+	HealthTests &get_health_tests() {return m_health_test;}
 	int get_operation_retry_count() const {return m_op_retry_count;}
 	int get_session_count() const {return m_session_count;}
 	AlphaRngConfig& get_configuration() { return m_cfg; }

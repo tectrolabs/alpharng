@@ -1,7 +1,7 @@
 /**
  *    @file sample_c.c
- *    @date 07/20/2024
- *    @version 1.5
+ *    @date 03/09/2025
+ *    @version 1.6
  *
  *    @brief A C example that utilizes a C wrapper around the C++ API for communicating with the AlphaRNG device.
  */
@@ -170,7 +170,7 @@ int main() {
 	}
 
 	/* Retrieve device frequency tables from noise sources */
-	call_ret_value = alrng_retrieve_frequency_tables(ctxt, rand_data.freq_table_1, rand_data.freq_table_1);
+	call_ret_value = alrng_retrieve_frequency_tables(ctxt, rand_data.freq_table_1, rand_data.freq_table_2);
 	if (call_ret_value) {
 		goto error;
 	}

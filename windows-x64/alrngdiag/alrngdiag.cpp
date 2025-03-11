@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2025 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,9 +13,9 @@
 
 /**
  *    @file alrngdiag.cpp
- *    @date 1/9/2024
+ *    @date 03/09/2025
  *    @Author: Andrian Belinski
- *    @version 1.5
+ *    @version 1.6
  *
  *    @brief A utility used for running the AlphaRNG device diagnostics
  *
@@ -110,12 +110,12 @@ int main() {
 		cout << endl;
 		cout << "----------  Inspecting RAW data of the noise sources  -------------" << endl;
 		unsigned char noise_source_1[16000];
-		if(!rng.get_noise_source_1((unsigned char *)noise_source_1, sizeof(noise_source_1))) {
+		if(!rng.get_noise_source_1(noise_source_1, sizeof(noise_source_1))) {
 			cerr << "err: " << rng.get_last_error() << endl;
 			return -1;
 		}
 		unsigned char noise_source_2[16000];
-		if(!rng.get_noise_source_2((unsigned char *)noise_source_2, sizeof(noise_source_2))) {
+		if(!rng.get_noise_source_2(noise_source_2, sizeof(noise_source_2))) {
 			cerr << "err: " << rng.get_last_error() << endl;
 			return -1;
 		}
