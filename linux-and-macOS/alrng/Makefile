@@ -35,8 +35,9 @@ CSAMPLE = sample_c
 ALRNGDIAG = alrngdiag
 ALRNG_PSERVER = run-alrng-pserver.sh
 ALSEQGEN = alseqgen
+BITGRPS = bitgrps
 
-all: $(ALRNGDIAG) $(ALRNG) $(ALPERFTEST) $(CPPSAMPLE) $(CSAMPLE) $(ALSEQGEN)  
+all: $(ALRNGDIAG) $(ALRNG) $(ALPERFTEST) $(CPPSAMPLE) $(CSAMPLE) $(ALSEQGEN) $(BITGRPS)
 
 $(ALRNGDIAG): $(ALRNGDIAG).cpp $(OBJECTS)
 	@echo
@@ -67,6 +68,12 @@ $(ALSEQGEN) : $(ALSEQGEN).cpp $(OBJECTS)
 	@echo "Creating alseqgen ..."
 	$(CC) -c $(ALSEQGEN).cpp $(CPPFLAGS)
 	$(CC) $(ALSEQGEN).o $(OBJECTS) -o $(ALSEQGEN) $(LDCPPFLAGS)
+
+$(BITGRPS) : $(BITGRPS).cpp $(OBJECTS)
+	@echo
+	@echo "Creating bitgrps ..."
+	$(CC) -c $(BITGRPS).cpp $(CPPFLAGS)
+	$(CC) $(BITGRPS).o $(OBJECTS) -o $(BITGRPS) $(LDCPPFLAGS)
 
 $(CSAMPLE): $(CSAMPLE).c $(OBJECTS)
 	@echo
@@ -123,7 +130,7 @@ AlphaRandomRangeSequence.o:
 	$(GPP) -c $(SDIR)/AlphaRandomRangeSequence.cpp $(CPPFLAGS)
 
 clean:
-	rm -fr *.o ; rm -fr $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE) $(ALSEQGEN)
+	rm -fr *.o ; rm -fr $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE) $(ALSEQGEN) $(BITGRPS)
 
 install:
 	install -d $(BINDIR)
@@ -131,6 +138,7 @@ install:
 	install $(ALRNG) $(BINDIR)/$(ALRNG)
 	install $(ALPERFTEST) $(BINDIR)/$(ALPERFTEST)
 	install $(ALSEQGEN) $(BINDIR)/$(ALSEQGEN)
+	install $(BITGRPS) $(BINDIR)/$(BITGRPS) 
 	cp $(ALRNG_PSERVER) $(BINDIR)/$(ALRNG_PSERVER)
 	chmod a+x $(BINDIR)/$(ALRNG_PSERVER)
 
@@ -139,4 +147,5 @@ uninstall:
 	rm $(BINDIR)/$(ALRNG)
 	rm $(BINDIR)/$(ALPERFTEST)
 	rm $(BINDIR)/$(ALSEQGEN)
+	rm $(BINDIR)/$(BITGRPS)
 	rm $(BINDIR)/$(ALRNG_PSERVER)
