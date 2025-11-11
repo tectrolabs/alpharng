@@ -13,9 +13,9 @@
 
 /**
  *    @file bitgrps.cpp
- *    @date 07/05/2025
+ *    @date 11/10/2025
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief A utility that reads from a file with binary random bytes and runs statistical analysis of bit value distribution.
  */
@@ -28,6 +28,7 @@
 #include <cstring>
 #include <cstdio>
 #include <algorithm>
+#include <cstdint>
 
 using namespace std;
 using namespace alpharng;
@@ -61,7 +62,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.0;
+static double const version = 1.1;
 
 /**
 * Local functions
