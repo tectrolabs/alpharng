@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
  /**
   *    @file WinUsbSerialDevice.h
-  *    @date 03/24/2024
+  *    @date 03/29/2026
   *    @Author: Andrian Belinski
-  *    @version 1.2
+  *    @version 1.3
   *
   *    @brief Implements the API for communicating with the AlphaRNG device
   */
@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include <tchar.h>
 #include <combaseapi.h>
-
+#include <set>
 
 #include <DeviceInterface.h>
 
@@ -61,7 +61,7 @@ private:
 	void set_error_message(const char* error_message);
 	void purge_comm_data();
 	void clear_comm_error();
-	void get_connected_ports(int ports[], int max_ports, int* actual_count, WCHAR* hardware_id, WCHAR* serial_id);
+	void get_connected_ports(int ports[], int max_ports, int* actual_count, const std::set<std::wstring>& hardwareIds, WCHAR* serial_id);
 
 private:
 	static const int c_max_devices = 25;
@@ -74,7 +74,10 @@ private:
 	HANDLE m_cdc_device_handle;
 	COMSTAT m_comm_status;
 	DWORD m_comm_error;
-
+	const std::set<std::wstring> c_hardware_ids = {
+		L"USB\\VID_1FC9&PID_8111",
+		L"USB\\VID_3975&PID_0005"
+	};
 
 };
 

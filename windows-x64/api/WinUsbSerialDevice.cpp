@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
  /**
   *    @file WinUsbSerialDevice.cpp
-  *    @date 04/24/2024
+  *    @date 03/29/2026
   *    @Author: Andrian Belinski
-  *    @version 1.3
+  *    @version 1.4
   *
   *    @brief Implements the API for communicating with the CDC USB interface
   */
@@ -244,13 +244,13 @@ namespace alpharng {
 * @param int ports[] - an array of integers that represent all of the AlphaRNG COM ports found
 * @param int max_ports - the maximum number of AlphaRNG devices to discover
 * @param  int *actual_count - a pointer to the actual number of AlphaRNG devices found
-* @param  WCHAR *hardware_id - a pointer to AlphaRNG device hardware ID
+* @param  std::set<std::wstring> &hardwareIds - a reference to a set of SwiftRNG device hardware IDs
 * @param WCHAR* serial_id - a pointer to AlphaRNG device hardware serial ID
 *
 * @return 0 - successful operation, otherwise the error code
 *
 */
-void WinUsbSerialDevice::get_connected_ports(int ports[], int max_ports, int* actual_count, WCHAR* hardware_id, WCHAR* serial_id) {
+void WinUsbSerialDevice::get_connected_ports(int ports[], int max_ports, int* actual_count, const std::set<std::wstring>& hardwareIds, WCHAR* serial_id) {
 
 		DWORD dev_idx = 0;
 		int found_port_index = 0;
@@ -296,8 +296,9 @@ void WinUsbSerialDevice::get_connected_ports(int ports[], int max_ports, int* ac
 					{
 						if (_tcsnicmp(curPortName, _T("COM"), 3) == 0)
 						{
-							TCHAR* src = (TCHAR*)current_hardware_id;
-							if (_tcsnicmp(hardware_id, (TCHAR*)current_hardware_id, _tcsnlen(hardware_id, 80)) == 0) {
+							wchar_t* szValue = reinterpret_cast<wchar_t*>(current_hardware_id);
+							std::wstring strValue(szValue);
+							if (strValue.size() >= 21 && hardwareIds.find(strValue.substr(0, 21)) != hardwareIds.end()) {
 								int port_nr = _ttoi(curPortName + 3);
 								if (port_nr != 0)
 								{
@@ -337,7 +338,7 @@ void WinUsbSerialDevice::get_connected_ports(int ports[], int max_ports, int* ac
 	 */
 	void WinUsbSerialDevice::scan_available_devices() {
 		m_active_device_count = 0;
-		get_connected_ports(m_ports, c_max_devices, &m_active_device_count, (WCHAR *)L"USB\\VID_1FC9&PID_8111", (WCHAR*)L"ALPHARNG");
+		get_connected_ports(m_ports, c_max_devices, &m_active_device_count, c_hardware_ids, (WCHAR*)L"ALPHARNG");
 		for (int i = 0; i < m_active_device_count; ++i)
 		{
 			sprintf_s(m_device_names[i], c_max_size_device_name, "\\\\.\\COM%d", m_ports[i]);

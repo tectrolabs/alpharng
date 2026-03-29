@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,9 +13,9 @@
 
 /**
  *    @file alseqgen.cpp
- *    @date 03/09/2025
+ *    @date 03/29/2026
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief A program for generating random sequences of unique integer numbers based on true random bytes produced by an AlphaRNG device.
  */
@@ -49,7 +49,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.1;
+static double const version = 1.2;
 
 /**
 * Local functions used
