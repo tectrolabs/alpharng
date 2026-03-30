@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2025 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,9 +13,9 @@
 
 /**
  *    @file alrng.cpp
- *    @date 03/09/2025
+ *    @date 03/29/2026
  *    @Author: Andrian Belinski
- *    @version 2.3
+ *    @version 2.4
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
@@ -55,7 +55,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 2.3;
+static double const version = 2.4;
 
 /**
 * Local functions used
