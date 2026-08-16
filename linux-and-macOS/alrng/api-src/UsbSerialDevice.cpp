@@ -1,4 +1,4 @@
-/** Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+/** Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -11,14 +11,15 @@
 
 /**
  *    @file UsbSerialDevice.cpp
- *    @date 6/23/2024
+ *    @date 8/16/2026
  *    @Author: Andrian Belinski
- *    @version 1.4
+ *    @version 1.5
  *
  *    @brief Implements the API for communicating with the CDC USB interface
  */
 
 #include <UsbSerialDevice.h>
+#include <cstdio>
 
 namespace alpharng {
 
@@ -250,10 +251,15 @@ void UsbSerialDevice::scan_available_devices() {
 			}
 		}
 #ifdef __linux__
-		strcpy(c_device_names[m_active_device_count], "/dev/");
-		strcat(c_device_names[m_active_device_count], tty);
+		if (strlen(tty) + strlen("/dev/") >= (size_t)c_max_size_device_name) {
+			continue;
+		}
+		snprintf(c_device_names[m_active_device_count], c_max_size_device_name, "/dev/%s", tty);
 #else
-		strcpy(c_device_names[m_active_device_count], tty);
+		if (strlen(tty) >= (size_t)c_max_size_device_name) {
+			continue;
+		}
+		snprintf(c_device_names[m_active_device_count], c_max_size_device_name, "%s", tty);
 #endif
 		m_active_device_count++;
 	}
@@ -297,8 +303,11 @@ void UsbSerialDevice::scan_available_devices() {
 				}
 				char *tkn = strtok(p + strlen("umodem"), ":");
 				if (tkn != nullptr) {
-					strcpy(c_device_names[m_active_device_count], "/dev/cuaU");
-					strcat(c_device_names[m_active_device_count], tkn);
+					if (strlen(tkn) + strlen("/dev/cuaU") >= (size_t)c_max_size_device_name) {
+						device_candidate = false;
+						continue;
+					}
+					snprintf(c_device_names[m_active_device_count], c_max_size_device_name, "/dev/cuaU%s", tkn);
 					m_active_device_count++;
 					device_candidate = false;
 				}

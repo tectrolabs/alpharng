@@ -194,12 +194,12 @@ namespace alpharng {
 	 *
 	 * @param[out] rcv points to location for the bytes to receive
 	 * @param[in] size_receive expected amount of bytes to receive
-	 * @param[out] bytes_rceived point to a location to store the actual bytes received
+	 * @param[out] bytes_received point to a location to store the actual bytes received
 	 *
 	 * @return 0 for successful operation, -7 for operation timeout or other error value
 	 *
 	 */
-	int WinUsbSerialDevice::receive_data(unsigned char* rcv, int size_receive, int* bytes_rceived) {
+	int WinUsbSerialDevice::receive_data(unsigned char* rcv, int size_receive, int* bytes_received) {
 		DWORD actualBytesReceived;
 		int retStatus = -1;
 		if (!is_connected()) {
@@ -207,9 +207,9 @@ namespace alpharng {
 		}
 
 		BOOL status = ReadFile(m_cdc_device_handle, (void*)rcv, size_receive, &actualBytesReceived, NULL);
-		*bytes_rceived = (int)actualBytesReceived;
-		if (!status || *bytes_rceived != size_receive) {
-			if (status && *bytes_rceived != size_receive) {
+		*bytes_received = (int)actualBytesReceived;
+		if (!status || *bytes_received != size_receive) {
+			if (status && *bytes_received != size_receive) {
 				retStatus = -7; // Time out
 				set_error_message("Got timeout while receiving data from the device");
 			}
