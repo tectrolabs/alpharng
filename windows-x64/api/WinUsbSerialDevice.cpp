@@ -12,9 +12,9 @@
 
  /**
   *    @file WinUsbSerialDevice.cpp
-  *    @date 03/29/2026
+  *    @date 8/16/2026
   *    @Author: Andrian Belinski
-  *    @version 1.4
+  *    @version 1.5
   *
   *    @brief Implements the API for communicating with the CDC USB interface
   */

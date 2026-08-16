@@ -12,9 +12,9 @@
 
  /**
   *    @file WinUsbSerialDevice.h
-  *    @date 03/29/2026
+  *    @date 8/16/2026
   *    @Author: Andrian Belinski
-  *    @version 1.3
+  *    @version 1.4
   *
   *    @brief Implements the API for communicating with the AlphaRNG device
   */
