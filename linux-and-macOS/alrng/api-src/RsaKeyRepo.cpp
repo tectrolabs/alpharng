@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,20 +12,26 @@
 
 /**
  *    @file RsaKeyRepo.cpp
- *    @date 9/16/2023
+ *    @date 8/16/2026
  *    @Author: Andrian Belinski
- *    @version 1.4
+ *    @version 1.5
  *
  *    @brief Used for storing hard-coded RSA 2048 and 1024 public keys used for establishing a secure connection with the AlphaRNG device.
  */
 
 #include <RsaKeyRepo.h>
+#include <cstring>
 
 namespace alpharng {
 
-RsaKeyRepo::RsaKeyRepo() {
+namespace {
 
-	c_rsapub_2048_pem = new (std::nothrow) unsigned char[c_rsapub_2048_pem_len] {
+// NOTE: these key bytes used to be initialized directly in a `new[]{...}` expression
+// inside the constructor below, but that pattern triggers an internal compiler error
+// in GCC 15 (ICE in expand_expr_real_2 / sign_mask at wide-int.h) regardless of
+// optimization level. Keeping the data as plain static arrays and memcpy-ing it into
+// the heap buffer avoids the buggy codegen path while producing identical output.
+static const unsigned char k_rsapub_2048_pem[] = {
 		  0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x42, 0x45, 0x47, 0x49, 0x4e, 0x20, 0x52,
 		  0x53, 0x41, 0x20, 0x50, 0x55, 0x42, 0x4c, 0x49, 0x43, 0x20, 0x4b, 0x45,
 		  0x59, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x0a, 0x4d, 0x49, 0x49, 0x42, 0x43,
@@ -62,9 +68,9 @@ RsaKeyRepo::RsaKeyRepo() {
 		  0x0a, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x45, 0x4e, 0x44, 0x20, 0x52, 0x53,
 		  0x41, 0x20, 0x50, 0x55, 0x42, 0x4c, 0x49, 0x43, 0x20, 0x4b, 0x45, 0x59,
 		  0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x0a
-	};
+};
 
-	c_rsapub_1024_pem = new (std::nothrow) unsigned char [c_rsapub_1024_pem_len] {
+static const unsigned char k_rsapub_1024_pem[] = {
 		  0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x42, 0x45, 0x47, 0x49, 0x4e, 0x20, 0x52,
 		  0x53, 0x41, 0x20, 0x50, 0x55, 0x42, 0x4c, 0x49, 0x43, 0x20, 0x4b, 0x45,
 		  0x59, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x0a, 0x4d, 0x49, 0x47, 0x4a, 0x41,
@@ -86,7 +92,24 @@ RsaKeyRepo::RsaKeyRepo() {
 		  0x42, 0x41, 0x41, 0x45, 0x3d, 0x0a, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x45,
 		  0x4e, 0x44, 0x20, 0x52, 0x53, 0x41, 0x20, 0x50, 0x55, 0x42, 0x4c, 0x49,
 		  0x43, 0x20, 0x4b, 0x45, 0x59, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x0a
-	};
+};
+
+static_assert(sizeof(k_rsapub_2048_pem) == 426, "unexpected c_rsapub_2048_pem_len");
+static_assert(sizeof(k_rsapub_1024_pem) == 251, "unexpected c_rsapub_1024_pem_len");
+
+} /* anonymous namespace */
+
+RsaKeyRepo::RsaKeyRepo() {
+
+	c_rsapub_2048_pem = new (std::nothrow) unsigned char[c_rsapub_2048_pem_len];
+	if (c_rsapub_2048_pem != nullptr) {
+		std::memcpy(const_cast<unsigned char*>(c_rsapub_2048_pem), k_rsapub_2048_pem, c_rsapub_2048_pem_len);
+	}
+
+	c_rsapub_1024_pem = new (std::nothrow) unsigned char[c_rsapub_1024_pem_len];
+	if (c_rsapub_1024_pem != nullptr) {
+		std::memcpy(const_cast<unsigned char*>(c_rsapub_1024_pem), k_rsapub_1024_pem, c_rsapub_1024_pem_len);
+	}
 }
 
 RsaKeyRepo::~RsaKeyRepo() {

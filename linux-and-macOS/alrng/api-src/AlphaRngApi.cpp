@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.cpp
- *    @date 07/20/2024
+ *    @date 8/16/2026
  *    @Author: Andrian Belinski
- *    @version 1.10
+ *    @version 1.11
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -411,7 +411,7 @@ bool AlphaRngApi::get_noise(unsigned char *out, int out_length) {
 
 /**
  * This method is only used for testing the correctness of the data communication with the
- * SecireRNG device. Each byte retrieved, starting with 0, represents an incremented value of
+ * AlphaRNG device. Each byte retrieved, starting with 0, represents an incremented value of
  * the previous byte value.
  *
  * @param[out] out points to a byte array for storing the test data

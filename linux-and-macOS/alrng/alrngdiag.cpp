@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2025 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,9 +13,9 @@
 
 /**
  *    @file alrngdiag.cpp
- *    @date 03/09/2025
+ *    @date 8/16/2026
  *    @Author: Andrian Belinski
- *    @version 1.6
+ *    @version 1.7
  *
  *    @brief A utility used for running the AlphaRNG device diagnostics
  *
@@ -407,7 +407,7 @@ static bool retrieve_noise_bytes(AlphaRngApi &rng) {
 
 /**
  * This function is used for testing the correctness of the data communication with the
- * SecireRNG device. Each byte retrieved, starting with 0, represents an incremented value of
+ * AlphaRNG device. Each byte retrieved, starting with 0, represents an incremented value of
  * the previous byte value.
  *
  * @return true for successful operation
