@@ -24,7 +24,7 @@
  * Module's internal status can be verified with the following command:
  * cat /proc/alrandom/info
  *
- * Please note that modules's internal status is only updated when the AlphaRNG
+ * Please note that module's internal status is only updated when the AlphaRNG
  * device is in use.
  *
  */
@@ -141,7 +141,7 @@ static void apt_restart(void);
 //
 static bool acm_device_probe(void);
 static int acm_read(struct file *file, unsigned char *data, int size);
-static int acm_full_read(unsigned char *data, int size, int *bytesTransfered);
+static int acm_full_read(unsigned char *data, int size, int *bytesTransferred);
 static int acm_write(struct file *file, const unsigned char *data, int size);
 static void acm_close(struct file *file);
 

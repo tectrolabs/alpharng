@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,9 +14,9 @@
 
 /**
  *    @file RsaCryptor.cpp
- *    @date 07/20/2024
+ *    @date 9/13/2026
  *    @Author: Andrian Belinski
- *    @version 1.7
+ *    @version 1.8
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device.
  */
@@ -65,12 +65,17 @@ void RsaCryptor::initialize_with_key(const unsigned char* key, int key_size_byte
 	else {
 		m_rsa = PEM_read_bio_RSAPrivateKey(m_kbio_rsa, nullptr, 0, nullptr);
 	}
-
 #endif
 
 	if (m_rsa == nullptr) {
 		return;
 	}
+
+#if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
+	m_rsa_key_size = static_cast<RsaKeySize>(EVP_PKEY_get_size(m_rsa));
+#else
+	m_rsa_key_size = static_cast<RsaKeySize>(RSA_size(m_rsa));
+#endif
 
 	m_is_key_initialized = true;
 }

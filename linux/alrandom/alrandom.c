@@ -24,7 +24,7 @@
  * Module's internal status can be verified with the following command:
  * cat /proc/alrandom/info
  *
- * Please note that modules's internal status is only updated when the AlphaRNG
+ * Please note that module's internal status is only updated when the AlphaRNG
  * device is in use.
  *
  */
@@ -958,12 +958,12 @@ static int acm_read(struct file *file, unsigned char *data, int size)
  *
  * @param data - pointer to where the bytes should be saved
  * @param size - total amount of bytes to read
- * @param bytesTransfered - pointer to an actual bytes transfered
+ * @param bytesTransferred - pointer to the actual number of bytes transferred
  *
  * @return 0 for successful operation, a negative number indicates an error.
  *
  */
-static int acm_full_read(unsigned char *data, int size, int *bytesTransfered)
+static int acm_full_read(unsigned char *data, int size, int *bytesTransferred)
 {
    int totalBytesReceived = 0;
 
@@ -981,7 +981,7 @@ static int acm_full_read(unsigned char *data, int size, int *bytesTransfered)
    if (totalBytesReceived != size) {
       return -EPERM;
    }
-   *bytesTransfered = totalBytesReceived;
+   *bytesTransferred = totalBytesReceived;
    return SUCCESS;
 }
 

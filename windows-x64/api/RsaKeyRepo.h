@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,11 +12,11 @@
 
 /**
  *    @file RsaKeyRepo.h
- *    @date 09/16/2023
+ *    @date 09/13/2026
  *    @Author: Andrian Belinski
- *    @version 1.5
+ *    @version 1.6
  *
- *    @brief Used for storing hard-coded RSA 2048 and 1024 public keys used for establishing a secure connection with the AlphaRNG device.
+ *    @brief Used for storing hard-coded RSA 3072, 2048 and 1024 public keys used for establishing a secure connection with the AlphaRNG device.
  */
 
 #ifndef ALPHARNG_API_INC_RSAKEYREPO_H_
@@ -29,7 +29,9 @@ namespace alpharng {
 class RsaKeyRepo {
 public:
 	const unsigned int c_rsapub_2048_pem_len = {426};
+	const unsigned int c_rsapub_3072_pem_len = {601};
 	const unsigned int c_rsapub_1024_pem_len = {251};
+	const unsigned char *c_rsapub_3072_pem;
 	const unsigned char *c_rsapub_2048_pem;
 	const unsigned char *c_rsapub_1024_pem;
 	RsaKeyRepo();

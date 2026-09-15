@@ -16,10 +16,9 @@
 
 /**
  *    @file AlphaRngApiCWrapper.h
- *    @date 8/16/2026
+ *    @date 9/13/2026
  *    @Author: Andrian Belinski
- *    @version 1.1
- *
+ *    @version 1.2
  *    @brief Implements a C API wrapper around the C++ API for securely interacting with the AlphaRNG device.
  */
 #ifndef __ALRNGCWRAPPER_H
@@ -32,7 +31,7 @@ extern "C" {
 #endif
 
 /* Define security attributes */
-enum alrng_rsa_key_type {rsa_2048_key = 256, rsa_1024_key = 128};
+enum alrng_rsa_key_type {rsa_2048_key = 256, rsa_3072_key = 384, rsa_1024_key = 128};
 enum alrng_mac_type {mac_type_none = 0, hmac_md5 = 16, hmac_sha_160 = 20, hmac_sha_256 = 32};
 enum alrng_cipher_type {cipher_type_none = 0, aes_256_gcm = 32, aes_128_gcm = 16};
 

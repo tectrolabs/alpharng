@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file Structures.h
- *    @date 11/03/2024
+ *    @date 9/13/2026
  *    @Author: Andrian Belinski
- *    @version 1.7
+ *    @version 1.8
  *
  *    @brief Data structures used in the API implementation.
  */
@@ -42,9 +42,9 @@ enum class CommandType : uint16_t {
 };
 enum class KeySize : uint8_t {None = 0, k128 = 16, k256 = 32};
 enum class MacType : uint8_t {None = 0, hmacMD5 =16, hmacSha160 = 20, hmacSha256 = 32};
-enum class PacketType : uint8_t {pkRSA2048 = 1,	pkAltRSA2048 = 2, pkRSA1024 = 20,	aes = 40};
+enum class PacketType : uint8_t {pkRSA2048 = 1,	pkAltRSA2048 = 2, pkRSA3072 = 3, pkAltRSA3072 = 4, pkRSA1024 = 20,	aes = 40};
 enum class SessionKeyType : uint8_t {aes = 1};
-enum class RsaKeySize : uint16_t {rsa2048 = 256, rsa1024 = 128};
+enum class RsaKeySize : uint16_t {rsa2048 = 256, rsa1024 = 128, rsa3072 = 384};
 
 #pragma pack (1)
 struct DeviceInfo {
