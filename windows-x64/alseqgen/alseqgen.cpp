@@ -13,7 +13,7 @@
 
 /**
  *    @file alseqgen.cpp
- *    @date 03/29/2026
+ *    @date 09/15/2026
  *    @Author: Andrian Belinski
  *    @version 1.2
  *
@@ -49,7 +49,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.2;
+static double const version = 1.1;
 
 /**
 * Local functions used
@@ -85,6 +85,8 @@ int main(const int argc, const char **argv) {
 			cerr << "Could not load the RSA public key file: " << cfg.key_file << endl;
 			return -1;
 		}
+		// Retrieve an actual RSA key size.
+		cfg.e_rsa_key_size = rsa.get_rsa_key_size();
 	}
 
 	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
@@ -281,7 +283,11 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 				cfg.e_rsa_key_size = RsaKeySize::rsa2048;
 				break;
 			}
-			cerr << "unexpected RSA option specified, must be RSA1024, RSA2048 or RSA4096" << endl;
+			if (value.compare("RSA3072") == 0) {
+				cfg.e_rsa_key_size = RsaKeySize::rsa3072;
+				break;
+			}
+			cerr << "unexpected RSA option specified, must be RSA1024, RSA2048 or RSA3072" << endl;
 			return false;
 			break;
 		case 'd':
@@ -391,7 +397,7 @@ static void display_help() {
 	cout << "           MAC type: hmacMD5, hmacSha160, hmacSha256 or none - skip this option for none." << endl;
 	cout << endl;
 	cout << "     -p KEYTYPE" << endl;
-	cout << "           Public KEYTYPE: RSA1024 or RSA2048 - skip this option for RSA2048." << endl;
+	cout << "           Public KEYTYPE: RSA1024, RSA2048 or RSA3072 (if supported) - skip this option for RSA2048." << endl;
 	cout << "           RSA is used for establishing a secure session with an AlphaRNG device." << endl;
 	cout << endl;
 	cout << "     -c CIPHER" << endl;
@@ -400,7 +406,7 @@ static void display_help() {
 	cout << "           AES cipher is used for securing the data communication within an AlphaRNG session." << endl;
 	cout << endl;
 	cout << "     -k FILE" << endl;
-	cout << "           FILE pathname with an alternative RSA 2048 public key, supplied by the manufacturer." << endl;
+	cout << "           FILE pathname with an alternative RSA 2048/3072 public key, supplied by the manufacturer." << endl;
 	cout << endl;
 	cout << "EXAMPLES:" << endl;
 	cout << "     Generating a sequence of 6 integers within [1..49] range" << endl;

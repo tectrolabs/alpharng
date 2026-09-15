@@ -14,7 +14,7 @@
  *    @file AlphaRngApi.cpp
  *    @date 9/13/2026
  *    @Author: Andrian Belinski
- *    @version 1.2
+ *    @version 1.12
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
