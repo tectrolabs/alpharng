@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,9 +14,9 @@
 
 /**
  *    @file RsaCryptor.h
- *    @date 09/16/2023
+ *    @date 09/13/2026
  *    @Author: Andrian Belinski
- *    @version 1.5
+ *    @version 1.6
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device suing RSA PK encryption.
  */
@@ -28,6 +28,7 @@
 #include <openssl/pem.h>
 #include <string>
 #include <fstream>
+#include <Structures.h>
 
 namespace alpharng {
 
@@ -47,6 +48,7 @@ public:
 	bool encrypt_with_private_key(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
 	bool decrypt_with_private_key(unsigned char *in, int in_size_bytes, unsigned char *out, int *out_size_bytes);
 	bool is_public_key_file() const {return m_is_public_key_file;}
+	RsaKeySize get_rsa_key_size() {return m_rsa_key_size;}
 	virtual ~RsaCryptor();
 private:
 	void crete_new_key(int key_size);
@@ -69,7 +71,8 @@ private:
     int m_padding = RSA_NO_PADDING;
     bool m_is_public_key_file = false;
 	unsigned char* m_file_pub_key_bytes = nullptr;
-	const int c_m_file_pub_key_max_size_bytes = 1024*2;
+	const int c_m_file_pub_key_max_size_bytes = 1024;
+	RsaKeySize m_rsa_key_size = RsaKeySize::rsa2048;
 };
 
 } /* namespace alpharng */
