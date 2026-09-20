@@ -16,9 +16,9 @@
 
 /**
  *    @file AlphaRngApiCWrapper.cpp
- *    @date 9/13/2026
+ *    @date 9/20/2026
  *    @Author: Andrian Belinski
- *    @version 1.4
+ *    @version 1.5
  *
  *    @brief Implements a C wrapper around the C++ API for securely interacting with the AlphaRNG device.
  */
@@ -65,6 +65,9 @@ alrng_context* alrng_create_ctxt(enum alrng_rsa_key_type rsa_key_type, enum alrn
 		break;
 	case rsa_3072_key:
 		e_rsa_key_size = RsaKeySize::rsa3072;
+		break;
+	case rsa_4096_key:
+		e_rsa_key_size = RsaKeySize::rsa4096;
 		break;
 	case rsa_2048_key:
 	default:

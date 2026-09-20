@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.cpp
- *    @date 9/13/2026
+ *    @date 9/20/2026
  *    @Author: Andrian Belinski
- *    @version 1.12
+ *    @version 1.13
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -119,6 +119,9 @@ bool AlphaRngApi::initialize_rsa() {
 	case RsaKeySize::rsa3072:
 		m_rsa_cryptor = new (nothrow) RsaCryptor(m_rsa_key_repo.c_rsapub_3072_pem, m_rsa_key_repo.c_rsapub_3072_pem_len, true);
 		break;
+	case RsaKeySize::rsa4096:
+		m_rsa_cryptor = new (nothrow) RsaCryptor(m_rsa_key_repo.c_rsapub_4096_pem, m_rsa_key_repo.c_rsapub_4096_pem_len, true);
+		break;
 	case RsaKeySize::rsa2048:
 	default:
 		m_rsa_cryptor = new (nothrow) RsaCryptor(m_rsa_key_repo.c_rsapub_2048_pem, m_rsa_key_repo.c_rsapub_2048_pem_len, true);
@@ -141,11 +144,15 @@ PacketType AlphaRngApi::get_rsa_request_type() const {
 			return PacketType::pkAltRSA2048;
 		case RsaKeySize::rsa3072:
 			return PacketType::pkAltRSA3072;
+		case RsaKeySize::rsa4096:
+			return PacketType::pkAltRSA4096;
 		default:
 			return PacketType::pkAltRSA2048;
 		}
 	}
 	switch(m_cfg.e_rsa_key_size) {
+	case RsaKeySize::rsa4096:
+		return PacketType::pkRSA4096;
 	case RsaKeySize::rsa3072:
 		return PacketType::pkRSA3072;
 	case RsaKeySize::rsa2048:
