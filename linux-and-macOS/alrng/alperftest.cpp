@@ -13,9 +13,9 @@
 
 /**
  *    @file alperftest.cpp
- *    @date 9/13/2026
+ *    @date 9/20/2026
  *    @Author: Andrian Belinski
- *    @version 1.5
+ *    @version 1.6
  *
  *    @brief A utility used for measuring performance of the AlphaRNG device in different transmission modes.
  */
@@ -157,10 +157,10 @@ static bool run_device_perf_tests(int device_num) {
 	RsaKeySize keySize {RsaKeySize::rsa2048};
 
 	if (g_major_version > 1) {
-		keySize = RsaKeySize::rsa3072;
+		keySize = RsaKeySize::rsa4096;
 	} else {
 		if (g_minor_version > 1) {
-			keySize = RsaKeySize::rsa3072;
+			keySize = RsaKeySize::rsa4096;
 		}
 	}
 
@@ -280,6 +280,9 @@ static bool run_device_perf_test(int device_num, const RngConfig &cfg) {
 		break;
 	case RsaKeySize::rsa3072:
 		cout << "RSA-3072";
+		break;
+	case RsaKeySize::rsa4096:
+		cout << "RSA-4096";
 		break;
 	}
 	cout << " ...... ";
