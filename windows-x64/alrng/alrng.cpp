@@ -13,9 +13,9 @@
 
 /**
  *    @file alrng.cpp
- *    @date 09/13/2026
+ *    @date 09/20/2026
  *    @Author: Andrian Belinski
- *    @version 2.4
+ *    @version 2.5
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */
@@ -55,7 +55,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 2.4;
+static double const version = 2.5;
 
 /**
 * Local functions used
@@ -349,7 +349,11 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 				cfg.e_rsa_key_size = RsaKeySize::rsa3072;
 				break;
 			}
-			cerr << "unexpected RSA option specified, must be RSA1024, RSA2048 or RSA3072" << endl;
+			if (value.compare("RSA4096") == 0) {
+				cfg.e_rsa_key_size = RsaKeySize::rsa4096;
+				break;
+			}
+			cerr << "unexpected RSA option specified, must be RSA1024, RSA2048, RSA3072 or RSA4096" << endl;
 			return false;
 			break;
 		case 'd':
@@ -537,7 +541,7 @@ static void display_help() {
 	cout << "           MAC type: hmacMD5, hmacSha160, hmacSha256 or none - skip this option for none." << endl;
 	cout << endl;
 	cout << "     -p KEYTYPE" << endl;
-	cout << "           Public KEYTYPE: RSA1024, RSA2048 or RSA3072 (if supported) - skip this option for RSA2048." << endl;
+	cout << "           Public KEYTYPE: RSA1024, RSA2048, RSA3072 or RSA4096 (if supported) - skip for RSA2048." << endl;
 	cout << "           RSA is used for establishing a secure session with an AlphaRNG device." << endl;
 	cout << endl;
 	cout << "     -c CIPHER" << endl;
@@ -546,7 +550,7 @@ static void display_help() {
 	cout << "           AES cipher is used for securing the data communication within an AlphaRNG session." << endl;
 	cout << endl;
 	cout << "     -k FILE" << endl;
-	cout << "           FILE pathname with an alternative RSA 2048/3072 public key, supplied by the manufacturer." << endl;
+	cout << "           FILE pathname with an alternative RSA 2048/3072/4096 public key, supplied by the manufacturer." << endl;
 	cout << endl;
 	cout << "     -dt" << endl;
 	cout << "           Disable APT and RCT statistical tests." << endl;

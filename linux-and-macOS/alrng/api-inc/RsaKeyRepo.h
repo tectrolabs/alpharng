@@ -12,11 +12,11 @@
 
 /**
  *    @file RsaKeyRepo.h
- *    @date 09/13/2026
+ *    @date 09/20/2026
  *    @Author: Andrian Belinski
- *    @version 1.6
+ *    @version 1.7
  *
- *    @brief Used for storing hard-coded RSA 3072, 2048 and 1024 public keys used for establishing a secure connection with the AlphaRNG device.
+ *    @brief Used for storing hard-coded RSA 4096, 3072, 2048 and 1024 public keys used for establishing a secure connection with the AlphaRNG device.
  */
 
 #ifndef ALPHARNG_API_INC_RSAKEYREPO_H_
@@ -30,9 +30,11 @@ class RsaKeyRepo {
 public:
 	const unsigned int c_rsapub_2048_pem_len = {426};
 	const unsigned int c_rsapub_3072_pem_len = {601};
+	const unsigned int c_rsapub_4096_pem_len = {775};
 	const unsigned int c_rsapub_1024_pem_len = {251};
 	const unsigned char *c_rsapub_3072_pem;
 	const unsigned char *c_rsapub_2048_pem;
+	const unsigned char *c_rsapub_4096_pem;
 	const unsigned char *c_rsapub_1024_pem;
 	RsaKeyRepo();
 	RsaKeyRepo(const RsaKeyRepo &repo) = delete;
