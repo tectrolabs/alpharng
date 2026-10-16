@@ -287,7 +287,10 @@ void UsbSerialDevice::scan_available_devices() {
 	while (fgets(line, sizeof(line), pf) && m_active_device_count < c_max_devices) {
 		if (device_candidate == false && strstr(line, "Alpha RNG") != nullptr) {
 			device_candidate = true;
-			continue;
+			// Newer usbconfig output lists the driver on the same line as the description.
+			if (strstr(line, "umodem") == nullptr) {
+				continue;
+			}
 		}
 		if (device_candidate) {
 
