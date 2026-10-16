@@ -1,6 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
 project(alrng LANGUAGES C CXX)
 
+# Match the Makefile: Release builds use plain -O2, with no debug info and no -DNDEBUG.
+# Replace CMake's default Release flags (-O3 -DNDEBUG), but leave any value the user set.
+if(NOT WIN32)
+  foreach(lang C CXX)
+    if(CMAKE_${lang}_FLAGS_RELEASE STREQUAL "-O3 -DNDEBUG")
+      set(CMAKE_${lang}_FLAGS_RELEASE "-O2" CACHE STRING "Flags used by the ${lang} compiler for Release builds" FORCE)
+    endif()
+  endforeach()
+endif()
+
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
