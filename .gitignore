@@ -40,3 +40,12 @@
 
 # CMake build directory
 build/
+
+# Binaries built by make in linux-and-macOS/alrng
+/linux-and-macOS/alrng/alrng
+/linux-and-macOS/alrng/alrngdiag
+/linux-and-macOS/alrng/alperftest
+/linux-and-macOS/alrng/alseqgen
+/linux-and-macOS/alrng/bitgrps
+/linux-and-macOS/alrng/sample
+/linux-and-macOS/alrng/sample_c
