@@ -37,3 +37,6 @@
 .project
 .settings
 .pem
+
+# CMake build directory
+build/

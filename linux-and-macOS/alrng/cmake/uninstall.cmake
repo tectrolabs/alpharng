@@ -1,0 +1,11 @@
+if(NOT EXISTS "${MANIFEST}")
+  message(FATAL_ERROR "Cannot find install manifest: ${MANIFEST}")
+endif()
+
+file(STRINGS "${MANIFEST}" installed_files)
+foreach(f ${installed_files})
+  if(EXISTS "$ENV{DESTDIR}${f}")
+    message(STATUS "Removing $ENV{DESTDIR}${f}")
+    file(REMOVE "$ENV{DESTDIR}${f}")
+  endif()
+endforeach()
