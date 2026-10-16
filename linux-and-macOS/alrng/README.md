@@ -66,8 +66,14 @@ Notes:
 
 ```sh
 make              # Linux and macOS
-make -f Makefile.bsd   # FreeBSD
 sudo make install
+```
+
+On FreeBSD use `Makefile.bsd`:
+
+```sh
+make -f Makefile.bsd
+sudo make -f Makefile.bsd install
 ```
 
 `make clean` removes the build output. Both build systems produce the same programs.
