@@ -22,6 +22,7 @@ if(APPLE AND NOT OPENSSL_ROOT_DIR)
   endforeach()
 endif()
 find_package(OpenSSL REQUIRED)
+find_package(Threads REQUIRED)
 
 # Core library shared by all utilities
 add_library(alpharng STATIC
@@ -43,7 +44,7 @@ add_library(alpharng STATIC
   api-src/UsbSerialDevice.cpp
 )
 target_include_directories(alpharng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/api-inc)
-target_link_libraries(alpharng PUBLIC OpenSSL::Crypto)
+target_link_libraries(alpharng PUBLIC OpenSSL::Crypto Threads::Threads)
 if(MSVC)
   target_compile_options(alpharng PRIVATE /W3)
 else()
