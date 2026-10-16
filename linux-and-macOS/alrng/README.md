@@ -78,6 +78,14 @@ sudo make -f Makefile.bsd install
 
 `make clean` removes the build output. Both build systems produce the same programs.
 
+## FreeBSD performance
+
+Download speed is lower on FreeBSD than on Linux. In `alperftest`, a FreeBSD 14.3 system measured about 6.5 MB/s
+for the plain (no MAC, no cipher) test, against about 25 MB/s on Ubuntu with the same device.
+
+The limit is in FreeBSD's `umodem` serial driver, which reads the device through a single 1 KB USB transfer
+at a time, not in these utilities or in the device. The USB link itself runs at full high speed.
+
 ## Linux USB access
 
 To use the device without root, install the udev rules and re-plug the device:
