@@ -14,9 +14,9 @@
 
 /**
  *    @file RsaCryptor.cpp
- *    @date 9/13/2026
+ *    @date 10/17/2026
  *    @Author: Andrian Belinski
- *    @version 1.8
+ *    @version 1.9
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device.
  */
@@ -230,7 +230,7 @@ bool RsaCryptor::evp_key_decrypt(const unsigned char *in, int in_size_bytes, uns
 	if (ctx == nullptr) {
 		return false;
 	}
-	if (EVP_PKEY_encrypt_init(ctx) <= 0) {
+	if (EVP_PKEY_decrypt_init(ctx) <= 0) {
 		EVP_PKEY_CTX_free(ctx);
 		return false;
 	}
@@ -407,6 +407,16 @@ void RsaCryptor::crete_new_key(int key_size) {
 	if (RSA_generate_key_ex(m_rsa, key_size, m_bignum, nullptr) != 1) {
 		return;
 	}
+#endif
+
+	if (m_rsa == nullptr) {
+		return;
+	}
+
+#if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
+	m_rsa_key_size = static_cast<RsaKeySize>(EVP_PKEY_get_size(m_rsa));
+#else
+	m_rsa_key_size = static_cast<RsaKeySize>(RSA_size(m_rsa));
 #endif
 
 	m_is_key_initialized = true;

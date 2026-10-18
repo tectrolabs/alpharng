@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file AppArguments.h
- *    @date 9/16/2023
+ *    @date 10/17/2026
  *    @Author: Andrian Belinski
- *    @version 1.4
+ *    @version 1.5
  *
  *    @brief Parse application command line arguments
  */
@@ -33,6 +33,7 @@ namespace alpharng {
  */
 void AppArguments::load_arguments(const int argc, const char **argv) {
 	clear_error_log();
+	m_is_error = false;
 	m_argument_map.clear();
 	m_app_name = argv[0];
 	for (int i = 1; i < argc; ++i) {
