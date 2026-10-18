@@ -78,6 +78,36 @@ sudo make -f Makefile.bsd install
 
 `make clean` removes the build output. Both build systems produce the same programs.
 
+## Running the tests
+
+The unit tests need no device. They are built only when you ask for them:
+
+```sh
+cmake -S . -B build -DALRNG_BUILD_TESTS=ON
+cmake --build build -j4
+cd build && ctest --output-on-failure
+```
+
+Each test file in `tests/` is its own program (for example `build/tests/test_aes`), which you can also run
+directly to see every test by name. They use a small framework in `tests/test_framework.h`, so there is nothing
+extra to install.
+
+| Suite | What it checks |
+| --- | --- |
+| `sha` | SHA-256 and SHA-512 against known answers |
+| `hmac` | HMAC-SHA256, HMAC-SHA1 and HMAC-MD5 against known answers, and key handling |
+| `aes` | AES-128/256-GCM round trips, rejection of tampered data and tags, and agreement with OpenSSL |
+| `rsa` | The embedded device public keys, key files, generated keys, and encryption and decryption |
+| `health` | The Repetition Count and Adaptive Proportion health tests, with good and with stuck data |
+| `range_sequence` | Unique, in-range, evenly distributed random sequences, using a repeatable entropy source |
+| `app_arguments` | Command line option parsing and error reporting |
+
+The classes that talk to a device (`AlphaRngApi`, `UsbSerialDevice` and `ShaEntropyExtractor`) are not covered,
+because they need an AlphaRNG device.
+
+A test that documents a known, unfixed defect is declared with `TEST_KNOWN_BUG`. It is reported as `XFAIL` and
+does not fail the run. Once the defect is fixed, the test reports `XPASS` and fails the run until the marker is removed.
+
 ## FreeBSD performance
 
 Download speed is lower on FreeBSD than on Linux. In `alperftest`, a FreeBSD 14.3 system measured about 6.5 MB/s
