@@ -192,16 +192,22 @@ Things to know:
 * **A missing device is not an error for OpenSSL.** If the provider cannot start, for example because no AlphaRNG is found,
   it is not loaded and OpenSSL silently keeps using its own source. Applications that must use the device should check
   `OSSL_PROVIDER_available(NULL, "alpharng")`. If the provider loads and the device then fails, `RAND_bytes()` returns 0.
-* The provider uses the first AlphaRNG device and holds it while the process runs, so one process at a time can use it.
-  Starting it sets up the secure session with the device, which takes about 0.7 seconds on a Raspberry Pi 5 with the
-  default `RSA2048` and several seconds with `RSA4096`.
+* **One device per process.** A process uses the device chosen by `device` (default 0) and holds it from the moment OpenSSL
+  loads the provider until the process ends. While it is held, `alrng` and other programs cannot use that device. To use
+  several devices, run separate processes, each with its own config and its own `device = N`. The number counts all
+  connected devices, in the same order as `alrng -l`, whether or not they are in use. A process that asks for a device
+  that is already in use cannot start the provider: it prints `Could not lock device` and OpenSSL silently keeps using
+  its own random source. The process that holds the device is not affected. A single process cannot combine the output
+  of two devices.
+* Starting the provider sets up the secure session with the device, which takes about 0.7 seconds on a Raspberry Pi 5
+  with the default `RSA2048` and several seconds with `RSA4096`.
 * The AlphaRNG API calls `RAND_bytes()` itself for its session keys. While the provider is reading from the device,
   those calls are answered by OpenSSL's built-in generator, not by the device.
 * Speed is set by the device: about 0.5 MB/s on a Raspberry Pi 5 and on an Ubuntu PC, the same as `alrng -e`.
 
 The provider tests (`-DALRNG_BUILD_TESTS=ON` together with the provider option) use a stand-in provider with a known
 byte stream instead of a device, so they need no hardware. The provider was run end to end with OpenSSL 4.0.3 and an
-AlphaRNG device on a Raspberry Pi 5 and on Ubuntu 22.04.
+AlphaRNG device on a Raspberry Pi 5, on Ubuntu 22.04 and on macOS, and with two devices on a Mac.
 
 ## FreeBSD performance
 
