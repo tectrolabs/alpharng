@@ -84,6 +84,32 @@ if(NOT TARGET uninstall)
             -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/uninstall.cmake)
 endif()
 
+# OpenSSL provider that makes RAND_bytes() return bytes from an AlphaRNG device (for OpenSSL 4.0, which has no engines).
+# Needs OpenSSL 4.0 or a 3.5.x release with OSSL_FUNC_PROVIDER_RANDOM_BYTES. Opt-in: -DALRNG_BUILD_PROVIDER=ON
+option(ALRNG_BUILD_PROVIDER "Build the OpenSSL provider (alpharng.so)" OFF)
+if(ALRNG_BUILD_PROVIDER)
+  include(CheckSymbolExists)
+  set(CMAKE_REQUIRED_INCLUDES ${OPENSSL_INCLUDE_DIR})
+  check_symbol_exists(OSSL_FUNC_PROVIDER_RANDOM_BYTES openssl/core_dispatch.h ALRNG_OPENSSL_HAS_RANDOM_BYTES_HOOK)
+  unset(CMAKE_REQUIRED_INCLUDES)
+  if(NOT ALRNG_OPENSSL_HAS_RANDOM_BYTES_HOOK)
+    message(FATAL_ERROR "The OpenSSL found (${OPENSSL_VERSION}) has no provider random bytes support. "
+            "The provider needs OpenSSL 4.0 or a 3.5.x release that has OSSL_FUNC_PROVIDER_RANDOM_BYTES. "
+            "Use -DOPENSSL_ROOT_DIR=<path> to choose another OpenSSL.")
+  endif()
+  # The provider is a shared module that includes the (static) alpharng library
+  set_target_properties(alpharng PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  # OpenSSL looks for provider modules with the platform suffix when they are loaded by name
+  if(APPLE)
+    set(ALRNG_PROVIDER_SUFFIX ".dylib")
+  else()
+    set(ALRNG_PROVIDER_SUFFIX ".so")
+  endif()
+  add_library(alpharng_provider MODULE provider/alpharng_provider.cpp provider/rng_backend_device.cpp provider/settings.cpp)
+  set_target_properties(alpharng_provider PROPERTIES PREFIX "" OUTPUT_NAME alpharng SUFFIX "${ALRNG_PROVIDER_SUFFIX}")
+  target_link_libraries(alpharng_provider PRIVATE alpharng OpenSSL::Crypto)
+endif()
+
 # Unit tests, opt-in: cmake -S . -B build -DALRNG_BUILD_TESTS=ON && cmake --build build && (cd build && ctest --output-on-failure)
 option(ALRNG_BUILD_TESTS "Build the unit tests" OFF)
 if(ALRNG_BUILD_TESTS)
