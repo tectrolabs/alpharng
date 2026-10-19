@@ -14,6 +14,7 @@ Communication with the device goes through a secure channel.
 | `alseqgen` | Generate a random sequence of unique integers within a range |
 | `bitgrps` | Statistical analysis of sticky bit groups in a file of random bytes |
 | `sample`, `sample_c` | C++ and C examples of using the API |
+| `alpharng.so` | OpenSSL 4 provider that uses AlphaRNG as the random source (optional, see [below](#openssl-provider-openssl-40-and-later)) |
 | `run-alrng-pserver.sh` | Named pipe server script for Linux, see [below](#named-pipe-server) |
 | `85-alpharng-usb-access.rules` | udev rules for non-root USB access on Linux |
 
@@ -107,6 +108,100 @@ because they need an AlphaRNG device.
 
 A test that documents a known, unfixed defect is declared with `TEST_KNOWN_BUG`. It is reported as `XFAIL` and
 does not fail the run. Once the defect is fixed, the test reports `XPASS` and fails the run until the marker is removed.
+
+## OpenSSL provider (OpenSSL 4.0 and later)
+
+OpenSSL 4.0 removed engines. The AlphaRNG provider lets OpenSSL use an AlphaRNG device instead: when it is named as the
+random provider, `RAND_bytes()` and `RAND_priv_bytes()` return bytes from the device. It is built only when you ask for
+it, and needs OpenSSL 4.0 or a 3.5.x release that has `OSSL_FUNC_PROVIDER_RANDOM_BYTES`; configuring fails with a message
+if the OpenSSL found does not have it.
+
+```sh
+cmake -S . -B build -DALRNG_BUILD_PROVIDER=ON -DOPENSSL_ROOT_DIR=<path to OpenSSL 4>
+cmake --build build
+```
+
+This creates `build/alpharng.so` (`build/alpharng.dylib` on macOS). Name it in the OpenSSL config file (`openssl.cnf`)
+and set `OPENSSL_CONF` to that file:
+
+```
+openssl_conf = openssl_init
+
+[openssl_init]
+random = random_sect
+providers = provider_sect
+
+[provider_sect]
+default = default_sect
+alpharng = alpharng_sect
+
+[default_sect]
+activate = 1
+
+[alpharng_sect]
+module = /path/to/alpharng.so
+activate = 1
+
+[random_sect]
+random_provider = alpharng
+```
+
+To check it, run `openssl list -providers` (it should list `AlphaRNG`) and `openssl rand -hex 16`.
+
+### Settings
+
+Lines in the provider section (`[alpharng_sect]` above) choose how the provider uses the device. They use the same
+values as the options of `alrng`, and all are optional:
+
+| Setting | Values | Default | Like `alrng` |
+| --- | --- | --- | --- |
+| `cipher` | `aes256`, `aes128`, `none` | `aes256` | `-c` |
+| `mac` | `none`, `hmacSha256`, `hmacSha160`, `hmacMD5` | `none` | `-m` |
+| `rsa` | `RSA2048`, `RSA1024`, `RSA3072`, `RSA4096`; ignored when `key_file` is given | `RSA2048` | `-p` |
+| `key_file` | path of a device public key file. If given, it is used instead of the key built into the API, and `rsa` is ignored | the key built into the API | `-k` |
+| `device` | device number, 0 to 25 | `0` | `-d` |
+| `data` | `entropy` (the device's processed output), `sha256` or `sha512` (extracted from the raw noise) | `entropy` | `-e`, `-x`, `-X` |
+| `stat_tests` | `on`, `off` | `on` | `-dt` turns them off |
+
+For example, to use the second device with HMAC-SHA256 and SHA-512 extraction:
+
+```
+[alpharng_sect]
+module = /path/to/alpharng.so
+activate = 1
+mac = hmacSha256
+device = 1
+data = sha512
+```
+
+A value that is not allowed, or a device or key file that cannot be used, stops the provider from loading, so the
+device is never used with settings other than the ones asked for. The reason is printed to the standard error output,
+and OpenSSL keeps its own random source (see the notes below). `cipher = none` sends the random bytes over USB
+unencrypted. A program can read the settings in use from the provider's `buildinfo` parameter
+(`OSSL_PROVIDER_get_params`, `OSSL_PROV_PARAM_BUILDINFO`).
+
+Things to know:
+
+* **Keep `random` before `providers`** in `[openssl_init]`. With OpenSSL 4.0.3, listing `providers` first makes the provider
+  get unloaded again as soon as `random_provider` is read, and OpenSSL then uses its own random source.
+* **Load the `default` provider too**, as in the config above. The AlphaRNG API itself needs OpenSSL's random generator and
+  AES while it starts, and OpenSSL provides them through the default provider. Without it the provider cannot start.
+* **Load the config before the first random call.** OpenSSL answers the very first `RAND_bytes()` call of a process from
+  its own source if it has not read the config yet. Tools such as `openssl` read it first. In your own program, call
+  `OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG, NULL)` before generating random numbers.
+* **A missing device is not an error for OpenSSL.** If the provider cannot start, for example because no AlphaRNG is found,
+  it is not loaded and OpenSSL silently keeps using its own source. Applications that must use the device should check
+  `OSSL_PROVIDER_available(NULL, "alpharng")`. If the provider loads and the device then fails, `RAND_bytes()` returns 0.
+* The provider uses the first AlphaRNG device and holds it while the process runs, so one process at a time can use it.
+  Starting it sets up the secure session with the device, which takes about 0.7 seconds on a Raspberry Pi 5 with the
+  default `RSA2048` and several seconds with `RSA4096`.
+* The AlphaRNG API calls `RAND_bytes()` itself for its session keys. While the provider is reading from the device,
+  those calls are answered by OpenSSL's built-in generator, not by the device.
+* Speed is set by the device: about 0.5 MB/s on a Raspberry Pi 5 and on an Ubuntu PC, the same as `alrng -e`.
+
+The provider tests (`-DALRNG_BUILD_TESTS=ON` together with the provider option) use a stand-in provider with a known
+byte stream instead of a device, so they need no hardware. The provider was run end to end with OpenSSL 4.0.3 and an
+AlphaRNG device on a Raspberry Pi 5 and on Ubuntu 22.04.
 
 ## FreeBSD performance
 
