@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2025 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file RandomRangeSequence.h
- *    @date 03/09/2025
+ *    @date 10/30/2026
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implements a class with an algorithm for generating up to 4294967295 unique sequence of integers within [-2147483647,2147483647] range.
  */
@@ -37,6 +37,9 @@ public:
 
 	RandomRangeSequence(const int32_t min_limit, const int32_t max_limit);
 	virtual ~RandomRangeSequence();
+
+	RandomRangeSequence(const RandomRangeSequence&) = delete;
+	RandomRangeSequence& operator=(const RandomRangeSequence&) = delete;
 
 private:
 	void init();
