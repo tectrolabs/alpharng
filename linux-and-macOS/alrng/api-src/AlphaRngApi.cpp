@@ -12,14 +12,15 @@
 
 /**
  *    @file AlphaRngApi.cpp
- *    @date 9/20/2026
+ *    @date 10/30/2026
  *    @Author: Andrian Belinski
- *    @version 1.13
+ *    @version 1.14
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
 
 #include <AlphaRngApi.h>
+#include <openssl/crypto.h>
 
 using namespace std;
 
@@ -1396,7 +1397,7 @@ bool AlphaRngApi::is_response_valid(Response *resp) {
 			m_error_log_oss << "Could not compute hash value for the response" << ". " << endl;
 			return false;
 		}
-		if (memcmp(resp->mac, tmp.mac, m_hmac->get_mac_size())) {
+		if (CRYPTO_memcmp(resp->mac, tmp.mac, m_hmac->get_mac_size())) {
 			m_error_log_oss << "Response hash value mismatch" << ". " << endl;
 			return false;
 		}

@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2025 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.h
- *    @date 03/09/2025
+ *    @date 10/30/2026
  *    @Author: Andrian Belinski
- *    @version 1.8
+ *    @version 1.9
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -153,7 +153,7 @@ private:
 	uint16_t m_token_serial_number;
 	char *m_device_name = nullptr;
 	const int m_max_device_name_size = 128;
-	DeviceInfo m_device_info;
+	DeviceInfo m_device_info {};
 	const int c_slow_timeout_mlsecs = 4000;
 	const int c_fast_timeout_mlsecs = 300;
 	const int c_rnd_data_block_size_bytes = 16000;
@@ -162,7 +162,7 @@ private:
 	const int64_t c_max_file_ouput_bytes = 200000000000LL;
 	unsigned char *m_file_buffer = nullptr;
 	HealthTests m_health_test;
-	int m_op_retry_count;
+	int m_op_retry_count {0};
 	int m_session_count = 0;
 	AlphaRngConfig m_cfg;
 	ShaInterface *m_sha_256 = nullptr;

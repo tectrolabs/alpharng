@@ -12,9 +12,9 @@
 
 /**
  *    @file Structures.h
- *    @date 9/20/2026
+ *    @date 10/30/2026
  *    @Author: Andrian Belinski
- *    @version 1.9
+ *    @version 1.10
  *
  *    @brief Data structures used in the API implementation.
  */
@@ -23,6 +23,7 @@
 #define ALPHARNG_API_INC_STRUCTURES_H_
 
 #include <cstdint>
+#include <cstddef>
 #include <string>
 
 namespace alpharng {
@@ -87,6 +88,14 @@ struct Session {
 	uint8_t 		mac[32];
 };
 #pragma pack ()
+
+// The packed Session is RSA-encrypted without padding, with its first byte as the most
+// significant byte of the RSA input. That byte must stay smaller than the top byte of
+// every embedded RSA modulus (lowest is 0xBC), or encryption fails with
+// "data too large for modulus". Keep e_type as the first field, with a small value.
+static_assert(offsetof(Session, e_type) == 0, "Session::e_type must be the first field");
+static_assert(sizeof(SessionKeyType) == 1, "SessionKeyType must be one byte");
+static_assert(static_cast<uint8_t>(SessionKeyType::aes) < 0x80, "SessionKeyType values must stay below 0x80");
 
 enum class CmdOpt : uint8_t {
 	none = 0,
