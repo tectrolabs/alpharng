@@ -25,7 +25,8 @@ LDCPPFLAGS = $(LDFLAGS) -lstdc++
 SRCS=$(wildcard $(SDIR)/*.cpp)
 OBJECTS = HmacSha1.o HealthTests.o UsbSerialDevice.o HmacSha256.o RsaCryptor.o RsaKeyRepo.o \
 	ShaEntropyExtractor.o AlphaRngApiCWrapper.o Sha256.o AlphaRngApi.o HmacMD5.o AesCryptor.o \
-	Sha512.o AppArguments.o RandomRangeSequence.o AlphaRandomRangeSequence.o
+	Sha512.o AppArguments.o RandomRangeSequence.o AlphaRandomRangeSequence.o \
+	MlKemCryptor.o MlKemKeyRepo.o mlkem_native.o
 
 
 ALRNG = alrng
@@ -38,6 +39,23 @@ ALSEQGEN = alseqgen
 BITGRPS = bitgrps
 
 all: $(ALRNGDIAG) $(ALRNG) $(ALPERFTEST) $(CPPSAMPLE) $(CSAMPLE) $(ALSEQGEN) $(BITGRPS)
+
+# Unit tests (the same ones CMake builds with -DALRNG_BUILD_TESTS=ON); run with: make test
+TEST_DIR = ./tests
+TEST_NAMES = sha hmac aes rsa health range_sequence app_arguments
+TEST_BINS = $(addprefix $(TEST_DIR)/test_,$(TEST_NAMES))
+
+$(TEST_DIR)/test_%: $(TEST_DIR)/test_%.cpp $(TEST_DIR)/test_framework.h $(OBJECTS)
+	$(GPP) $< $(OBJECTS) -o $@ $(CPPFLAGS) -I$(TEST_DIR) $(LDCPPFLAGS)
+
+test: $(TEST_BINS)
+	@failed=0; \
+	for t in $(TEST_BINS); do \
+		echo; echo "== $$t"; \
+		$$t || failed=$$((failed + 1)); \
+	done; \
+	echo; \
+	if [ $$failed -eq 0 ]; then echo "All tests passed"; else echo "$$failed test program(s) failed"; exit 1; fi
 
 $(ALRNGDIAG): $(ALRNGDIAG).cpp $(OBJECTS)
 	@echo
@@ -99,6 +117,15 @@ RsaCryptor.o:
 RsaKeyRepo.o:
 	$(GPP) -c $(SDIR)/RsaKeyRepo.cpp $(CPPFLAGS)
 
+MlKemCryptor.o:
+	$(GPP) -c $(SDIR)/MlKemCryptor.cpp $(CPPFLAGS)
+
+MlKemKeyRepo.o:
+	$(GPP) -c $(SDIR)/MlKemKeyRepo.cpp $(CPPFLAGS)
+
+mlkem_native.o:
+	$(CC) -c $(SDIR)/mlkem/mlkem_native.c $(CFLAGS) -std=c99 -I$(SDIR)/mlkem $(OPENSSL_SUPPORT_INC)
+
 ShaEntropyExtractor.o:
 	$(GPP) -c $(SDIR)/ShaEntropyExtractor.cpp $(CPPFLAGS)
 
@@ -130,7 +157,7 @@ AlphaRandomRangeSequence.o:
 	$(GPP) -c $(SDIR)/AlphaRandomRangeSequence.cpp $(CPPFLAGS)
 
 clean:
-	rm -fr *.o ; rm -fr $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE) $(ALSEQGEN) $(BITGRPS)
+	rm -fr *.o ; rm -fr $(ALRNGDIAG) $(ALRNG) $(CPPSAMPLE) $(ALPERFTEST) $(CSAMPLE) $(ALSEQGEN) $(BITGRPS) $(TEST_BINS)
 
 install:
 	install -d $(BINDIR)
@@ -149,3 +176,5 @@ uninstall:
 	rm $(BINDIR)/$(ALSEQGEN)
 	rm $(BINDIR)/$(BITGRPS)
 	rm $(BINDIR)/$(ALRNG_PSERVER)
+
+.PHONY: all test clean install uninstall

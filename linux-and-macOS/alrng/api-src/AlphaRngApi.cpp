@@ -31,14 +31,20 @@ AlphaRngApi::AlphaRngApi(const AlphaRngConfig &cfg) {
 }
 
 AlphaRngApi::AlphaRngApi() {
-	initialize(AlphaRngConfig {MacType::hmacSha256, RsaKeySize::rsa2048, KeySize::k256, ""});
+	initialize(AlphaRngConfig {MacType::hmacSha256, RsaKeySize::rsa2048, KeySize::k256, "", KeyExchange::rsa});
 }
 
 void AlphaRngApi::initialize(const AlphaRngConfig &cfg) {
 	m_cfg = cfg;
 	if (m_cfg.pub_key_file_name.size() > 0) {
-		if (!initialize_rsa_keyfile()) {
-			m_error_log_oss << "Could not initialize RSA from a public key file" << ". " << endl;
+		if (!initialize_ml_kem_keyfile() && !initialize_rsa_keyfile()) {
+			m_error_log_oss << "Could not load an ML-KEM-1024 or RSA public key from "
+								<< m_cfg.pub_key_file_name << ". " << endl;
+			return;
+		}
+	} else if (m_cfg.e_key_exchange == KeyExchange::mlkem1024) {
+		if (!initialize_ml_kem()) {
+			m_error_log_oss << "Could not initialize ML-KEM-1024" << ". " << endl;
 			return;
 		}
 	} else {
@@ -46,6 +52,10 @@ void AlphaRngApi::initialize(const AlphaRngConfig &cfg) {
 			m_error_log_oss << "Could not initialize RSA" << ". " << endl;
 			return;
 		}
+	}
+	if (m_ml_kem_cryptor != nullptr) {
+		// AlphaRNG PQ devices only support AES-256-GCM
+		m_cfg.e_aes_key_size = KeySize::k256;
 	}
 	if (!initialize_aes(m_cfg.e_aes_key_size)) {
 		m_error_log_oss << "Could not initialize cipher" << ". " << endl;
@@ -96,6 +106,26 @@ bool AlphaRngApi::initialize_serial_device() {
 bool AlphaRngApi::initialize_rsa_keyfile() {
 	m_rsa_cryptor = new (nothrow) RsaCryptor(m_cfg.pub_key_file_name, true);
 	if (m_rsa_cryptor == nullptr || !m_rsa_cryptor->is_initialized()) {
+		return false;
+	}
+	return true;
+}
+
+bool AlphaRngApi::initialize_ml_kem_keyfile() {
+	MlKemCryptor *cryptor = new (nothrow) MlKemCryptor(m_cfg.pub_key_file_name);
+	if (cryptor == nullptr || !cryptor->is_initialized()) {
+		// Not an ML-KEM-1024 public key, the caller falls back to RSA
+		delete cryptor;
+		return false;
+	}
+	m_ml_kem_cryptor = cryptor;
+	return true;
+}
+
+bool AlphaRngApi::initialize_ml_kem() {
+	m_ml_kem_cryptor = new (nothrow) MlKemCryptor(m_ml_kem_key_repo.c_mlkem1024_pub_pem,
+			(int)m_ml_kem_key_repo.c_mlkem1024_pub_pem_len);
+	if (m_ml_kem_cryptor == nullptr || !m_ml_kem_cryptor->is_initialized()) {
 		return false;
 	}
 	return true;
@@ -1173,8 +1203,20 @@ bool AlphaRngApi::upload_session_key() {
 	}
 	int actual_size_bytes = actual_size + m_hmac->get_mac_size();
 
-	if (!create_and_upload_session_packet((uint8_t*)&sess, actual_size_bytes)) {
-		return false;
+	if (m_ml_kem_cryptor != nullptr) {
+		if (!m_ml_kem_cryptor->is_initialized()) {
+			m_error_log_oss << "ML-KEM Cryptor not initialized" << endl;
+			return false;
+		}
+		if (!create_and_upload_ml_kem_session_packet(&sess)) {
+			return false;
+		}
+
+	} else {
+
+		if (!create_and_upload_session_packet((uint8_t*)&sess, actual_size_bytes)) {
+			return false;
+		}
 	}
 
 	Response resp;
@@ -1244,6 +1286,48 @@ bool AlphaRngApi::create_and_upload_command_packet(uint8_t *p, int object_size_b
 	}
 
 	return true;
+}
+
+bool AlphaRngApi::create_and_upload_ml_kem_session_packet(Session *sess) {
+	unsigned char secret[MlKemCryptor::c_shared_secret_size_bytes];
+	MlKemPacket rqst;
+	memset(&rqst, 0x00, sizeof(rqst));
+	if (m_ml_kem_cryptor->is_public_key_file()) {
+		rqst.e_type = PacketType::mlkemAlt1024;
+	} else {
+		rqst.e_type = PacketType::mlkem1024;
+
+	}
+
+	bool ok = false;
+	EVP_CIPHER_CTX *ctx = nullptr;
+	int len = 0;
+	int total = 0;
+	// Authenticated in clear text: e_type and capsule (they come first in the packed struct)
+	const int aad_size = (int)offsetof(MlKemPacket, cipher_iv);
+
+	if (!m_ml_kem_cryptor->encapsulate(rqst.capsule, sizeof(rqst.capsule), secret, sizeof(secret))) {
+		m_error_log_oss << "Could not create ML-KEM capsule. " << endl;
+	} else if (RAND_bytes(rqst.cipher_iv, sizeof(rqst.cipher_iv)) != 1) {
+		m_error_log_oss << "Could not generate the session packet IV. " << endl;
+	} else if ((ctx = EVP_CIPHER_CTX_new()) == nullptr
+			|| EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), nullptr, nullptr, nullptr) != 1
+			|| EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_IVLEN, sizeof(rqst.cipher_iv), nullptr) != 1
+			|| EVP_EncryptInit_ex(ctx, nullptr, nullptr, secret, rqst.cipher_iv) != 1
+			|| EVP_EncryptUpdate(ctx, nullptr, &len, (const unsigned char *)&rqst, aad_size) != 1
+			|| EVP_EncryptUpdate(ctx, (unsigned char *)&rqst.session, &len,
+					(const unsigned char *)sess, sizeof(Session)) != 1
+			|| (total = len, EVP_EncryptFinal_ex(ctx, (unsigned char *)&rqst.session + total, &len) != 1)
+			|| (total += len) != (int)sizeof(Session)
+			|| EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_GET_TAG, sizeof(rqst.cipher_tag), rqst.cipher_tag) != 1) {
+		m_error_log_oss << "Could not encrypt the ML-KEM session packet. " << endl;
+	} else {
+		ok = upload_request(&rqst);
+	}
+
+	EVP_CIPHER_CTX_free(ctx);
+	OPENSSL_cleanse(secret, sizeof(secret));
+	return ok;
 }
 
 bool AlphaRngApi::create_and_upload_session_packet(uint8_t *p, int object_size_bytes) {
@@ -1416,6 +1500,16 @@ bool AlphaRngApi::upload_request(Packet *rqst) {
 	return true;
 }
 
+bool AlphaRngApi::upload_request(MlKemPacket *rqst) {
+	int actual_bytes_sent = 0;
+	if (m_device->send_data((unsigned char *)rqst, sizeof(MlKemPacket), &actual_bytes_sent)) {
+		m_error_log_oss << "send_data() ml-kem, expected to send  " << sizeof(MlKemPacket) << " bytes, actual bytes sent " << actual_bytes_sent << ". " << endl;
+		return false;
+	}
+	return true;
+}
+
+
 /**
  * Disconnect from AlphaRNG device
  *
@@ -1522,6 +1616,9 @@ AlphaRngApi::~AlphaRngApi() {
 	}
 	if (m_rsa_cryptor) {
 		delete m_rsa_cryptor;
+	}
+	if (m_ml_kem_cryptor) {
+		delete m_ml_kem_cryptor;
 	}
 	if (m_aes_cryptor) {
 		delete m_aes_cryptor;

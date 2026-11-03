@@ -110,7 +110,7 @@ alrng_context* alrng_create_ctxt(enum alrng_rsa_key_type rsa_key_type, enum alrn
 		key_file = pub_key_file;
 	}
 
-	return (alrng_context*) new (std::nothrow) AlphaRngApi(AlphaRngConfig {e_mac_type, e_rsa_key_size, e_aes_key_size, key_file});
+	return (alrng_context*) new (std::nothrow) AlphaRngApi(AlphaRngConfig {e_mac_type, e_rsa_key_size, e_aes_key_size, key_file, KeyExchange::rsa});
 }
 
 /**

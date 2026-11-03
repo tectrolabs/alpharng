@@ -88,17 +88,17 @@ int main(const int argc, const char **argv) {
 		return -1;
 	}
 
-	if (cfg.key_file.size() > 0) {
+	if (cfg.key_file.size() > 0 && !MlKemCryptor(cfg.key_file).is_initialized()) {
 		RsaCryptor rsa(cfg.key_file, true);
 		if (!rsa.is_initialized()) {
-			cerr << "Could not load the RSA public key file: " << cfg.key_file << endl;
+			cerr << "Could not load the ML-KEM-1024 or RSA public key file: " << cfg.key_file << endl;
 			return -1;
 		}
 		// Retrieve an actual RSA key size.
 		cfg.e_rsa_key_size = rsa.get_rsa_key_size();
 	}
 
-	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
+	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file, KeyExchange::rsa}};
 
 	if (!rng.set_session_ttl(cmd.ttl_minutes)) {
 		cerr << rng.get_last_error() << endl;
@@ -413,7 +413,7 @@ static bool validate_comand(const Cmd &cmd) {
  * @return true for successful operation
  */
 static bool list_connected_devices(const RngConfig &cfg) {
-	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
+	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file, KeyExchange::rsa}};
 	string id;
 	string model;
 	unsigned char major_version;

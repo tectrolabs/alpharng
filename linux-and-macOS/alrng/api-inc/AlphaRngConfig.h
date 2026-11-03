@@ -32,6 +32,9 @@ struct AlphaRngConfig {
 	RsaKeySize e_rsa_key_size;
 	KeySize e_aes_key_size;
 	std::string pub_key_file_name;
+	// rsa: built-in RSA keys (default). mlkem1024: the built-in ML-KEM-1024 key for AlphaRNG PQ devices.
+	// Ignored when pub_key_file_name is set: the type of key in the file decides.
+	KeyExchange e_key_exchange;
 };
 
 

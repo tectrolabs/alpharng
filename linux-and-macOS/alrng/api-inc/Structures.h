@@ -25,6 +25,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <string>
+#include <MlKemCryptor.h>
 
 namespace alpharng {
 
@@ -42,8 +43,10 @@ enum class CommandType : uint16_t {
 	extractSha512Entropy = 310
 };
 enum class KeySize : uint8_t {None = 0, k128 = 16, k256 = 32};
+enum class KeyExchange : uint8_t {rsa = 0, mlkem1024 = 1};
 enum class MacType : uint8_t {None = 0, hmacMD5 =16, hmacSha160 = 20, hmacSha256 = 32};
-enum class PacketType : uint8_t {pkRSA2048 = 1, pkAltRSA2048 = 2, pkRSA3072 = 3, pkAltRSA3072 = 4, pkRSA4096 = 5, pkAltRSA4096 = 6, pkRSA1024 = 20, aes = 40};
+enum class PacketType : uint8_t {pkRSA2048 = 1, pkAltRSA2048 = 2, pkRSA3072 = 3, pkAltRSA3072 = 4,
+	pkRSA4096 = 5, pkAltRSA4096 = 6, pkRSA1024 = 20, mlkem1024 = 21, mlkemAlt1024 = 22, aes = 40};
 enum class SessionKeyType : uint8_t {aes = 1};
 enum class RsaKeySize : uint16_t {rsa2048 = 256, rsa1024 = 128, rsa3072 = 384, rsa4096 = 512};
 
@@ -86,6 +89,13 @@ struct Session {
 	MacType 		e_mac_type;
 	uint8_t			mac_key[32];
 	uint8_t 		mac[32];
+};
+struct MlKemPacket {
+	PacketType	e_type;
+	uint8_t		capsule[MlKemCryptor::c_capsule_size_bytes];
+	uint8_t		cipher_iv[12];
+	uint8_t		cipher_tag[16];
+	Session		session;
 };
 #pragma pack ()
 

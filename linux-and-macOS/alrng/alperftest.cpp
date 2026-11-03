@@ -225,7 +225,7 @@ static bool run_device_perf_tests(int device_num) {
  */
 static bool run_device_perf_test(int device_num, const RngConfig &cfg) {
 	DeviceStatistics ds;
-	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
+	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file, KeyExchange::rsa}};
 	bool slow_dwld = false;
 	unsigned char rnd_buffer[100000];
 

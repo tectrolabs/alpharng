@@ -14,7 +14,8 @@ LDCPPFLAGS = $(LDFLAGS) -lstdc++
 SRCS!=ls ${SDIR}/*.cpp
 OBJECTS = HmacSha1.o HealthTests.o UsbSerialDevice.o HmacSha256.o RsaCryptor.o RsaKeyRepo.o \
 	ShaEntropyExtractor.o AlphaRngApiCWrapper.o Sha256.o AlphaRngApi.o HmacMD5.o AesCryptor.o \
-	Sha512.o AppArguments.o RandomRangeSequence.o AlphaRandomRangeSequence.o
+	Sha512.o AppArguments.o RandomRangeSequence.o AlphaRandomRangeSequence.o \
+	MlKemCryptor.o MlKemKeyRepo.o mlkem_native.o
 
 
 ALRNG = alrng
@@ -87,6 +88,15 @@ RsaCryptor.o:
 
 RsaKeyRepo.o:
 	$(GPP) -c $(SDIR)/RsaKeyRepo.cpp $(CPPFLAGS)
+
+MlKemCryptor.o:
+	$(GPP) -c $(SDIR)/MlKemCryptor.cpp $(CPPFLAGS)
+
+MlKemKeyRepo.o:
+	$(GPP) -c $(SDIR)/MlKemKeyRepo.cpp $(CPPFLAGS)
+
+mlkem_native.o:
+	$(CC) -c $(SDIR)/mlkem/mlkem_native.c $(CFLAGS) -std=c99 -I$(SDIR)/mlkem
 
 ShaEntropyExtractor.o:
 	$(GPP) -c $(SDIR)/ShaEntropyExtractor.cpp $(CPPFLAGS)
