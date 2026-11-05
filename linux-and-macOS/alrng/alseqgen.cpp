@@ -89,7 +89,7 @@ int main(const int argc, const char **argv) {
 		cfg.e_rsa_key_size = rsa.get_rsa_key_size();
 	}
 
-	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file, KeyExchange::rsa}};
+	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file, cfg.e_key_exchange}};
 
 	if (cmd.cmd_type == CmdOpt::generateSequence && !rng.connect(cmd.device_number)) {
 		cerr << rng.get_last_error() << endl;
@@ -200,6 +200,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 	cfg.e_mac_type = MacType::None;
 	cfg.e_aes_key_size = KeySize::k256;
 	cfg.e_rsa_key_size = RsaKeySize::rsa2048;
+	cfg.e_key_exchange = KeyExchange::rsa;
 
 
 	map<string, string> arg_map = appArgs.get_argument_map();
@@ -275,6 +276,10 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 			return false;
 			break;
 		case 'p':
+			if (value.compare("MLKEM1024") == 0) {
+				cfg.e_key_exchange = KeyExchange::mlkem1024;
+				break;
+			}
 			if (value.compare("RSA1024") == 0) {
 				cfg.e_rsa_key_size = RsaKeySize::rsa1024;
 				break;
@@ -291,7 +296,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 				cfg.e_rsa_key_size = RsaKeySize::rsa4096;
 				break;
 			}
-			cerr << "unexpected RSA option specified, must be RSA1024, RSA2048, RSA3072 or RSA4096" << endl;
+			cerr << "unexpected public key type specified, must be MLKEM1024, RSA1024, RSA2048, RSA3072 or RSA4096" << endl;
 			return false;
 			break;
 		case 'd':
@@ -401,8 +406,9 @@ static void display_help() {
 	cout << "           MAC type: hmacMD5, hmacSha160, hmacSha256 or none - skip this option for none." << endl;
 	cout << endl;
 	cout << "     -p KEYTYPE" << endl;
-	cout << "           Public KEYTYPE: RSA1024, RSA2048, RSA3072 or RSA4096 (if supported) - skip for RSA2048." << endl;
-	cout << "           RSA is used for establishing a secure session with an AlphaRNG device." << endl;
+	cout << "           Public KEYTYPE: RSA1024, RSA2048, RSA3072 or RSA4096 (if supported), MLKEM1024 - skip for RSA2048." << endl;
+	cout << "           The key is used for establishing a secure session with an AlphaRNG device." << endl;
+	cout << "           MLKEM1024 (ML-KEM-1024) is required for AlphaRNG PQ devices." << endl;
 	cout << endl;
 	cout << "     -c CIPHER" << endl;
 	cout << "           CIPHER type: aes256, aes128 or none - skip this option for aes256." << endl;

@@ -151,6 +151,7 @@ struct RngConfig {
 	KeySize e_aes_key_size;
 	std::string key_file;
 	RsaKeySize e_rsa_key_size;
+	KeyExchange e_key_exchange;
 };
 
 struct FrequencyTables {

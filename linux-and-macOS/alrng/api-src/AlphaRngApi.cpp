@@ -53,10 +53,6 @@ void AlphaRngApi::initialize(const AlphaRngConfig &cfg) {
 			return;
 		}
 	}
-	if (m_ml_kem_cryptor != nullptr) {
-		// AlphaRNG PQ devices only support AES-256-GCM
-		m_cfg.e_aes_key_size = KeySize::k256;
-	}
 	if (!initialize_aes(m_cfg.e_aes_key_size)) {
 		m_error_log_oss << "Could not initialize cipher" << ". " << endl;
 		return;
@@ -1308,8 +1304,10 @@ bool AlphaRngApi::create_and_upload_ml_kem_session_packet(Session *sess) {
 
 	if (!m_ml_kem_cryptor->encapsulate(rqst.capsule, sizeof(rqst.capsule), secret, sizeof(secret))) {
 		m_error_log_oss << "Could not create ML-KEM capsule. " << endl;
-	} else if (RAND_bytes(rqst.cipher_iv, sizeof(rqst.cipher_iv)) != 1) {
-		m_error_log_oss << "Could not generate the session packet IV. " << endl;
+	} else if (m_cfg.e_aes_key_size != KeySize::None
+			? (!m_aes_cryptor->initialize_iv() || !m_aes_cryptor->get_iv(rqst.cipher_iv))
+			: RAND_bytes(rqst.cipher_iv, sizeof(rqst.cipher_iv)) != 1) {
+		m_error_log_oss << "Could not generate AES IV for the session. " << endl;
 	} else if ((ctx = EVP_CIPHER_CTX_new()) == nullptr
 			|| EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), nullptr, nullptr, nullptr) != 1
 			|| EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_IVLEN, sizeof(rqst.cipher_iv), nullptr) != 1

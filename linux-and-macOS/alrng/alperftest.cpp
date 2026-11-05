@@ -141,7 +141,7 @@ static bool display_device_info(AlphaRngApi &rng) {
  * @return true for successful operation
  */
 static bool run_device_perf_tests(int device_num, MacType macType, KeySize keySize, RsaKeySize rsaKeySize) {
-	RngConfig cfg {macType, keySize, "", rsaKeySize};
+	RngConfig cfg {macType, keySize, "", rsaKeySize, KeyExchange::rsa};
 	return run_device_perf_test(device_num, cfg);
 }
 

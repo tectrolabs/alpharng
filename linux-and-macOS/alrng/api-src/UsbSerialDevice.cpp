@@ -222,7 +222,7 @@ void UsbSerialDevice::scan_available_devices() {
 #ifdef __linux__
 	char command[] = "/bin/ls -1l /dev/serial/by-id 2>&1 | grep -i \"TectroLabs_Alpha_RNG\"";
 #else
-	char command[] = "/bin/ls -1a /dev/cu.usbmodemALPHARNG* /dev/cu.usbmodemF* 2>&1";
+	char command[] = "/bin/ls -1a /dev/cu.usbmodemALPHARNG* /dev/cu.usbmodemALRNGPQ* /dev/cu.usbmodemF* 2>&1";
 #endif
 	FILE *pf = popen(command,"r");
 	if (pf == nullptr) {
@@ -239,7 +239,8 @@ void UsbSerialDevice::scan_available_devices() {
 #else
 		int cmp1  = strncmp(line, "/dev/cu.usbmodemALPHARNG", 24);
 		int cmp2  = strncmp(line, "/dev/cu.usbmodemF", 17);
-		if (cmp1 != 0 && cmp2 != 0 ) {
+		int cmp3  = strncmp(line, "/dev/cu.usbmodemALRNGPQ", 23);
+		if (cmp1 != 0 && cmp2 != 0 && cmp3 != 0) {
 			continue;
 		}
 		char *tty = line;
