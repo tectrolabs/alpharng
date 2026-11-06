@@ -42,7 +42,7 @@ typedef struct alrng_context alrng_context;
  * Create a context for referencing AlphaRngApi class instance using default security configuration:
  *
  * MAC type:        HMAC-SHA-256
- * public key type: RSA-2048
+ * public key type: RSA-2048 (ML-KEM-1024 is used automatically with AlphaRNG PQ devices)
  * Cipher type:     AES-256-GCM
  * public key file: NONE
  *
@@ -56,7 +56,7 @@ alrng_context* alrng_create_default_ctxt();
  * @param[in] rsa_key_type RSA public key type used for establishing a secure session with an AlphaRNG device
  * @param[in] mac_type MAC type used for data authentication
  * @param[in] cipher_type AES cipher is used for securing the data communication within an AlphaRNG session
- * @param[in] pub_key_file file pathname with an alternative RSA 2048 public key, supplied by the manufacturer
+ * @param[in] pub_key_file file pathname with an alternative RSA 2048/3072/4096 or ML-KEM-1024 public key, supplied by the manufacturer
  *
  * @return pointer to the new context or NULL if failed
  */

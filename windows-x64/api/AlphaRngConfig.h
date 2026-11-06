@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -32,6 +32,9 @@ struct AlphaRngConfig {
 	RsaKeySize e_rsa_key_size;
 	KeySize e_aes_key_size;
 	std::string pub_key_file_name;
+	// rsa: built-in RSA keys (default). mlkem1024: the built-in ML-KEM-1024 key for AlphaRNG PQ devices.
+	// Ignored when pub_key_file_name is set: the type of key in the file decides.
+	KeyExchange e_key_exchange;
 };
 
 

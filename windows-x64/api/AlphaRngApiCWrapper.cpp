@@ -33,7 +33,7 @@ extern "C" {
  * Create a context for referencing AlphaRngApi class instance using default security configuration:
  *
  * MAC type:        HMAC-SHA-256
- * public key type: RSA-2048
+ * public key type: RSA-2048 (ML-KEM-1024 is used automatically with AlphaRNG PQ devices)
  * Cipher type:     AES-256-GCM
  * public key file: NONE
  *
@@ -49,7 +49,7 @@ alrng_context* alrng_create_default_ctxt() {
  * @param[in] rsa_key_type RSA public key type used for establishing a secure session with an AlphaRNG device
  * @param[in] mac_type MAC type used for data authentication
  * @param[in] cipher_type AES cipher is used for securing the data communication within an AlphaRNG session
- * @param[in] pub_key_file file pathname with an alternative RSA 2048 public key, supplied by the manufacturer
+ * @param[in] pub_key_file file pathname with an alternative RSA 2048/3072/4096 or ML-KEM-1024 public key, supplied by the manufacturer
  *
  * @return pointer to the new context or NULL if failed
  */
@@ -60,14 +60,14 @@ alrng_context* alrng_create_ctxt(enum alrng_rsa_key_type rsa_key_type, enum alrn
 	RsaKeySize e_rsa_key_size;
 
 	switch(rsa_key_type) {
-	case rsa_1024_key:
-		e_rsa_key_size = RsaKeySize::rsa1024;
+	case rsa_4096_key:
+		e_rsa_key_size = RsaKeySize::rsa4096;
 		break;
 	case rsa_3072_key:
 		e_rsa_key_size = RsaKeySize::rsa3072;
 		break;
-	case rsa_4096_key:
-		e_rsa_key_size = RsaKeySize::rsa4096;
+	case rsa_1024_key:
+		e_rsa_key_size = RsaKeySize::rsa1024;
 		break;
 	case rsa_2048_key:
 	default:
@@ -110,7 +110,7 @@ alrng_context* alrng_create_ctxt(enum alrng_rsa_key_type rsa_key_type, enum alrn
 		key_file = pub_key_file;
 	}
 
-	return (alrng_context*) new (std::nothrow) AlphaRngApi(AlphaRngConfig {e_mac_type, e_rsa_key_size, e_aes_key_size, key_file});
+	return (alrng_context*) new (std::nothrow) AlphaRngApi(AlphaRngConfig {e_mac_type, e_rsa_key_size, e_aes_key_size, key_file, KeyExchange::rsa});
 }
 
 /**
@@ -288,7 +288,7 @@ int alrng_retrieve_device_id(alrng_context* ctxt, char *id_buffer, int id_buffer
 		return -1;
 	}
 	memcpy(id_buffer, id.c_str(), size);
-	id[size] = '\0';
+	id_buffer[size] = '\0';
 	return 0;
 }
 
@@ -316,7 +316,7 @@ int alrng_retrieve_device_model(alrng_context* ctxt, char *model_buffer, int mod
 		return -1;
 	}
 	memcpy(model_buffer, model.c_str(), size);
-	model[size] = '\0';
+	model_buffer[size] = '\0';
 	return 0;
 }
 

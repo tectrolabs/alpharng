@@ -88,17 +88,17 @@ int main(const int argc, const char **argv) {
 		return -1;
 	}
 
-	if (cfg.key_file.size() > 0) {
+	if (cfg.key_file.size() > 0 && !MlKemCryptor(cfg.key_file).is_initialized()) {
 		RsaCryptor rsa(cfg.key_file, true);
 		if (!rsa.is_initialized()) {
-			cerr << "Could not load the RSA public key file: " << cfg.key_file << endl;
+			cerr << "Could not load the ML-KEM-1024 or RSA public key file: " << cfg.key_file << endl;
 			return -1;
 		}
 		// Retrieve an actual RSA key size.
 		cfg.e_rsa_key_size = rsa.get_rsa_key_size();
 	}
 
-	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
+	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file, cfg.e_key_exchange}};
 
 	if (!rng.set_session_ttl(cmd.ttl_minutes)) {
 		cerr << rng.get_last_error() << endl;
@@ -214,6 +214,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 	cfg.e_mac_type = MacType::None;
 	cfg.e_aes_key_size = KeySize::k256;
 	cfg.e_rsa_key_size = RsaKeySize::rsa2048;
+	cfg.e_key_exchange = KeyExchange::rsa;
 
 
 	map<string, string> arg_map = appArgs.get_argument_map();
@@ -337,6 +338,10 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 			return false;
 			break;
 		case 'p':
+			if (value.compare("MLKEM1024") == 0) {
+				cfg.e_key_exchange = KeyExchange::mlkem1024;
+				break;
+			}
 			if (value.compare("RSA1024") == 0) {
 				cfg.e_rsa_key_size = RsaKeySize::rsa1024;
 				break;
@@ -353,7 +358,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 				cfg.e_rsa_key_size = RsaKeySize::rsa4096;
 				break;
 			}
-			cerr << "unexpected RSA option specified, must be RSA1024, RSA2048, RSA3072 or RSA4096" << endl;
+			cerr << "unexpected public key type specified, must be MLKEM1024, RSA1024, RSA2048, RSA3072 or RSA4096" << endl;
 			return false;
 			break;
 		case 'd':
@@ -413,7 +418,7 @@ static bool validate_comand(const Cmd &cmd) {
  * @return true for successful operation
  */
 static bool list_connected_devices(const RngConfig &cfg) {
-	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
+	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file, cfg.e_key_exchange}};
 	string id;
 	string model;
 	unsigned char major_version;
@@ -429,7 +434,7 @@ static bool list_connected_devices(const RngConfig &cfg) {
 		rng.disconnect();
 		cout << "Device " << i << ": ";
 		if (!rng.connect(i)) {
-			cout << "could not connect" << endl;
+			cout << "could not connect. " << rng.get_last_error() << endl;
 			continue;
 		}
 		rng.retrieve_device_id(id);
@@ -541,8 +546,9 @@ static void display_help() {
 	cout << "           MAC type: hmacMD5, hmacSha160, hmacSha256 or none - skip this option for none." << endl;
 	cout << endl;
 	cout << "     -p KEYTYPE" << endl;
-	cout << "           Public KEYTYPE: RSA1024, RSA2048, RSA3072 or RSA4096 (if supported) - skip for RSA2048." << endl;
-	cout << "           RSA is used for establishing a secure session with an AlphaRNG device." << endl;
+	cout << "           Public KEYTYPE: RSA1024, RSA2048, RSA3072, RSA4096, MLKEM1024 - skip for RSA2048." << endl;
+	cout << "           The key is used for establishing a secure session with an AlphaRNG device." << endl;
+	cout << "           MLKEM1024 (ML-KEM-1024) is enforced when using AlphaRNG PQ devices. " << endl;
 	cout << endl;
 	cout << "     -c CIPHER" << endl;
 	cout << "           CIPHER type: aes256, aes128 or none - skip this option for aes256." << endl;
@@ -550,7 +556,7 @@ static void display_help() {
 	cout << "           AES cipher is used for securing the data communication within an AlphaRNG session." << endl;
 	cout << endl;
 	cout << "     -k FILE" << endl;
-	cout << "           FILE pathname with an alternative RSA 2048/3072/4096 public key, supplied by the manufacturer." << endl;
+	cout << "           FILE pathname with an alternative RSA 2048/3072/4096 or ML-KEM-1024 public key, supplied by the manufacturer." << endl;
 	cout << endl;
 	cout << "     -dt" << endl;
 	cout << "           Disable APT and RCT statistical tests." << endl;

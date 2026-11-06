@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -35,6 +35,8 @@ class ShaEntropyExtractor {
 public:
 	bool extract_entropy(unsigned char *out, int len);
 	ShaEntropyExtractor(AlphaRngApi *rng_api, ShaInterface *sha_api, int in_out_ratio = 2);
+	ShaEntropyExtractor(const ShaEntropyExtractor &extractor) = delete;
+	ShaEntropyExtractor & operator=(const ShaEntropyExtractor &extractor) = delete;
 	std::string get_last_error() const {return m_error_log_oss.str();};
 	int get_hash_size() {return m_sha_api->get_hash_size();};
 	virtual ~ShaEntropyExtractor();

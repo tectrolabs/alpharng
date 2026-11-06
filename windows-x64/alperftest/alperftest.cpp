@@ -141,7 +141,7 @@ static bool display_device_info(AlphaRngApi &rng) {
  * @return true for successful operation
  */
 static bool run_device_perf_tests(int device_num, MacType macType, KeySize keySize, RsaKeySize rsaKeySize) {
-	RngConfig cfg {macType, keySize, "", rsaKeySize};
+	RngConfig cfg {macType, keySize, "", rsaKeySize, KeyExchange::rsa};
 	return run_device_perf_test(device_num, cfg);
 }
 
@@ -156,12 +156,8 @@ static bool run_device_perf_tests(int device_num) {
 
 	RsaKeySize keySize {RsaKeySize::rsa2048};
 
-	if (g_major_version > 1) {
+	if (g_major_version == 1 && g_minor_version > 1) {
 		keySize = RsaKeySize::rsa4096;
-	} else {
-		if (g_minor_version > 1) {
-			keySize = RsaKeySize::rsa4096;
-		}
 	}
 
 	if (!run_device_perf_tests(device_num, MacType::None, KeySize::None, keySize)) {
@@ -225,7 +221,7 @@ static bool run_device_perf_tests(int device_num) {
  */
 static bool run_device_perf_test(int device_num, const RngConfig &cfg) {
 	DeviceStatistics ds;
-	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
+	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file, KeyExchange::rsa}};
 	bool slow_dwld = false;
 	unsigned char rnd_buffer[100000];
 
@@ -271,21 +267,26 @@ static bool run_device_perf_test(int device_num, const RngConfig &cfg) {
 	}
 
 	cout << ", session pk: ";
-	switch(cfg.e_rsa_key_size) {
-	case RsaKeySize::rsa1024:
-		cout << "RSA-1024";
-		break;
-	case RsaKeySize::rsa2048:
-		cout << "RSA-2048";
-		break;
-	case RsaKeySize::rsa3072:
-		cout << "RSA-3072";
-		break;
-	case RsaKeySize::rsa4096:
-		cout << "RSA-4096";
-		break;
+	if (g_major_version == 2) {
+		cout << "ML-KEM-1024";
+		cout << " ... ";
+	} else {
+		switch(cfg.e_rsa_key_size) {
+		case RsaKeySize::rsa1024:
+			cout << "RSA-1024";
+			break;
+		case RsaKeySize::rsa2048:
+			cout << "RSA-2048";
+			break;
+		case RsaKeySize::rsa3072:
+			cout << "RSA-3072";
+			break;
+		case RsaKeySize::rsa4096:
+			cout << "RSA-4096";
+			break;
+		}
+		cout << " ...... ";
 	}
-	cout << " ...... ";
 	std::cout.flush();
 
 
