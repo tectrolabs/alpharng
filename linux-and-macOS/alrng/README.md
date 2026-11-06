@@ -169,6 +169,17 @@ random_provider = alpharng
 
 To check it, run `openssl list -providers` (it should list `AlphaRNG`) and `openssl rand -hex 16`.
 
+**Set `OPENSSL_CONF` for each command rather than exporting it.** Every program that uses OpenSSL reads the file named by
+`OPENSSL_CONF`, and that includes `alrng`, `alrngdiag`, `alperftest`, `alseqgen` and the samples. With `OPENSSL_CONF`
+exported in a shell, each of them loads its own copy of the provider, which takes the device before the program itself
+can open it, so the program cannot connect. Set it only for the command that should use the provider:
+
+```sh
+OPENSSL_CONF=/path/to/openssl.cnf openssl rand -hex 16
+```
+
+If it was exported, `unset OPENSSL_CONF` makes the device available to the AlphaRNG utilities again.
+
 ### Settings
 
 Lines in the provider section (`[alpharng_sect]` above) choose how the provider uses the device. They use the same
