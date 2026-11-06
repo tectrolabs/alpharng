@@ -96,12 +96,12 @@ bool UsbSerialDevice::connect(const char *device_path_name) {
 /**
  * Set connection read/write timeout in milliseconds.
  *
- * @param[i]  milliseconds
+ * @param[in] milliseconds connection timeout in milliseconds
  *
  * @return true for successful operation
  */
 bool UsbSerialDevice::set_connection_timeout(int milliseconds) {
-	// Set time out to 100 milliseconds for read serial device operations
+	// VTIME is in tenths of a second: convert the timeout, using at least one tenth
 	int conn_timeout = milliseconds < 100 ? 1 : milliseconds / 100;
 	m_opts.c_cc[VTIME] = (cc_t)conn_timeout;
 	m_opts.c_cc[VMIN] = 0;
@@ -139,7 +139,7 @@ bool UsbSerialDevice::disconnect() {
  *
  * @param[in] snd points to location of the bytes to send
  * @param[in] size_snd how many bytes to send
- * @param[out] bytes_sent point to a location to store the actual bytes sent
+ * @param[out] bytes_sent points to a location to store the actual bytes sent
  *
  * @return 0 for successful operation, otherwise it is the error code
  */
@@ -173,7 +173,7 @@ void UsbSerialDevice::purge_comm_data() const {
  *
  * @param[out] rcv points to location for the bytes to receive
  * @param[in] size_receive expected amount of bytes to receive
- * @param[out] bytes_received point to a location to store the actual bytes received
+ * @param[out] bytes_received points to a location to store the actual bytes received
  *
  * @return 0 for successful operation, -7 for operation timeout or other error value
  *

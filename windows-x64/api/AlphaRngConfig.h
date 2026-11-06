@@ -6,12 +6,12 @@
 
  This class may only be used in conjunction with TectroLabs devices.
 
- This structure used by the API for interacting with the AlphaRNG device over a secure data communication channel.
+ This structure is used by the API for interacting with the AlphaRNG device over a secure data communication channel.
 
  */
 
 /**
- *    @file AlphaRngApi.h
+ *    @file AlphaRngConfig.h
  *    @date 09/16/2023
  *    @Author: Andrian Belinski
  *    @version 1.3

@@ -121,11 +121,11 @@ int main(const int argc, const char **argv) {
 /**
  * Generate randomized sequence for specific range
  *
- * @param[in] AlphaRngApi *rng a pointer to RNG
- * @param[in] int32_t smallest_value smallest value in sequence
- * @param[in] int32_t largest_value largest value in sequence
- * @param[in] uint32_t sequence_size how many random integer numbers to generate
- * @param[in] string &file_path_name file name for storing generated integers in binary format
+ * @param[in] rng a pointer to the RNG API instance
+ * @param[in] smallest_value smallest value in sequence
+ * @param[in] largest_value largest value in sequence
+ * @param[in] sequence_size how many random integer numbers to generate
+ * @param[in] file_path_name file name for storing generated integers in binary format
  *
  * @return true when executed successfully
  */
@@ -416,7 +416,7 @@ static void display_help() {
 	cout << "           AES cipher is used for securing the data communication within an AlphaRNG session." << endl;
 	cout << endl;
 	cout << "     -k FILE" << endl;
-	cout << "           FILE pathname with an alternative RSA 2048/3072/4096 public key, supplied by the manufacturer." << endl;
+	cout << "           FILE pathname with an alternative RSA 2048/3072/4096 or ML-KEM-1024 public key, supplied by the manufacturer." << endl;
 	cout << endl;
 	cout << "EXAMPLES:" << endl;
 	cout << "     Generating a sequence of 6 integers within [1..49] range" << endl;

@@ -16,7 +16,7 @@
  *    @Author: Andrian Belinski
  *    @version 1.1
  *
- *    @brief Implements a class with an algorithm for generating up to 4294967295 unique sequence of integers within [-2147483647,2147483647] range.
+ *    @brief Implements a class with an algorithm for generating a sequence of up to 4294967295 unique integers within the [-2147483647,2147483647] range.
  */
 
 #include <RandomRangeSequence.h>
@@ -26,8 +26,8 @@ namespace tl_algorithm {
 /**
  * Validate minimum and maximum limits. Allocate memory for arrays.
  *
- * @param int32_t min_limit - the smallest number in the range
- * @param int32_t max_limit - the largest number in the range
+ * @param[in] min_limit the smallest number in the range
+ * @param[in] max_limit the largest number in the range
  */
 RandomRangeSequence::RandomRangeSequence(const int32_t min_limit, const int32_t max_limit)
 		: c_min_limit(min_limit) {
@@ -110,8 +110,8 @@ void RandomRangeSequence::defragment() {
  * Generate relative random integers and mark positions for those that have been extracted with -1 to
  * prevent duplicates.
  *
- * @param uint32_t *dest - destination buffer
- * @param uint32_t size - how many integers to generate within the range
+ * @param[out] dest destination buffer
+ * @param[in] size how many integers to generate within the range
  */
 void RandomRangeSequence::iterate(uint32_t *dest, const uint32_t size) {
 	for (uint32_t i = 0; i < size && m_dest_idx < size; i++) {
@@ -145,9 +145,9 @@ void RandomRangeSequence::clear_error_log() {
 /**
  * Generate a sequence of random numbers within the range, up to the specified limit `size`
  *
- * @param int32_t *dest - destination memory
- * @param uint32_t size - how many integers to generate within the range
- * @return bool - true when successfully generated
+ * @param[out] dest destination memory
+ * @param[in] size how many integers to generate within the range
+ * @return true when successfully generated
  */
 bool RandomRangeSequence::generate_sequence(int32_t *dest, uint32_t size) {
 	if (m_is_error) {

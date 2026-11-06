@@ -65,6 +65,8 @@ public:
 
 	AlphaRngApi();
 	explicit AlphaRngApi(const AlphaRngConfig &cfg);
+	AlphaRngApi(const AlphaRngApi &api) = delete;
+	AlphaRngApi & operator=(const AlphaRngApi &api) = delete;
 	bool is_connected();
 	bool connect(int device_number);
 	bool disconnect();

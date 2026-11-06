@@ -202,7 +202,7 @@ static bool display_frequency_table_summary(const uint16_t frequency_table[]) {
 /**
  * Retrieve and display AlphaRNG device information
  *
- * @param[in] RNG API instance
+ * @param[in] rng RNG API instance
  *
  * @return true for successful operation
  */
@@ -247,7 +247,7 @@ static bool display_device_info(AlphaRngApi &rng) {
  * Generate frequency distribution tables for both noise sources and display counted values.
  *
  * @param[in] raw_data_1 raw (unprocessed) data from noise source one
- * @param[in] raw_data_3 raw (unprocessed) data from noise source two
+ * @param[in] raw_data_2 raw (unprocessed) data from noise source two
  *
  * @return true for successful operation
  */
@@ -327,7 +327,7 @@ static bool inspect_raw_data(const unsigned char raw_data_1[], const unsigned ch
 /**
  * Invoke device built-in diagnostics routines.
  *
- * @param[in] RNG API instance
+ * @param[in] rng RNG API instance
  *
  * @return true for successful operation
  */

@@ -303,7 +303,7 @@ bool AlphaRngApi::retrieve_rng_status(unsigned char *status) {
  * Retrieve digitized raw (unprocessed) random bytes from the first noise source of the AlphaRNG device.
  * It is used to evaluate the quality of the first random noise source.
  *
- * @param[out] out points to a byte arrays for storing the resulting bytes
+ * @param[out] out points to a byte array for storing the resulting bytes
  * @param[in] out_length how many bytes to retrieve
  *
  * @return true for successful operation
@@ -324,7 +324,7 @@ bool AlphaRngApi::get_noise_source_1(unsigned char *out, int out_length) {
  * Retrieve digitized raw (unprocessed) random bytes from the second noise source of the AlphaRNG device.
  * It is used to evaluate the quality of the second random noise source.
  *
- * @param[out] out points to a byte arrays for storing the resulting bytes
+ * @param[out] out points to a byte array for storing the resulting bytes
  * @param[in] out_length how many bytes to retrieve
  *
  * @return true for successful operation
@@ -343,7 +343,7 @@ bool AlphaRngApi::get_noise_source_2(unsigned char *out, int out_length) {
 
 /**
  * Retrieve entropy bytes from the AlphaRNG device.
- * This is the method for retrieving high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for retrieving high quality, unbiased, random bytes that can be directly used in applications
  * or can feed the entropy inputs of DRBG(s).
  *
  * @param[out] out points to a byte array for storing the random bytes retrieved
@@ -365,7 +365,7 @@ bool AlphaRngApi::get_entropy(unsigned char *out, int out_length) {
 
 /**
  * Extract entropy bytes by applying SHA-256 method to RAW random bytes retrieved from an AlphaRNG device.
- * This is the method for generating high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for generating high quality, unbiased, random bytes that can be directly used in applications
  * or feed entropy inputs of DRBG(s).
  *
  * @param[out] out points to a byte array for storing the random bytes extracted
@@ -383,7 +383,7 @@ bool AlphaRngApi::extract_sha256_entropy(unsigned char *out, int out_length) {
 
 /**
  * Extract entropy bytes by applying SHA-512 method to RAW random bytes retrieved from an AlphaRNG device.
- * This is the method for generating high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for generating high quality, unbiased, random bytes that can be directly used in applications
  * or feed entropy inputs of DRBG(s).
  *
  * @param[out] out points to a byte array for storing the random bytes extracted
@@ -401,10 +401,10 @@ bool AlphaRngApi::extract_sha512_entropy(unsigned char *out, int out_length) {
 
 /**
  * Extract entropy bytes by applying SHA specific method to RAW random bytes retrieved from an AlphaRNG device.
- * This is the method for generating high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for generating high quality, unbiased, random bytes that can be directly used in applications
  * or feed entropy inputs of DRBG(s).
  *
- * @param[in] hash_api SHA specific implementation
+ * @param[in] sha_api SHA specific implementation
  * @param[out] out points to a byte array for storing the random bytes extracted
  * @param[in] out_length how many entropy bytes to retrieve
  *
@@ -477,10 +477,10 @@ bool AlphaRngApi::get_test_data(unsigned char *out, int out_length) {
 
 /**
  * Retrieve entropy bytes from the AlphaRNG device and store those into a file.
- * This is the method for retrieving high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for retrieving high quality, unbiased, random bytes that can be directly used in applications
  * or can feed the entropy inputs of DRBG(s).
  *
- * @param[out] out file_path_name file path name for storing entropy bytes
+ * @param[in] file_path_name file path name for storing entropy bytes
  * @param[in] num_bytes how many entropy bytes to retrieve, 0 - for continuous operation
  *
  * @return true for successful operation
@@ -494,10 +494,10 @@ bool AlphaRngApi::entropy_to_file(const string &file_path_name, int64_t num_byte
 
 /**
  * Extract entropy bytes into a file by applying SHA-256 method to RAW random bytes retrieved from an AlphaRNG device.
- * This is the method for retrieving high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for retrieving high quality, unbiased, random bytes that can be directly used in applications
  * or feed entropy inputs of DRBG(s).
  *
- * @param[out] out file_path_name file path name for storing entropy bytes
+ * @param[in] file_path_name file path name for storing entropy bytes
  * @param[in] num_bytes how many entropy bytes to retrieve, 0 - for continuous operation
  *
  * @return true for successful operation
@@ -511,10 +511,10 @@ bool AlphaRngApi::extract_sha256_entropy_to_file(const string &file_path_name, i
 
 /**
  * Extract entropy bytes into a file by applying SHA-512 method to RAW random bytes retrieved from an AlphaRNG device.
- * This is the method for retrieving high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for retrieving high quality, unbiased, random bytes that can be directly used in applications
  * or feed entropy inputs of DRBG(s).
  *
- * @param[out] out file_path_name file path name for storing entropy bytes
+ * @param[in] file_path_name file path name for storing entropy bytes
  * @param[in] num_bytes how many entropy bytes to retrieve, 0 - for continuous operation
  *
  * @return true for successful operation
@@ -532,7 +532,7 @@ bool AlphaRngApi::extract_sha512_entropy_to_file(const string &file_path_name, i
  * before any post-processing or conditioning.
  * The byte stream can also be used as an input for alternative post-processing or conditioning algorithms.
  *
- * @param[out] out file_path_name file path name for storing entropy bytes
+ * @param[in] file_path_name file path name for storing entropy bytes
  * @param[in] num_bytes how many entropy bytes to retrieve, 0 - for continuous operation
  *
  * @return true for successful operation
@@ -1035,7 +1035,7 @@ bool AlphaRngApi::retrieve_device_major_version(unsigned char *major_version) {
 	return true;
 }
 /**
- * Retrieve AlphaRNG minor_version version
+ * Retrieve AlphaRNG minor version
  *
  * @param[out] minor_version points to location for minor version number
  *

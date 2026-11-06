@@ -126,7 +126,7 @@ AesCryptor::AesCryptor() {
  * @param[in] in_byte_count how many bytes to encrypt
  * @param[out] out points to location for encrypted bytes
  * @param[out] out_byte_count points to location for storing the number of encrypted bytes
- * @param[out] out_tag points to location for storing 16 bytes tag
+ * @param[out] out_tag points to location for storing 16-byte tag
  *
  * @return true if encrypted successfully
  */
@@ -198,7 +198,7 @@ bool AesCryptor::initialize_iv() {
  * @param[in] in_byte_count how many bytes to decrypt
  * @param[out] out points to location for decrypted bytes
  * @param[out] out_byte_count points to location for storing the number of decrypted bytes
- * @param[in] in_tag points to location for 16 bytes tag
+ * @param[in] in_tag points to location for 16-byte tag
  *
  * @return true if decrypted successfully
  */
@@ -234,7 +234,7 @@ bool AesCryptor::decrypt(const unsigned char *in, int in_byte_count, unsigned ch
  *
  * @param[out] out points to location with enough space to store the key
  *
- * @return[out] true if key retrieved successfully
+ * @return true if key retrieved successfully
  */
 bool AesCryptor::get_key(unsigned char* out) const {
 	if (!m_initialized) {
@@ -247,9 +247,9 @@ bool AesCryptor::get_key(unsigned char* out) const {
 /**
  * Retrieve current IV.
  *
- * @param[out] out points to location with of 12 bytes to store the IV
+ * @param[out] out points to location of 12 bytes to store the IV
  *
- * @return[out] true if IV retrieved successfully
+ * @return true if IV retrieved successfully
  */
 bool AesCryptor::get_iv(unsigned char* out) const {
 	if (!m_initialized) {
@@ -264,7 +264,7 @@ bool AesCryptor::get_iv(unsigned char* out) const {
  *
  * @param[out] out points to location of 16 bytes to store the AAD
  *
- * @return[out] true if AAD retrieved successfully
+ * @return true if AAD retrieved successfully
  */
 bool AesCryptor::get_aad(unsigned char* out) const {
 	if (!m_initialized) {

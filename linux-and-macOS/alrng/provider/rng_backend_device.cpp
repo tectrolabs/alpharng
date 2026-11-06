@@ -56,7 +56,7 @@ public:
 		}
 		cfg.pub_key_file_name = settings.key_file;
 		if (!settings.key_file.empty() && !alpharng::MlKemCryptor(settings.key_file).is_initialized()) {
-			// As alrng does: the size of the key in the file decides the RSA size
+			// Not an ML-KEM-1024 key: as alrng does, the size of the RSA key in the file decides the RSA size
 			alpharng::RsaCryptor rsa(settings.key_file, true);
 			if (!rsa.is_initialized()) {
 				std::cerr << "AlphaRNG provider: could not load the ML-KEM-1024 or RSA public key file " << settings.key_file << std::endl;

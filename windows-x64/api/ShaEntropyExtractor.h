@@ -51,7 +51,7 @@ private:
 
 	// How many input bytes are used for extracting one byte of entropy.
 	// When set to 2 then for each byte in the output there will be 2 bytes used for input.
-	// It cannot be less then 1.
+	// It cannot be less than 1.
 	const int m_in_out_ratio;
 
 	// A byte array for collecting noise from the noise sources.
@@ -60,7 +60,7 @@ private:
 	// The size of the noise buffer in bytes.
 	const int m_noise_buff_bytes;
 
-	// A byte array to temporary store the hash value produced.
+	// A byte array to temporarily store the hash value produced.
 	unsigned char *m_hash_value = nullptr;
 
 	// The digest output size of the current SHA algorithm in bytes.
