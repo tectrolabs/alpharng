@@ -15,7 +15,7 @@
  *    @file alrng.cpp
  *    @date 11/05/2026
  *    @Author: Andrian Belinski
- *    @version 2.5
+ *    @version 2.6
  *
  *    @brief A utility used for downloading data from the AlphaRNG device
  */

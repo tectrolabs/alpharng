@@ -15,7 +15,7 @@
  *    @file bitgrps.cpp
  *    @date 11/05/2026
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief A utility that reads from a file with binary random bytes and runs statistical analysis of bit value distribution.
  */

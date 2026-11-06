@@ -15,7 +15,7 @@
  *    @file alseqgen.cpp
  *    @date 11/05/2026
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief A program for generating random sequences of unique integer numbers based on true random bytes produced by an AlphaRNG device.
  */

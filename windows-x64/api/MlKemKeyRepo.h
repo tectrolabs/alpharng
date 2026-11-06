@@ -14,7 +14,7 @@
  *    @file MlKemKeyRepo.h
  *    @date 11/03/2026
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Used for storing the hard-coded ML-KEM-1024 public key used for establishing a secure connection with the AlphaRNG PQ device.
  */

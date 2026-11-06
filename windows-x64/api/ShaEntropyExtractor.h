@@ -16,7 +16,7 @@
  *    @file ShaEntropyExtractor.h
  *    @date 11/05/2026
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief Implements an API used for extracting entropy from the AlphaRNG device using SHA for seeding a DRBG.
  */

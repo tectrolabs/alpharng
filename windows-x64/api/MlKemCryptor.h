@@ -17,7 +17,7 @@
  *    @file MlKemCryptor.h
  *    @date 11/03/2026
  *    @Author: Andrian Belinski
- *    @version 1.0
+ *    @version 1.1
  *
  *    @brief Used for establishing a secure session between the host computer and the AlphaRNG PQ device using
  *    ML-KEM-1024 key encapsulation.

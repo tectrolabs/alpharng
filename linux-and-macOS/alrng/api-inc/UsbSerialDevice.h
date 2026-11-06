@@ -14,7 +14,7 @@
  *    @file UsbSerialDevice.h
  *    @date 11/05/2026
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief Implements the API for communicating with the AlphaRNG device
  */
