@@ -434,7 +434,7 @@ static bool list_connected_devices(const RngConfig &cfg) {
 		rng.disconnect();
 		cout << "Device " << i << ": ";
 		if (!rng.connect(i)) {
-			cout << "could not connect" << endl;
+			cout << "could not connect. " << rng.get_last_error() << endl;
 			continue;
 		}
 		rng.retrieve_device_id(id);
@@ -548,7 +548,7 @@ static void display_help() {
 	cout << "     -p KEYTYPE" << endl;
 	cout << "           Public KEYTYPE: RSA1024, RSA2048, RSA3072, RSA4096, MLKEM1024 - skip for RSA2048." << endl;
 	cout << "           The key is used for establishing a secure session with an AlphaRNG device." << endl;
-	cout << "           MLKEM1024 (ML-KEM-1024) is required for AlphaRNG PQ devices. " << endl;
+	cout << "           MLKEM1024 (ML-KEM-1024) is enforced when using AlphaRNG PQ devices. " << endl;
 	cout << endl;
 	cout << "     -c CIPHER" << endl;
 	cout << "           CIPHER type: aes256, aes128 or none - skip this option for aes256." << endl;

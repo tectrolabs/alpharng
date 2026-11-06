@@ -156,12 +156,8 @@ static bool run_device_perf_tests(int device_num) {
 
 	RsaKeySize keySize {RsaKeySize::rsa2048};
 
-	if (g_major_version > 1) {
+	if (g_major_version == 1 && g_minor_version > 1) {
 		keySize = RsaKeySize::rsa4096;
-	} else {
-		if (g_minor_version > 1) {
-			keySize = RsaKeySize::rsa4096;
-		}
 	}
 
 	if (!run_device_perf_tests(device_num, MacType::None, KeySize::None, keySize)) {
@@ -271,21 +267,26 @@ static bool run_device_perf_test(int device_num, const RngConfig &cfg) {
 	}
 
 	cout << ", session pk: ";
-	switch(cfg.e_rsa_key_size) {
-	case RsaKeySize::rsa1024:
-		cout << "RSA-1024";
-		break;
-	case RsaKeySize::rsa2048:
-		cout << "RSA-2048";
-		break;
-	case RsaKeySize::rsa3072:
-		cout << "RSA-3072";
-		break;
-	case RsaKeySize::rsa4096:
-		cout << "RSA-4096";
-		break;
+	if (g_major_version == 2) {
+		cout << "ML-KEM-1024";
+		cout << " ... ";
+	} else {
+		switch(cfg.e_rsa_key_size) {
+		case RsaKeySize::rsa1024:
+			cout << "RSA-1024";
+			break;
+		case RsaKeySize::rsa2048:
+			cout << "RSA-2048";
+			break;
+		case RsaKeySize::rsa3072:
+			cout << "RSA-3072";
+			break;
+		case RsaKeySize::rsa4096:
+			cout << "RSA-4096";
+			break;
+		}
+		cout << " ...... ";
 	}
-	cout << " ...... ";
 	std::cout.flush();
 
 

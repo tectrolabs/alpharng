@@ -964,7 +964,44 @@ bool AlphaRngApi::connect_internal(int device_number) {
 		return false;
 	}
 
+	if (!retrieve_version()) {
+		return false;
+	}
+
+	if (!evaluate_key_exchange()) {
+		return false;
+	}
+
 	return create_new_session();
+}
+
+bool AlphaRngApi::evaluate_key_exchange() {
+	switch(m_device_version) {
+	case 2:
+		// Enforce mlkem1024 key exchange for AlphaRNG PQ device
+		if (m_cfg.e_key_exchange != KeyExchange::mlkem1024) {
+			m_cfg.e_key_exchange = KeyExchange::mlkem1024;
+			if (m_ml_kem_cryptor == nullptr) {
+				if (!initialize_ml_kem()) {
+					m_error_log_oss << "Could not initialize ML-KEM-1024 key exchanger. " << endl;
+					return false;
+				}
+			}
+		}
+		break;
+	case 1:
+		if (m_cfg.e_key_exchange == KeyExchange::mlkem1024) {
+			m_error_log_oss << "ML-KEM-1024 key exchanger is only available with AlphaRNG PQ devices. " << endl;
+			return false;
+		}
+		break;
+	default:
+		// This should never happen
+		m_error_log_oss << "Unknown device canonical version. " << endl;
+		return false;
+	}
+
+	return true;
 }
 
 /**
@@ -1118,6 +1155,29 @@ bool AlphaRngApi::create_token(uint64_t *new_token) {
 	token  = (token << 32) | (m_token_serial_number++ << 16) | rnd;
 	*new_token = token;
 	return true;
+}
+
+bool AlphaRngApi::retrieve_version() {
+	unsigned char cmd {51};
+
+	for (int tries = 0; tries < c_max_command_retry_count; ++tries) {
+		clear_error_log();
+		int actual_bytes_sent;
+		if (!m_device->send_data((unsigned char *)&cmd, 1, &actual_bytes_sent)) {
+			int actual_bytes_received;
+			if (!m_device->receive_data((unsigned char *)&m_device_version, 1, &actual_bytes_received)) {
+				return true;
+			} else {
+				m_error_log_oss << "Could not retrieve device canonical version. " << endl;
+			}
+		} else {
+			m_error_log_oss << "Could not sent command to device. " << endl;
+		}
+		sleep_usecs(1000);
+		clear_receiver();
+		sleep_usecs(1000);
+	}
+	return false;
 }
 
 bool AlphaRngApi::execute_command_internal (Response *resp, Command *cmd, int resp_payload_size_bytes) {

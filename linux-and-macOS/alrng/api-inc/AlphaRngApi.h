@@ -145,6 +145,8 @@ private:
 	bool initialize_ml_kem();
 	bool initialize_serial_device();
 	bool create_token(uint64_t *new_token);
+	bool retrieve_version();
+	bool evaluate_key_exchange();
 	static void sleep_usecs(int usec) {std::this_thread::sleep_for(std::chrono::microseconds(usec));}
 	static int get_packet_size(int resp_packet_payload_size_bytes) {
 		return sizeof(Packet::e_type) + sizeof(Packet::e_key_size) + sizeof(Packet::cipher_iv)
@@ -176,6 +178,7 @@ private:
 	HealthTests m_health_test;
 	int m_op_retry_count {0};
 	int m_session_count = 0;
+	char m_device_version = 0;
 	AlphaRngConfig m_cfg;
 	ShaInterface *m_sha_256 = nullptr;
 	ShaInterface *m_sha_512 = nullptr;
