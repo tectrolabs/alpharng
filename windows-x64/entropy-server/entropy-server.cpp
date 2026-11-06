@@ -50,7 +50,7 @@ AppArguments appArgs({
 /**
 * Current version of this application
 */
-static double const version = 1.8;
+static double const version = 1.10;
 
 static bool extract_command(Cmd& cmd, RngConfig& cfg, const int argc, const char** argv);
 static bool validate_comand(const Cmd& cmd);
@@ -314,7 +314,7 @@ static bool validate_comand(const Cmd& cmd) {
 void display_help() {
 	cout << "*********************************************************************************" << endl;
 	cout << "                       AlphaRNG entropy-server Ver ";
-	cout << std::fixed << std::setw(2) << std::setprecision(1) << version << endl;
+	cout << std::fixed << std::setw(2) << std::setprecision(2) << version << endl;
 	cout << "*********************************************************************************" << endl;
 	cout << "NAME" << endl;
 	cout << "     entropy-server - An application server for distributing random bytes" << endl;

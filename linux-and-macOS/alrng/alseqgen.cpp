@@ -49,7 +49,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.3;
+static double const version = 1.4;
 
 /**
 * Local functions used
