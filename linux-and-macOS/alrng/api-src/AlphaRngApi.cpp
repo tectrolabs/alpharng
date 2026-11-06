@@ -115,6 +115,8 @@ bool AlphaRngApi::initialize_ml_kem_keyfile() {
 		return false;
 	}
 	m_ml_kem_cryptor = cryptor;
+	// Lets evaluate_key_exchange() reject an ML-KEM-1024 key file on a stock AlphaRNG device
+	m_cfg.e_key_exchange = KeyExchange::mlkem1024;
 	return true;
 }
 
