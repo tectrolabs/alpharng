@@ -288,7 +288,7 @@ int alrng_retrieve_device_id(alrng_context* ctxt, char *id_buffer, int id_buffer
 		return -1;
 	}
 	memcpy(id_buffer, id.c_str(), size);
-	id[size] = '\0';
+	id_buffer[size] = '\0';
 	return 0;
 }
 
@@ -316,7 +316,7 @@ int alrng_retrieve_device_model(alrng_context* ctxt, char *model_buffer, int mod
 		return -1;
 	}
 	memcpy(model_buffer, model.c_str(), size);
-	model[size] = '\0';
+	model_buffer[size] = '\0';
 	return 0;
 }
 
