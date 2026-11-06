@@ -12,7 +12,7 @@
 
 /**
  *    @file AlphaRngConfig.h
- *    @date 09/16/2023
+ *    @date 11/03/2026
  *    @Author: Andrian Belinski
  *    @version 1.3
  *
