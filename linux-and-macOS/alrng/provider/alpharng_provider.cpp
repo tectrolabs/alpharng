@@ -218,7 +218,7 @@ extern "C" int OSSL_provider_init(const OSSL_CORE_HANDLE *handle, const OSSL_DIS
 		alrng_teardown(ctx);
 		return 0;
 	}
-	// Opening the device also makes RAND_bytes() calls (RSA key, session), so treat it like a read
+	// Opening the device also makes RAND_bytes() calls (session keys, tokens), so treat it like a read
 	bool opened;
 	{
 		BackendScope scope;

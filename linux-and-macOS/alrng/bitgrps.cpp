@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2025 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,14 +13,15 @@
 
 /**
  *    @file bitgrps.cpp
- *    @date 11/10/2025
+ *    @date 11/05/2026
  *    @Author: Andrian Belinski
- *    @version 1.1
+ *    @version 1.2
  *
  *    @brief A utility that reads from a file with binary random bytes and runs statistical analysis of bit value distribution.
  */
 #include <AppArguments.h>
 #include <iomanip>
+#include <sys/stat.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -62,7 +63,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.1;
+static double const version = 1.2;
 
 /**
 * Local functions
@@ -206,6 +207,14 @@ static bool validateComand(const Command &cmd) {
 			return false;
 		}
 
+		// The whole file is read into memory, so it must be a regular file with a known size.
+		// Checked before opening it: opening a named pipe would wait for a writer.
+		struct stat st;
+		if (stat(cmd.filePathName.c_str(), &st) == 0 && !S_ISREG(st.st_mode)) {
+			cerr << "Not a regular file: " << cmd.filePathName << endl;
+			return false;
+		}
+
 		ifstream isFile(cmd.filePathName.c_str(), ios::in | ios::binary);
 		if(!isFile.good()) {
 			cerr << "Could not open file: " << cmd.filePathName << endl;
@@ -268,7 +277,7 @@ static void displayHelp() {
 }
 
 /**
- * Run sticky bit analysis - find sticky bit value groups per each bit position.
+ * Run sticky bit analysis - find sticky bit value groups for each bit position.
  *
  * @param cmd command to be used
  *
@@ -284,6 +293,10 @@ static bool findStickyBitGroups(const Command &cmd) {
 
 	isFile.seekg(0, std::ios::end);
 	long fileSize = isFile.tellg();
+	if (fileSize < 0) {
+		cerr << "The size of file " + cmd.filePathName + " could not be determined" << endl;
+		return false;
+	}
 	isFile.seekg(0, ios_base::beg);
 
 	vector<uint8_t> buffer(fileSize);

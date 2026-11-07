@@ -12,9 +12,9 @@
 
  /**
   *    @file WinUsbSerialDevice.h
-  *    @date 8/16/2026
+  *    @date 11/16/2026
   *    @Author: Andrian Belinski
-  *    @version 1.4
+  *    @version 1.5
   *
   *    @brief Implements the API for communicating with the AlphaRNG device
   */
@@ -61,7 +61,7 @@ private:
 	void set_error_message(const char* error_message);
 	void purge_comm_data();
 	void clear_comm_error();
-	void get_connected_ports(int ports[], int max_ports, int* actual_count, const std::set<std::wstring>& hardwareIds, WCHAR* serial_id);
+	void get_connected_ports(int ports[], int max_ports, int* actual_count, const std::set<std::wstring>& hardwareIds, const std::set<std::wstring>& serialIds);
 
 private:
 	static const int c_max_devices = 25;
@@ -76,7 +76,12 @@ private:
 	DWORD m_comm_error;
 	const std::set<std::wstring> c_hardware_ids = {
 		L"USB\\VID_1FC9&PID_8111",
-		L"USB\\VID_3975&PID_0005"
+		L"USB\\VID_3975&PID_0005",
+		L"USB\\VID_3975&PID_0006"
+	};
+	const std::set<std::wstring> c_serial_ids = {
+		L"ALPHARNG",
+		L"ALRNGPQ"
 	};
 
 };

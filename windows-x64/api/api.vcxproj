@@ -176,6 +176,10 @@
     <ClInclude Include="HmacMD5.h" />
     <ClInclude Include="HmacSha1.h" />
     <ClInclude Include="HmacSha256.h" />
+    <ClInclude Include="MlKemCryptor.h" />
+    <ClInclude Include="MlKemKeyRepo.h" />
+    <ClInclude Include="mlkem\mlkem_native.h" />
+    <ClInclude Include="mlkem\mlkem_native_config.h" />
     <ClInclude Include="RandomRangeSequence.h" />
     <ClInclude Include="RsaCryptor.h" />
     <ClInclude Include="RsaKeyRepo.h" />
@@ -197,6 +201,11 @@
     <ClCompile Include="HmacMD5.cpp" />
     <ClCompile Include="HmacSha1.cpp" />
     <ClCompile Include="HmacSha256.cpp" />
+    <ClCompile Include="MlKemCryptor.cpp" />
+    <ClCompile Include="MlKemKeyRepo.cpp" />
+    <ClCompile Include="mlkem\mlkem_native.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="RandomRangeSequence.cpp" />
     <ClCompile Include="RsaCryptor.cpp" />
     <ClCompile Include="RsaKeyRepo.cpp" />

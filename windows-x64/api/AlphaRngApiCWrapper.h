@@ -6,7 +6,7 @@
 
  This class may only be used in conjunction with TectroLabs devices.
 
- This class implements a C wrapper around the C++ API for interacting with the AlphaRNG device over a secure data communication channel.
+ These functions implement a C wrapper around the C++ API for interacting with the AlphaRNG device over a secure data communication channel.
 
  Most of C wrapper functions will return:
 	0 when invoked successfully;
@@ -42,7 +42,7 @@ typedef struct alrng_context alrng_context;
  * Create a context for referencing AlphaRngApi class instance using default security configuration:
  *
  * MAC type:        HMAC-SHA-256
- * public key type: RSA-2048
+ * public key type: RSA-2048 (ML-KEM-1024 is used automatically with AlphaRNG PQ devices)
  * Cipher type:     AES-256-GCM
  * public key file: NONE
  *
@@ -56,7 +56,7 @@ alrng_context* alrng_create_default_ctxt();
  * @param[in] rsa_key_type RSA public key type used for establishing a secure session with an AlphaRNG device
  * @param[in] mac_type MAC type used for data authentication
  * @param[in] cipher_type AES cipher is used for securing the data communication within an AlphaRNG session
- * @param[in] pub_key_file file pathname with an alternative RSA 2048 public key, supplied by the manufacturer
+ * @param[in] pub_key_file file pathname with an alternative RSA 2048/3072/4096 or ML-KEM-1024 public key, supplied by the manufacturer
  *
  * @return pointer to the new context or NULL if failed
  */
@@ -186,7 +186,7 @@ int alrng_retrieve_device_model(alrng_context* ctxt, char *model_buffer, int mod
 int alrng_retrieve_device_major_version(alrng_context* ctxt, unsigned char *major_version);
 
 /**
- * Retrieve AlphaRNG minor_version version
+ * Retrieve AlphaRNG minor version
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
  * @param[out] minor_version points to location for minor version number
@@ -209,7 +209,7 @@ int alrng_run_health_test(alrng_context* ctxt);
  * It is used to evaluate the quality of the first random noise source.
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
- * @param[out] out points to a byte arrays for storing the resulting bytes
+ * @param[out] out points to a byte array for storing the resulting bytes
  * @param[in] out_length how many bytes to retrieve
  *
  * @return 0 for successful operation
@@ -221,7 +221,7 @@ int alrng_get_noise_source_1(alrng_context* ctxt, unsigned char *out, int out_le
  * It is used to evaluate the quality of the second random noise source.
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
- * @param[out] out points to a byte arrays for storing the resulting bytes
+ * @param[out] out points to a byte array for storing the resulting bytes
  * @param[in] out_length how many bytes to retrieve
  *
  * @return 0 for successful operation
@@ -230,7 +230,7 @@ int alrng_get_noise_source_2(alrng_context* ctxt, unsigned char *out, int out_le
 
 /**
  * Retrieve entropy bytes from the AlphaRNG device.
- * This is the method for retrieving high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for retrieving high quality, unbiased, random bytes that can be directly used in applications
  * or can feed the entropy inputs of DRBG(s).
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
@@ -243,7 +243,7 @@ int alrng_get_entropy(alrng_context* ctxt, unsigned char *out, int out_length);
 
 /**
  * Extract entropy bytes by applying SHA-256 method to RAW random bytes retrieved from an AlphaRNG device.
- * This is the method for generating high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for generating high quality, unbiased, random bytes that can be directly used in applications
  * or feed entropy inputs of DRBG(s).
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
@@ -256,7 +256,7 @@ int alrng_extract_sha256_entropy(alrng_context* ctxt, unsigned char *out, int ou
 
 /**
  * Extract entropy bytes by applying SHA-512 method to RAW random bytes retrieved from an AlphaRNG device.
- * This is the method for generating high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for generating high quality, unbiased, random bytes that can be directly used in applications
  * or feed entropy inputs of DRBG(s).
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
@@ -298,11 +298,11 @@ int alrng_get_test_data(alrng_context* ctxt, unsigned char *out, int out_length)
 
 /**
  * Retrieve entropy bytes from the AlphaRNG device and store those into a file.
- * This is the method for retrieving high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for retrieving high quality, unbiased, random bytes that can be directly used in applications
  * or can feed the entropy inputs of DRBG(s).
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
- * @param[out] out file_path_name pointer to file path name for storing entropy bytes
+ * @param[in] file_path_name pointer to file path name for storing entropy bytes
  * @param[in] num_bytes how many entropy bytes to retrieve, 0 - for continuous operation
  *
  * @return 0 for successful operation
@@ -311,11 +311,11 @@ int alrng_entropy_to_file(alrng_context* ctxt, const char *file_path_name, int64
 
 /**
  * Extract entropy bytes into a file by applying SHA-256 method to RAW random bytes retrieved from an AlphaRNG device.
- * This is the method for retrieving high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for retrieving high quality, unbiased, random bytes that can be directly used in applications
  * or feed entropy inputs of DRBG(s).
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
- * @param[out] out file_path_name pointer to file path name for storing entropy bytes
+ * @param[in] file_path_name pointer to file path name for storing entropy bytes
  * @param[in] num_bytes how many entropy bytes to retrieve, 0 - for continuous operation
  *
  * @return 0 for successful operation
@@ -324,11 +324,11 @@ int alrng_extract_sha256_entropy_to_file(alrng_context* ctxt, const char *file_p
 
 /**
  * Extract entropy bytes into a file by applying SHA-512 method to RAW random bytes retrieved from an AlphaRNG device.
- * This is the method for retrieving high quality, non biased, random bytes that can be directly used in applications
+ * This is the method for retrieving high quality, unbiased, random bytes that can be directly used in applications
  * or feed entropy inputs of DRBG(s).
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
- * @param[out] out file_path_name pointer to file path name for storing entropy bytes
+ * @param[in] file_path_name pointer to file path name for storing entropy bytes
  * @param[in] num_bytes how many entropy bytes to retrieve, 0 - for continuous operation
  *
  * @return 0 for successful operation
@@ -368,7 +368,7 @@ int alrng_noise_source_two_to_file(alrng_context* ctxt, const char *file_path_na
  * The byte stream can also be used as an input for alternative post-processing or conditioning algorithms.
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
- * @param[out] out file_path_name file path name for storing entropy bytes
+ * @param[in] file_path_name file path name for storing entropy bytes
  * @param[in] num_bytes how many entropy bytes to retrieve, 0 - for continuous operation
  *
  * @return 0 for successful operation
@@ -381,8 +381,8 @@ int alrng_noise_to_file(alrng_context* ctxt, const char *file_path_name, int64_t
  * noise sources.
  *
  * @param[in] ctxt pointer to context structure, must not be NULL
- * @param[out] freq_table_1 pointer to a memory allocated to store 256 uint16_t values for the first noise source
- * @param[out] freq_table_2 pointer to a memory allocated to store 256 uint16_t values for the second noise source
+ * @param[out] freq_table_1 pointer to memory allocated to store 256 uint16_t values for the first noise source
+ * @param[out] freq_table_2 pointer to memory allocated to store 256 uint16_t values for the second noise source
  *
  * @return 0 for successful operation
  */

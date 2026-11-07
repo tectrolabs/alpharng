@@ -18,7 +18,7 @@
  *    @Author: Andrian Belinski
  *    @version 1.6
  *
- *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device suing RSA PK encryption.
+ *    @brief Used for establishing a secure session between the host computer and the AlphaRNG device using RSA PK encryption.
  */
 
 #ifndef ALPHARNG_RSACRYPTOR_H_

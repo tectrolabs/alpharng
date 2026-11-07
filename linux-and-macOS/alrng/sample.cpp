@@ -13,11 +13,11 @@ using namespace std;
 using namespace alpharng;
 
 /**
- * @return 0 if ran successfully
+ * @return 0 if run successfully
  */
 int main() {
 
-    //A sample code that retrieves entropy bytes from an AlphaRNG device and store those into a file
+    //A sample code that retrieves entropy bytes from an AlphaRNG device and stores them in a file
 
     // Create a new AlphaRngApi instance using default constructor (HMAC-SHA256, RSA2048, and AES-256-GCM)
     AlphaRngApi rng { };

@@ -12,9 +12,9 @@
 
 /**
  *    @file AlphaRngApi.h
- *    @date 10/30/2026
+ *    @date 11/05/2026
  *    @Author: Andrian Belinski
- *    @version 1.9
+ *    @version 1.10
  *
  *    @brief Implements the API for securely interacting with the AlphaRNG device.
  */
@@ -31,6 +31,8 @@
 #include <RsaCryptor.h>
 #include <AesCryptor.h>
 #include <RsaKeyRepo.h>
+#include <MlKemCryptor.h>
+#include <MlKemKeyRepo.h>
 #include <DeviceInterface.h>
 #include <HmacInterface.h>
 #include <HmacSha256.h>
@@ -43,6 +45,10 @@
 #include <Sha512.h>
 #include <ShaInterface.h>
 #include <ShaEntropyExtractor.h>
+
+#include <cstddef>
+#include <openssl/evp.h>
+#include <openssl/rand.h>
 
 #ifdef _WIN64
 #include <WinUsbSerialDevice.h>
@@ -59,6 +65,8 @@ public:
 
 	AlphaRngApi();
 	explicit AlphaRngApi(const AlphaRngConfig &cfg);
+	AlphaRngApi(const AlphaRngApi &api) = delete;
+	AlphaRngApi & operator=(const AlphaRngApi &api) = delete;
 	bool is_connected();
 	bool connect(int device_number);
 	bool disconnect();
@@ -110,6 +118,7 @@ private:
 	bool upload_session_key();
 	bool create_new_session();
 	bool upload_request(Packet *rqst);
+	bool upload_request(MlKemPacket *rqst);
 	int download_response(Response *resp, int resp_packet_payload_size);
 	bool is_response_valid(Response *resp);
 	int get_resp_packet_payload_size(int actual_payload_size_bytes) const;
@@ -118,6 +127,7 @@ private:
 	PacketType get_rsa_request_type() const;
 	static PacketType get_aes_request_type() {return PacketType::aes;};
 	bool create_and_upload_session_packet(uint8_t *p, int object_size_bytes);
+	bool create_and_upload_ml_kem_session_packet(Session *sess);
 	bool create_and_upload_command_packet(uint8_t *p, int object_size_bytes);
 	bool execute_command (Response *resp, Command *cmd, int resp_payload_size_bytes);
 	bool clear_receiver();
@@ -133,8 +143,12 @@ private:
 	bool execute_command_internal (Response *resp, Command *cmd, int resp_payload_size_bytes);
 	bool connect_internal(int device_number);
 	bool initialize_rsa_keyfile();
+	bool initialize_ml_kem_keyfile();
+	bool initialize_ml_kem();
 	bool initialize_serial_device();
 	bool create_token(uint64_t *new_token);
+	bool retrieve_version();
+	bool evaluate_key_exchange();
 	static void sleep_usecs(int usec) {std::this_thread::sleep_for(std::chrono::microseconds(usec));}
 	static int get_packet_size(int resp_packet_payload_size_bytes) {
 		return sizeof(Packet::e_type) + sizeof(Packet::e_key_size) + sizeof(Packet::cipher_iv)
@@ -145,8 +159,10 @@ private:
 	DeviceInterface *m_device = nullptr;
 	std::ostringstream m_error_log_oss;
 	RsaCryptor *m_rsa_cryptor = nullptr;
+	MlKemCryptor *m_ml_kem_cryptor = nullptr;
 	AesCryptor *m_aes_cryptor = nullptr;
 	RsaKeyRepo m_rsa_key_repo;
+	MlKemKeyRepo m_ml_kem_key_repo;
 	bool m_is_initialized = false;
 	int m_device_count;
 	const int c_max_command_retry_count = 3;
@@ -164,6 +180,7 @@ private:
 	HealthTests m_health_test;
 	int m_op_retry_count {0};
 	int m_session_count = 0;
+	char m_device_version = 0;
 	AlphaRngConfig m_cfg;
 	ShaInterface *m_sha_256 = nullptr;
 	ShaInterface *m_sha_512 = nullptr;

@@ -13,9 +13,9 @@
 
 /**
  *    @file alseqgen.cpp
- *    @date 09/20/2026
+ *    @date 11/05/2026
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief A program for generating random sequences of unique integer numbers based on true random bytes produced by an AlphaRNG device.
  */
@@ -49,7 +49,7 @@ AppArguments appArgs ({
 /**
 * Current version of this utility application
 */
-static double const version = 1.3;
+static double const version = 1.4;
 
 /**
 * Local functions used
@@ -79,17 +79,17 @@ int main(const int argc, const char **argv) {
 		return -1;
 	}
 
-	if (cfg.key_file.size() > 0) {
+	if (cfg.key_file.size() > 0 && !MlKemCryptor(cfg.key_file).is_initialized()) {
 		RsaCryptor rsa(cfg.key_file, true);
 		if (!rsa.is_initialized()) {
-			cerr << "Could not load the RSA public key file: " << cfg.key_file << endl;
+			cerr << "Could not load the ML-KEM-1024 or RSA public key file: " << cfg.key_file << endl;
 			return -1;
 		}
 		// Retrieve an actual RSA key size.
 		cfg.e_rsa_key_size = rsa.get_rsa_key_size();
 	}
 
-	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file}};
+	AlphaRngApi rng{AlphaRngConfig {cfg.e_mac_type, cfg.e_rsa_key_size, cfg.e_aes_key_size, cfg.key_file, cfg.e_key_exchange}};
 
 	if (cmd.cmd_type == CmdOpt::generateSequence && !rng.connect(cmd.device_number)) {
 		cerr << rng.get_last_error() << endl;
@@ -121,11 +121,11 @@ int main(const int argc, const char **argv) {
 /**
  * Generate randomized sequence for specific range
  *
- * @param[in] AlphaRngApi *rng a pointer to RNG
- * @param[in] int32_t smallest_value smallest value in sequence
- * @param[in] int32_t largest_value largest value in sequence
- * @param[in] uint32_t sequence_size how many random integer numbers to generate
- * @param[in] string &file_path_name file name for storing generated integers in binary format
+ * @param[in] rng a pointer to the RNG API instance
+ * @param[in] smallest_value smallest value in sequence
+ * @param[in] largest_value largest value in sequence
+ * @param[in] sequence_size how many random integer numbers to generate
+ * @param[in] file_path_name file name for storing generated integers in binary format
  *
  * @return true when executed successfully
  */
@@ -200,6 +200,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 	cfg.e_mac_type = MacType::None;
 	cfg.e_aes_key_size = KeySize::k256;
 	cfg.e_rsa_key_size = RsaKeySize::rsa2048;
+	cfg.e_key_exchange = KeyExchange::rsa;
 
 
 	map<string, string> arg_map = appArgs.get_argument_map();
@@ -275,6 +276,10 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 			return false;
 			break;
 		case 'p':
+			if (value.compare("MLKEM1024") == 0) {
+				cfg.e_key_exchange = KeyExchange::mlkem1024;
+				break;
+			}
 			if (value.compare("RSA1024") == 0) {
 				cfg.e_rsa_key_size = RsaKeySize::rsa1024;
 				break;
@@ -291,7 +296,7 @@ static bool extract_command(Cmd &cmd, RngConfig &cfg, const int argc, const char
 				cfg.e_rsa_key_size = RsaKeySize::rsa4096;
 				break;
 			}
-			cerr << "unexpected RSA option specified, must be RSA1024, RSA2048, RSA3072 or RSA4096" << endl;
+			cerr << "unexpected public key type specified, must be MLKEM1024, RSA1024, RSA2048, RSA3072 or RSA4096" << endl;
 			return false;
 			break;
 		case 'd':
@@ -401,8 +406,9 @@ static void display_help() {
 	cout << "           MAC type: hmacMD5, hmacSha160, hmacSha256 or none - skip this option for none." << endl;
 	cout << endl;
 	cout << "     -p KEYTYPE" << endl;
-	cout << "           Public KEYTYPE: RSA1024, RSA2048, RSA3072 or RSA4096 (if supported) - skip for RSA2048." << endl;
-	cout << "           RSA is used for establishing a secure session with an AlphaRNG device." << endl;
+	cout << "           Public KEYTYPE: RSA1024, RSA2048, RSA3072 or RSA4096 (if supported), MLKEM1024 - skip for RSA2048." << endl;
+	cout << "           The key is used for establishing a secure session with an AlphaRNG device." << endl;
+	cout << "           MLKEM1024 (ML-KEM-1024) is required for AlphaRNG PQ devices." << endl;
 	cout << endl;
 	cout << "     -c CIPHER" << endl;
 	cout << "           CIPHER type: aes256, aes128 or none - skip this option for aes256." << endl;
@@ -410,7 +416,7 @@ static void display_help() {
 	cout << "           AES cipher is used for securing the data communication within an AlphaRNG session." << endl;
 	cout << endl;
 	cout << "     -k FILE" << endl;
-	cout << "           FILE pathname with an alternative RSA 2048/3072/4096 public key, supplied by the manufacturer." << endl;
+	cout << "           FILE pathname with an alternative RSA 2048/3072/4096 or ML-KEM-1024 public key, supplied by the manufacturer." << endl;
 	cout << endl;
 	cout << "EXAMPLES:" << endl;
 	cout << "     Generating a sequence of 6 integers within [1..49] range" << endl;

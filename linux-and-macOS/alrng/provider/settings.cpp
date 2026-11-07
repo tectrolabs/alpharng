@@ -95,7 +95,7 @@ bool parse_settings(const std::function<const char *(const char *)> &lookup, Set
 	if ((text = lookup("key_file")) != nullptr) {
 		result.key_file = text;
 	}
-	// With a key file, the size of the key in the file is used and 'rsa' is ignored
+	// With a key file, 'rsa' is ignored: the file holds an ML-KEM-1024 key or an RSA key whose size is used
 	if (result.key_file.empty() && (text = lookup("rsa")) != nullptr) {
 		if (!choose("rsa", text, c_rsas, value, error)) {
 			return false;

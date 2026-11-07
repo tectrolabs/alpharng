@@ -16,7 +16,7 @@
  *    @Author: Andrian Belinski
  *    @version 1.2
  *
- *    @brief Implements a class with an algorithm for generating up to 4294967295 unique sequence of integers within [-2147483647,2147483647] range.
+ *    @brief Implements a class with an algorithm for generating a sequence of up to 4294967295 unique integers within the [-2147483647,2147483647] range.
  */
 #ifndef TL_RANDOMRANGESEQUENCE_H_
 #define TL_RANDOMRANGESEQUENCE_H_

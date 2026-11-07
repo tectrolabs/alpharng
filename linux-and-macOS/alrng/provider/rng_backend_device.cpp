@@ -36,6 +36,7 @@ class DeviceBackend : public RngBackend {
 public:
 	bool open(const Settings &settings) override {
 		alpharng::AlphaRngConfig cfg;
+		cfg.e_key_exchange = alpharng::KeyExchange::rsa;
 		switch (settings.cipher) {
 		case Cipher::none: cfg.e_aes_key_size = alpharng::KeySize::None; break;
 		case Cipher::aes128: cfg.e_aes_key_size = alpharng::KeySize::k128; break;
@@ -54,11 +55,11 @@ public:
 		default: cfg.e_rsa_key_size = alpharng::RsaKeySize::rsa2048; break;
 		}
 		cfg.pub_key_file_name = settings.key_file;
-		if (!settings.key_file.empty()) {
-			// As alrng does: the size of the key in the file decides the RSA size
+		if (!settings.key_file.empty() && !alpharng::MlKemCryptor(settings.key_file).is_initialized()) {
+			// Not an ML-KEM-1024 key: as alrng does, the size of the RSA key in the file decides the RSA size
 			alpharng::RsaCryptor rsa(settings.key_file, true);
 			if (!rsa.is_initialized()) {
-				std::cerr << "AlphaRNG provider: could not load the RSA public key file " << settings.key_file << std::endl;
+				std::cerr << "AlphaRNG provider: could not load the ML-KEM-1024 or RSA public key file " << settings.key_file << std::endl;
 				return false;
 			}
 			cfg.e_rsa_key_size = rsa.get_rsa_key_size();

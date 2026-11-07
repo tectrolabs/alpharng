@@ -34,6 +34,14 @@ endif()
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 
+# ML-KEM-1024 (mlkem-native, used by MlKemCryptor); it needs C99, the rest of the kit is C90
+add_library(mlkem_native OBJECT api-src/mlkem/mlkem_native.c)
+set_target_properties(mlkem_native PROPERTIES C_STANDARD 99)
+target_include_directories(mlkem_native PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/api-src/mlkem ${OPENSSL_INCLUDE_DIR})
+if(NOT MSVC)
+  target_compile_options(mlkem_native PRIVATE -Wall -Wextra)
+endif()
+
 # Core library shared by all utilities
 add_library(alpharng STATIC
   api-src/AesCryptor.cpp
@@ -45,6 +53,8 @@ add_library(alpharng STATIC
   api-src/HmacMD5.cpp
   api-src/HmacSha1.cpp
   api-src/HmacSha256.cpp
+  api-src/MlKemCryptor.cpp
+  api-src/MlKemKeyRepo.cpp
   api-src/RandomRangeSequence.cpp
   api-src/RsaCryptor.cpp
   api-src/RsaKeyRepo.cpp
@@ -52,6 +62,7 @@ add_library(alpharng STATIC
   api-src/Sha512.cpp
   api-src/ShaEntropyExtractor.cpp
   api-src/UsbSerialDevice.cpp
+  $<TARGET_OBJECTS:mlkem_native>
 )
 target_include_directories(alpharng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/api-inc)
 target_link_libraries(alpharng PUBLIC OpenSSL::Crypto Threads::Threads)
@@ -98,7 +109,7 @@ if(ALRNG_BUILD_PROVIDER)
             "Use -DOPENSSL_ROOT_DIR=<path> to choose another OpenSSL.")
   endif()
   # The provider is a shared module that includes the (static) alpharng library
-  set_target_properties(alpharng PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(alpharng mlkem_native PROPERTIES POSITION_INDEPENDENT_CODE ON)
   # OpenSSL looks for provider modules with the platform suffix when they are loaded by name
   if(APPLE)
     set(ALRNG_PROVIDER_SUFFIX ".dylib")

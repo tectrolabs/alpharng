@@ -13,7 +13,7 @@
 using namespace entropy::server::api;
 
 /**
- * @return 0 if ran successfully
+ * @return 0 if run successfully
  */
 int main() {
 

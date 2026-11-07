@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014-2024 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,9 +12,9 @@
 
 /**
  *    @file UsbSerialDevice.h
- *    @date 06/23/2024
+ *    @date 11/05/2026
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief Implements the API for communicating with the AlphaRNG device
  */
@@ -55,6 +55,8 @@ public:
 	bool set_connection_timeout(int milliseconds) override;
 
 	UsbSerialDevice();
+	UsbSerialDevice(const UsbSerialDevice &device) = delete;
+	UsbSerialDevice & operator=(const UsbSerialDevice &device) = delete;
 	~UsbSerialDevice() override;
 
 private:

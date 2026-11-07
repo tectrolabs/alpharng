@@ -11,9 +11,9 @@
 
 /**
  *    @file UsbSerialDevice.cpp
- *    @date 8/16/2026
+ *    @date 11/05/2026
  *    @Author: Andrian Belinski
- *    @version 1.5
+ *    @version 1.6
  *
  *    @brief Implements the API for communicating with the CDC USB interface
  */
@@ -96,12 +96,12 @@ bool UsbSerialDevice::connect(const char *device_path_name) {
 /**
  * Set connection read/write timeout in milliseconds.
  *
- * @param[i]  milliseconds
+ * @param[in] milliseconds connection timeout in milliseconds
  *
  * @return true for successful operation
  */
 bool UsbSerialDevice::set_connection_timeout(int milliseconds) {
-	// Set time out to 100 milliseconds for read serial device operations
+	// VTIME is in tenths of a second: convert the timeout, using at least one tenth
 	int conn_timeout = milliseconds < 100 ? 1 : milliseconds / 100;
 	m_opts.c_cc[VTIME] = (cc_t)conn_timeout;
 	m_opts.c_cc[VMIN] = 0;
@@ -139,7 +139,7 @@ bool UsbSerialDevice::disconnect() {
  *
  * @param[in] snd points to location of the bytes to send
  * @param[in] size_snd how many bytes to send
- * @param[out] bytes_sent point to a location to store the actual bytes sent
+ * @param[out] bytes_sent points to a location to store the actual bytes sent
  *
  * @return 0 for successful operation, otherwise it is the error code
  */
@@ -173,7 +173,7 @@ void UsbSerialDevice::purge_comm_data() const {
  *
  * @param[out] rcv points to location for the bytes to receive
  * @param[in] size_receive expected amount of bytes to receive
- * @param[out] bytes_received point to a location to store the actual bytes received
+ * @param[out] bytes_received points to a location to store the actual bytes received
  *
  * @return 0 for successful operation, -7 for operation timeout or other error value
  *
@@ -222,7 +222,7 @@ void UsbSerialDevice::scan_available_devices() {
 #ifdef __linux__
 	char command[] = "/bin/ls -1l /dev/serial/by-id 2>&1 | grep -i \"TectroLabs_Alpha_RNG\"";
 #else
-	char command[] = "/bin/ls -1a /dev/cu.usbmodemALPHARNG* /dev/cu.usbmodemF* 2>&1";
+	char command[] = "/bin/ls -1a /dev/cu.usbmodemALPHARNG* /dev/cu.usbmodemALRNGPQ* /dev/cu.usbmodemF* 2>&1";
 #endif
 	FILE *pf = popen(command,"r");
 	if (pf == nullptr) {
@@ -239,7 +239,8 @@ void UsbSerialDevice::scan_available_devices() {
 #else
 		int cmp1  = strncmp(line, "/dev/cu.usbmodemALPHARNG", 24);
 		int cmp2  = strncmp(line, "/dev/cu.usbmodemF", 17);
-		if (cmp1 != 0 && cmp2 != 0 ) {
+		int cmp3  = strncmp(line, "/dev/cu.usbmodemALRNGPQ", 23);
+		if (cmp1 != 0 && cmp2 != 0 && cmp3 != 0) {
 			continue;
 		}
 		char *tty = line;

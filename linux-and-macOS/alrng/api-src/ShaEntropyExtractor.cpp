@@ -4,9 +4,9 @@
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
- This interface may only be used in conjunction with TectroLabs devices.
+ This class may only be used in conjunction with TectroLabs devices.
 
- This interface is used for extracting entropy from the AlphaRNG device for seeding a DRBG.
+ This class is used for extracting entropy from the AlphaRNG device for seeding a DRBG.
 
  */
 
@@ -150,7 +150,7 @@ bool ShaEntropyExtractor::extract_entropy(unsigned char *out, int len) {
  *
  * @param[in] sha_qty number of SHA values to produce
  * @param[in] in_sha_byte_qty number of noise bytes required to produce one SHA value
- * @param[in/out] entropy_bytes_needed number of entropy bytes requested
+ * @param[in,out] entropy_bytes_needed number of entropy bytes requested
  * @param[out] o pointer to a byte array to store the entropy bytes produced
  *
  * @return true for successful operation

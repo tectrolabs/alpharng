@@ -1,12 +1,16 @@
-Copyright (C) 2014-2023 TectroLabs LLC, https://tectrolabs.com
+Copyright (C) 2014-2026 TectroLabs LLC, https://tectrolabs.com
 
 THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
 INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
-This software is used for interacting with the hardware random data generator device AlphaRNG for the purpose of downloading true random bytes.
+This software is used for interacting with the hardware random data generator devices AlphaRNG and AlphaRNG PQ for the purpose of downloading true random bytes.
 
 This software requires `OpenSSL` library when communicating with the AlphaRNG device.
 
 This software uses `OpenSSL` (directly or indirectly) which is distributed under the terms of the Apache License V2. For more information, please visit: https://www.openssl.org/source/apache-license-2.0.txt
 
-This software may only be used in conjunction with an AlphaRNG device.
+This software includes `mlkem-native` (ML-KEM-1024 key encapsulation for AlphaRNG PQ devices), which is used under the terms of the MIT License. Its source code and license are located in the `mlkem` directories of the API source code.
+
+The copyright notices and license terms of the third-party software are reproduced in the THIRD-PARTY-NOTICES.txt file, which must be included with any distribution of this software in source or binary form.
+
+This software may only be used in conjunction with an AlphaRNG or AlphaRNG PQ device.

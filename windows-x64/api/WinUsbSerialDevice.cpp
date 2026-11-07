@@ -12,9 +12,9 @@
 
  /**
   *    @file WinUsbSerialDevice.cpp
-  *    @date 8/16/2026
+  *    @date 11/16/2026
   *    @Author: Andrian Belinski
-  *    @version 1.5
+  *    @version 1.6
   *
   *    @brief Implements the API for communicating with the CDC USB interface
   */
@@ -100,7 +100,7 @@ namespace alpharng {
 	/**
 	 * Set connection read/write timeout in milliseconds.
 	 *
-	 * @param[i]  milliseconds
+	 * @param[in] milliseconds connection timeout in milliseconds
 	 *
 	 * @return true for successful operation
 	 */
@@ -148,7 +148,7 @@ namespace alpharng {
 	 *
 	 * @param[in] snd points to location of the bytes to send
 	 * @param[in] size_snd how many bytes to send
-	 * @param[out] bytes_sent point to a location to store the actual bytes sent
+	 * @param[out] bytes_sent points to a location to store the actual bytes sent
 	 *
 	 * @return 0 for successful operation, otherwise it is the error code
 	 */
@@ -194,7 +194,7 @@ namespace alpharng {
 	 *
 	 * @param[out] rcv points to location for the bytes to receive
 	 * @param[in] size_receive expected amount of bytes to receive
-	 * @param[out] bytes_received point to a location to store the actual bytes received
+	 * @param[out] bytes_received points to a location to store the actual bytes received
 	 *
 	 * @return 0 for successful operation, -7 for operation timeout or other error value
 	 *
@@ -245,12 +245,12 @@ namespace alpharng {
 * @param int max_ports - the maximum number of AlphaRNG devices to discover
 * @param  int *actual_count - a pointer to the actual number of AlphaRNG devices found
 * @param  std::set<std::wstring> &hardwareIds - a reference to a set of SwiftRNG device hardware IDs
-* @param WCHAR* serial_id - a pointer to AlphaRNG device hardware serial ID
+* @param  std::set<std::wstring> &serialIds - a reference to a set of AlphaRNG device hardware serial IDs
 *
 * @return 0 - successful operation, otherwise the error code
 *
 */
-void WinUsbSerialDevice::get_connected_ports(int ports[], int max_ports, int* actual_count, const std::set<std::wstring>& hardwareIds, WCHAR* serial_id) {
+void WinUsbSerialDevice::get_connected_ports(int ports[], int max_ports, int* actual_count, const std::set<std::wstring>& hardwareIds, const std::set<std::wstring>& serialIds) {
 
 		DWORD dev_idx = 0;
 		int found_port_index = 0;
@@ -309,8 +309,12 @@ void WinUsbSerialDevice::get_connected_ports(int ports[], int max_ports, int* ac
 									{
 										status = CM_Get_Device_ID(dev_instance_parent_id, sz_dev_instance_id, MAX_DEVICE_ID_LEN, 0);
 										if (status == CR_SUCCESS) {
-											if (std::wstring(sz_dev_instance_id).find(serial_id) != std::string::npos) {
-												ports[found_port_index++] = port_nr;
+											std::wstring parent_id(sz_dev_instance_id);
+											for (const std::wstring& serial_id : serialIds) {
+												if (parent_id.find(serial_id) != std::wstring::npos) {
+													ports[found_port_index++] = port_nr;
+													break;
+												}
 											}
 										}
 									}
@@ -338,7 +342,7 @@ void WinUsbSerialDevice::get_connected_ports(int ports[], int max_ports, int* ac
 	 */
 	void WinUsbSerialDevice::scan_available_devices() {
 		m_active_device_count = 0;
-		get_connected_ports(m_ports, c_max_devices, &m_active_device_count, c_hardware_ids, (WCHAR*)L"ALPHARNG");
+		get_connected_ports(m_ports, c_max_devices, &m_active_device_count, c_hardware_ids, c_serial_ids);
 		for (int i = 0; i < m_active_device_count; ++i)
 		{
 			sprintf_s(m_device_names[i], c_max_size_device_name, "\\\\.\\COM%d", m_ports[i]);

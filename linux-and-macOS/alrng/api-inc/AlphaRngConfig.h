@@ -1,20 +1,20 @@
 /**
- Copyright (C) 2014-2023 TectroLabs L.L.C. https://tectrolabs.com
+ Copyright (C) 2014-2026 TectroLabs L.L.C. https://tectrolabs.com
 
  THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
  INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
  This class may only be used in conjunction with TectroLabs devices.
 
- This structure used by the API for interacting with the AlphaRNG device over a secure data communication channel.
+ This structure is used by the API for interacting with the AlphaRNG device over a secure data communication channel.
 
  */
 
 /**
- *    @file AlphaRngApi.h
- *    @date 09/16/2023
+ *    @file AlphaRngConfig.h
+ *    @date 11/03/2026
  *    @Author: Andrian Belinski
- *    @version 1.3
+ *    @version 1.4
  *
  *    @brief AlphaRNG configuration structure used for establishing a session with the AlphaRNG device
  */
@@ -32,6 +32,9 @@ struct AlphaRngConfig {
 	RsaKeySize e_rsa_key_size;
 	KeySize e_aes_key_size;
 	std::string pub_key_file_name;
+	// rsa: built-in RSA keys (default). mlkem1024: the built-in ML-KEM-1024 key for AlphaRNG PQ devices.
+	// Ignored when pub_key_file_name is set: the type of key in the file decides.
+	KeyExchange e_key_exchange;
 };
 
 

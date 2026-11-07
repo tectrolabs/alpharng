@@ -1,7 +1,7 @@
 # AlphaRNG utilities for Linux, FreeBSD and macOS
 
 Source code for the command line utilities and the C/C++ API that access an
-[AlphaRNG](https://tectrolabs.com/alpharng/) true random number generator over USB.
+[AlphaRNG](https://tectrolabs.com/alpharng/) or AlphaRNG PQ true random number generator over USB.
 Communication with the device goes through a secure channel.
 
 ## Contents
@@ -22,6 +22,27 @@ The API lives in `api-inc/` (headers) and `api-src/` (sources). `AlphaRngApi.h`
 is the C++ interface and `AlphaRngApiCWrapper.h` is the C interface.
 
 Run any program with `-h` for its full list of options.
+
+## Secure session: RSA and ML-KEM-1024
+
+Each connection starts with a secure session. The host creates the session keys and sends them to the device
+protected with the device's public key: RSA on a stock AlphaRNG, ML-KEM-1024 (FIPS 203) on an AlphaRNG PQ. When it
+connects, the API first asks the device which kind it is, before any key exchange:
+
+| Requested | AlphaRNG PQ | Stock AlphaRNG |
+| --- | --- | --- |
+| Nothing, or an RSA key type (`-p RSA2048` and so on) | ML-KEM-1024 with the built-in key | RSA with the built-in key of that size |
+| `-p MLKEM1024` | ML-KEM-1024 with the built-in key | Error: ML-KEM-1024 is only available with AlphaRNG PQ devices |
+| An RSA key file (`-k FILE`) | ML-KEM-1024 with the built-in key; the file is not used | RSA with the key in the file |
+| An ML-KEM-1024 key file (`-k FILE`) | ML-KEM-1024 with the key in the file | Error: ML-KEM-1024 is only available with AlphaRNG PQ devices |
+
+A key file is a PEM public key supplied by the manufacturer. The API reads the file as an ML-KEM-1024 key first and
+as an RSA key otherwise, so the same `-k` option, `pub_key_file` argument of the C API and `key_file` provider setting
+take either kind. ML-KEM-1024 comes from the bundled [mlkem-native](https://github.com/pq-code-package/mlkem-native)
+sources in `api-src/mlkem/`, so it does not need a newer OpenSSL.
+
+With ML-KEM-1024 the session keys are always sent AES-256-GCM encrypted, keyed by the ML-KEM shared secret.
+`-c` (`cipher`) and `-m` (`mac`) still choose how the commands and the random data are protected after that.
 
 ## Requirements
 
@@ -148,6 +169,17 @@ random_provider = alpharng
 
 To check it, run `openssl list -providers` (it should list `AlphaRNG`) and `openssl rand -hex 16`.
 
+**Set `OPENSSL_CONF` for each command rather than exporting it.** Every program that uses OpenSSL reads the file named by
+`OPENSSL_CONF`, and that includes `alrng`, `alrngdiag`, `alperftest`, `alseqgen` and the samples. With `OPENSSL_CONF`
+exported in a shell, each of them loads its own copy of the provider, which takes the device before the program itself
+can open it, so the program cannot connect. Set it only for the command that should use the provider:
+
+```sh
+OPENSSL_CONF=/path/to/openssl.cnf openssl rand -hex 16
+```
+
+If it was exported, `unset OPENSSL_CONF` makes the device available to the AlphaRNG utilities again.
+
 ### Settings
 
 Lines in the provider section (`[alpharng_sect]` above) choose how the provider uses the device. They use the same
@@ -157,8 +189,8 @@ values as the options of `alrng`, and all are optional:
 | --- | --- | --- | --- |
 | `cipher` | `aes256`, `aes128`, `none` | `aes256` | `-c` |
 | `mac` | `none`, `hmacSha256`, `hmacSha160`, `hmacMD5` | `none` | `-m` |
-| `rsa` | `RSA2048`, `RSA1024`, `RSA3072`, `RSA4096`; ignored when `key_file` is given | `RSA2048` | `-p` |
-| `key_file` | path of a device public key file. If given, it is used instead of the key built into the API, and `rsa` is ignored | the key built into the API | `-k` |
+| `rsa` | `RSA2048`, `RSA1024`, `RSA3072`, `RSA4096`; ignored when `key_file` is given. An AlphaRNG PQ device always uses ML-KEM-1024 (see [Secure session](#secure-session-rsa-and-ml-kem-1024)) | `RSA2048` | `-p` |
+| `key_file` | path of a device public key file, RSA or ML-KEM-1024. If given, it is used instead of the key built into the API, and `rsa` is ignored | the key built into the API | `-k` |
 | `device` | device number, 0 to 25 | `0` | `-d` |
 | `data` | `entropy` (the device's processed output), `sha256` or `sha512` (extracted from the raw noise) | `entropy` | `-e`, `-x`, `-X` |
 | `stat_tests` | `on`, `off` | `on` | `-dt` turns them off |
@@ -200,8 +232,9 @@ Things to know:
   its own random source. The process that holds the device is not affected. A single process cannot combine the output
   of two devices.
 * Starting the provider sets up the secure session with the device, which takes about 0.7 seconds on a Raspberry Pi 5
-  with the default `RSA2048` and several seconds with `RSA4096`.
-* The AlphaRNG API calls `RAND_bytes()` itself for its session keys. While the provider is reading from the device,
+  with the default `RSA2048` and several seconds with `RSA4096`. An AlphaRNG PQ device uses ML-KEM-1024 instead.
+* The AlphaRNG API calls `RAND_bytes()` itself for its session keys and, with ML-KEM-1024, for the key encapsulation.
+  While the provider is reading from the device,
   those calls are answered by OpenSSL's built-in generator, not by the device.
 * Speed is set by the device: about 0.5 MB/s on a Raspberry Pi 5 and on an Ubuntu PC, the same as `alrng -e`.
 

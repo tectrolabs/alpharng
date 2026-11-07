@@ -18,7 +18,8 @@
  *        mac         = none | hmacSha256 | hmacSha160 | hmacMD5     (default none)
  *        rsa         = RSA2048 | RSA1024 | RSA3072 | RSA4096        (default RSA2048; ignored with key_file)
  *        key_file    = path of a device public key file             (default: the key built into the API;
- *                                                                    its key size is used instead of 'rsa')
+ *                                                                    an ML-KEM-1024 key selects ML-KEM, and an
+ *                                                                    RSA key's size is used instead of 'rsa')
  *        device      = device number, 0 to 25                       (default 0)
  *        data        = entropy | sha256 | sha512                    (default entropy)
  *        stat_tests  = on | off                                     (default on)

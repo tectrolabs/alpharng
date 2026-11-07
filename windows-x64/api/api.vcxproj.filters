@@ -45,6 +45,18 @@
     <ClInclude Include="RsaCryptor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MlKemCryptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MlKemKeyRepo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mlkem\mlkem_native.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mlkem\mlkem_native_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="RsaKeyRepo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -102,6 +114,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RsaCryptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MlKemCryptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MlKemKeyRepo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mlkem\mlkem_native.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RsaKeyRepo.cpp">

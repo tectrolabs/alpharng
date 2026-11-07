@@ -49,3 +49,8 @@ build/
 /linux-and-macOS/alrng/bitgrps
 /linux-and-macOS/alrng/sample
 /linux-and-macOS/alrng/sample_c
+
+# Unit test programs built by make test in linux-and-macOS/alrng
+/linux-and-macOS/alrng/tests/test_*
+!/linux-and-macOS/alrng/tests/test_*.cpp
+!/linux-and-macOS/alrng/tests/test_*.h

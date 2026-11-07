@@ -90,7 +90,7 @@ void HealthTests::set_num_failures_threshold(uint8_t num_failures_threshold) {
 }
 
 /**
- * Run an array of bytes trough the tests
+ * Run an array of bytes through the tests
  *
  * @param[in] in points to an array of bytes to be tested
  * @param[in] in_length amount of bytes to be tested
