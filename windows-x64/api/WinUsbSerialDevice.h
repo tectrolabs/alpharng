@@ -12,7 +12,7 @@
 
  /**
   *    @file WinUsbSerialDevice.h
-  *    @date 11/16/2026
+  *    @date 11/06/2026
   *    @Author: Andrian Belinski
   *    @version 1.5
   *
