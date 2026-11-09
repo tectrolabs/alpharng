@@ -1,4 +1,4 @@
-# AlphaRNG utilities for Linux, FreeBSD and macOS
+# AlphaRNG utilities for Linux, FreeBSD, and macOS
 
 Source code for the command line utilities and the C/C++ API that access an
 [AlphaRNG](https://tectrolabs.com/alpharng/) or AlphaRNG PQ true random number generator over USB.
@@ -17,11 +17,14 @@ Communication with the device goes through a secure channel.
 | `alpharng.so` | OpenSSL 4 provider that uses AlphaRNG as the random source (optional, see [below](#openssl-provider-openssl-40-and-later)) |
 | `run-alrng-pserver.sh` | Named pipe server script for Linux, see [below](#named-pipe-server) |
 | `85-alpharng-usb-access.rules` | udev rules for non-root USB access on Linux |
+| `tests/` | Unit tests, see [Running the tests](#running-the-tests) |
 
 The API lives in `api-inc/` (headers) and `api-src/` (sources). `AlphaRngApi.h`
 is the C++ interface and `AlphaRngApiCWrapper.h` is the C interface.
 
 Run any program with `-h` for its full list of options.
+
+If the Repetition Count or Adaptive Proportion test fails, the download stops with an error, and no further data is returned until the program is restarted.
 
 ## Secure session: RSA and ML-KEM-1024
 
@@ -51,7 +54,7 @@ With ML-KEM-1024 the session keys are always sent AES-256-GCM encrypted, keyed b
   * Debian/Ubuntu/Raspberry Pi OS: `sudo apt install build-essential libssl-dev`
   * macOS: `brew install openssl`
   * FreeBSD: OpenSSL from base or `pkg install openssl`
-* CMake 3.10 or newer, if building with CMake (`sudo apt install cmake`, `brew install cmake`)
+* CMake 3.10 or newer, if building with CMake (`sudo apt install cmake`, `brew install cmake`, `pkg install cmake`)
 
 ## Building with CMake
 
@@ -98,7 +101,7 @@ make -f Makefile.bsd
 sudo make -f Makefile.bsd install
 ```
 
-`make clean` removes the build output. Both build systems produce the same programs.
+`make clean` removes the build output. Both build systems produce the same programs. After changing a source file, run `make clean` first, because `make` does not rebuild object files that already exist.
 
 ## Running the tests
 
@@ -109,6 +112,14 @@ cmake -S . -B build -DALRNG_BUILD_TESTS=ON
 cmake --build build -j4
 cd build && ctest --output-on-failure
 ```
+
+The same seven tests also build and run with make, without CMake:
+
+```sh
+make clean && make test
+```
+
+`make test` runs every test program and reports how many failed. The OpenSSL provider tests are built only with CMake.
 
 Each test file in `tests/` is its own program (for example `build/tests/test_aes`), which you can also run
 directly to see every test by name. They use a small framework in `tests/test_framework.h`, so there is nothing
@@ -125,7 +136,7 @@ extra to install.
 | `app_arguments` | Command line option parsing and error reporting |
 
 The classes that talk to a device (`AlphaRngApi`, `UsbSerialDevice` and `ShaEntropyExtractor`) are not covered,
-because they need an AlphaRNG device.
+because they need an AlphaRNG device. The ML-KEM-1024 classes (`MlKemCryptor` and `MlKemKeyRepo`) have no unit tests yet.
 
 A test that documents a known, unfixed defect is declared with `TEST_KNOWN_BUG`. It is reported as `XFAIL` and
 does not fail the run. Once the defect is fixed, the test reports `XPASS` and fails the run until the marker is removed.
@@ -277,6 +288,12 @@ Download 1 MB without the secure channel (`-c none`):
 
 ```sh
 alrng -e -o rnd.bin -n 1000000 -c none
+```
+
+Download 1 MB using the device's own key file (RSA for an AlphaRNG, ML-KEM-1024 for an AlphaRNG PQ):
+
+```sh
+alrng -e -o rnd.bin -n 1000000 -k /path/to/device-key.pem
 ```
 
 Download 1 MB of raw, unprocessed bytes:
