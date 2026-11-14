@@ -11,15 +11,16 @@
 
 /**
  *    @file UsbSerialDevice.cpp
- *    @date 11/05/2026
+ *    @date 11/13/2026
  *    @Author: Andrian Belinski
- *    @version 1.6
+ *    @version 1.7
  *
  *    @brief Implements the API for communicating with the CDC USB interface
  */
 
 #include <UsbSerialDevice.h>
 #include <cstdio>
+#include <cerrno>
 
 namespace alpharng {
 
@@ -58,9 +59,17 @@ bool UsbSerialDevice::connect(const char *device_path_name) {
 
 	clear_error_log();
 
-	this->m_fd = open(device_path_name, O_RDWR | O_NOCTTY);
+	this->m_fd = open(device_path_name, O_RDWR | O_NOCTTY | O_CLOEXEC);
 	if (this->m_fd == -1) {
 		m_error_log_oss << "Could not open serial device: " << device_path_name << ". ";
+		return false;
+	}
+
+	struct stat st;
+	if (fstat(m_fd, &st) != 0 || !S_ISCHR(st.st_mode) || !isatty(m_fd)) {
+		m_error_log_oss << "Not a serial terminal device: " << device_path_name << ". ";
+		close(m_fd);
+		m_fd = -1;
 		return false;
 	}
 
@@ -69,6 +78,7 @@ bool UsbSerialDevice::connect(const char *device_path_name) {
 	if (this->m_lock != 0) {
 		m_error_log_oss << "Could not lock device: " << device_path_name << "." << std::endl;
 		close(m_fd);
+		m_fd = -1;
 		return false;
 	}
 
@@ -78,6 +88,7 @@ bool UsbSerialDevice::connect(const char *device_path_name) {
 	if (retVal) {
 		m_error_log_oss << "Could not retrieve configuration from serial device: " << device_path_name << ". ";
 		close(m_fd);
+		m_fd = -1;
 		return false;
 	}
 
@@ -87,8 +98,17 @@ bool UsbSerialDevice::connect(const char *device_path_name) {
 
 	if (!set_connection_timeout(c_timeout_mlsecs)) {
 		close(m_fd);
+		m_fd = -1;
 		return false;
 	}
+#ifndef __FreeBSD__
+	if (ioctl(m_fd, TIOCEXCL) != 0) {
+		m_error_log_oss << "Could not set exclusive access for device: " << device_path_name << ". ";
+		close(m_fd);
+		m_fd = -1;
+		return false;
+	}
+#endif
 	this->m_device_connected = true;
 	return true;
 }
@@ -127,8 +147,12 @@ bool UsbSerialDevice::disconnect() {
 	if (!is_connected()) {
 		return false;
 	}
+#ifndef __FreeBSD__
+	ioctl(m_fd, TIOCNXCL);
+#endif
 	flock(this->m_fd, LOCK_UN);
 	close(m_fd);
+	m_fd = -1;
 	this->m_device_connected = false;
 	clear_error_log();
 	return true;
@@ -147,7 +171,16 @@ int UsbSerialDevice::send_data(unsigned char *snd, int size_snd, int *bytes_sent
 	if (!is_connected()) {
 		return -1;
 	}
-	ssize_t ret_val = write(this->m_fd, snd, size_snd);
+	if (snd == nullptr || bytes_sent == nullptr || size_snd <= 0) {
+		set_error_message("Invalid arguments for sending data to serial device");
+		return -1;
+	}
+	*bytes_sent = 0;
+	ssize_t ret_val;
+	int attempts = 0;
+	do {
+		ret_val = write(this->m_fd, snd, size_snd);
+	} while (ret_val < 0 && errno == EINTR && ++attempts < c_max_eintr_retries);
 	if (ret_val != (ssize_t)size_snd) {
 		set_error_message("Could not send data to serial device");
 		return -1;
@@ -183,11 +216,20 @@ int UsbSerialDevice::receive_data(unsigned char *rcv, int size_receive, int *byt
 	if (!is_connected()) {
 		return -1;
 	}
+	if (rcv == nullptr || bytes_received == nullptr || size_receive <= 0) {
+		set_error_message("Invalid arguments for receiving data from serial device");
+		return -1;
+	}
+	*bytes_received = 0;
 
 	size_t actual_bytes_received = 0;
 	bool inLoop = true;
 	while (actual_bytes_received < (size_t)size_receive && inLoop) {
-		ssize_t received_count = read(this->m_fd, rcv + actual_bytes_received, size_receive - actual_bytes_received);
+		ssize_t received_count;
+		int attempts = 0;
+		do {
+			received_count = read(this->m_fd, rcv + actual_bytes_received, size_receive - actual_bytes_received);
+		} while (received_count < 0 && errno == EINTR && ++attempts < c_max_eintr_retries);
 		if (received_count < 0) {
 			set_error_message("Could not receive data from serial device");
 			return_status = -1;
@@ -346,16 +388,21 @@ int UsbSerialDevice::get_device_count() {
  *
  */
 bool UsbSerialDevice::retrieve_device_path(char *dev_path_name, int max_dev_path_name_bytes, int device_number) {
-	if (device_number >= m_active_device_count) {
+	if (dev_path_name == nullptr || max_dev_path_name_bytes <= 0) {
+		m_error_log_oss << "Invalid destination for the device path." << std::endl;
+		return false;
+	}
+	if (device_number < 0 || device_number >= m_active_device_count) {
 		m_error_log_oss << "Device number: " << device_number << " exceeds the maximum limit: " << m_active_device_count  << "." << std::endl;
 		return false;
 	}
-	if(max_dev_path_name_bytes < c_max_size_device_name - 1) {
+	size_t len = strlen(c_device_names[device_number]);
+	if (len >= (size_t)max_dev_path_name_bytes) {
 		m_error_log_oss << "Destination size too small: " << max_dev_path_name_bytes  << "." << std::endl;
 		return false;
 	}
 	memset(dev_path_name, 0, max_dev_path_name_bytes);
-	memcpy(dev_path_name, c_device_names[device_number], c_max_size_device_name);
+	memcpy(dev_path_name, c_device_names[device_number], len + 1);
 	return true;
 }
 
