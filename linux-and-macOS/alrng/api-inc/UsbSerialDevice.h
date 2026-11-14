@@ -12,9 +12,9 @@
 
 /**
  *    @file UsbSerialDevice.h
- *    @date 11/05/2026
+ *    @date 11/13/2026
  *    @Author: Andrian Belinski
- *    @version 1.4
+ *    @version 1.5
  *
  *    @brief Implements the API for communicating with the AlphaRNG device
  */
@@ -28,7 +28,9 @@
 #include <string>
 #include <sstream>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/file.h>
+#include <sys/ioctl.h>
 #include <cstdint>
 
 #ifdef __FreeBSD__
@@ -66,13 +68,14 @@ private:
 private:
 	static const int c_max_devices = 25;
 	static const int c_max_size_device_name = 128;
+	static const int c_max_eintr_retries = 100;
 	int m_fd {-1};
-	int m_lock;
-	char c_device_names[c_max_devices][c_max_size_device_name];
+	int m_lock {-1};
+	char c_device_names[c_max_devices][c_max_size_device_name] {};
 	int m_active_device_count {0};
 	bool m_device_connected {false};
 	std::ostringstream m_error_log_oss;
-	struct termios m_opts;
+	struct termios m_opts {};
 	const int c_timeout_mlsecs = 100;
 };
 
